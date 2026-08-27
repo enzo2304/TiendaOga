@@ -24,5 +24,16 @@ namespace TiendaOga
         {
             InitializeComponent();
         }
+
+        private void btnIngresar_Click(object sender, RoutedEventArgs e)
+        {
+            Window1 ventanaDashboard = new Window1();
+
+            // Le decimos a Visual Studio que la muestre en la pantalla
+            ventanaDashboard.Show();
+
+          
+            this.Close();
+        }
     }
 }

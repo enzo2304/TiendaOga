@@ -23,5 +23,29 @@ namespace TiendaOga
         {
             InitializeComponent();
         }
+        private void btnMenuDashboard_Click(object sender, RoutedEventArgs e)
+        {
+            // Aquí programaremos qué hace el botón Dashboard en el futuro
+        }
+
+        private void btnMenuVentas_Click(object sender, RoutedEventArgs e)
+        {
+            // Aquí programaremos qué hace el botón Ventas
+        }
+
+        private void btnMenuProductos_Click(object sender, RoutedEventArgs e)
+        {
+            // Aquí programaremos qué hace el botón Productos
+        }
+
+        private void btnMenuClientes_Click(object sender, RoutedEventArgs e)
+        {
+            // Aquí programaremos qué hace el botón Clientes
+        }
+
+        private void btnNuevaVenta_Click(object sender, RoutedEventArgs e)
+        {
+            // Aquí programaremos qué hace el botón Nueva Venta
+        }
     }
 }
