@@ -1,0 +1,140 @@
+﻿<Window x:Class="TiendaOga.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Tienda OGA - Dashboard" Height="768" Width="1366"
+        WindowStartupLocation="CenterScreen"
+        Background="#12121A">
+    <!-- Fondo oscuro principal -->
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="220"/>
+            <!-- Ancho del Menú Lateral -->
+            <ColumnDefinition Width="*"/>
+            <!-- Resto de la pantalla -->
+        </Grid.ColumnDefinitions>
+
+        <!-- ========================================== -->
+        <!-- 1. MENÚ LATERAL (SIDEBAR)                  -->
+        <!-- ========================================== -->
+        <Border Grid.Column="0" Background="#1A1A24" BorderBrush="#252530" BorderThickness="0,0,1,0" Padding="15,20,15,0">
+            <StackPanel>
+                <!-- Logo Tienda OGA -->
+                <TextBlock Text="🏪 TIENDA OGA" Foreground="#B2FF05" FontSize="20" FontWeight="Bold" Margin="0,0,0,40"/>
+
+                <!-- Botones del Menú con x:Name y Click -->
+                <Button x:Name="btnMenuDashboard" Click="btnMenuDashboard_Click" Content="Dashboard" Background="#B2FF05" Foreground="Black" FontWeight="Bold" Height="40" Margin="0,0,0,10">
+                    <Button.Resources>
+                        <Style TargetType="Border">
+                            <Setter Property="CornerRadius" Value="8"/>
+                        </Style>
+                    </Button.Resources>
+                </Button>
+                <Button x:Name="btnMenuVentas" Click="btnMenuVentas_Click" Content="Ventas" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,0,0,10"/>
+                <Button x:Name="btnMenuProductos" Click="btnMenuProductos_Click" Content="Productos" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,0,0,10"/>
+                <Button x:Name="btnMenuClientes" Click="btnMenuClientes_Click" Content="Clientes" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,0,0,10"/>
+            </StackPanel>
+        </Border>
+
+        <!-- ========================================== -->
+        <!-- 2. CONTENIDO PRINCIPAL                     -->
+        <!-- ========================================== -->
+        <Grid Grid.Column="1" Margin="30">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Header -->
+                <RowDefinition Height="Auto"/>
+                <!-- Tarjetas Superiores -->
+                <RowDefinition Height="*"/>
+                <!-- Gráficos -->
+                <RowDefinition Height="Auto"/>
+                <!-- Últimas Ventas -->
+            </Grid.RowDefinitions>
+
+            <!-- HEADER -->
+            <Grid Grid.Row="0" Margin="0,0,0,25">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="Dashboard" Foreground="White" FontSize="24" FontWeight="Bold"/>
+                    <TextBlock Text="Resumen operativo — Ventas de Hoy" Foreground="#808080" FontSize="14"/>
+                </StackPanel>
+
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <!-- Botón Nueva Venta con x:Name y Click -->
+                    <Button x:Name="btnNuevaVenta" Click="btnNuevaVenta_Click" Content="Nueva Venta" Background="#B2FF05" Foreground="Black" FontWeight="Bold" Width="130" Height="40" Margin="0,0,20,0">
+                        <Button.Resources>
+                            <Style TargetType="Border">
+                                <Setter Property="CornerRadius" Value="8"/>
+                            </Style>
+                        </Button.Resources>
+                    </Button>
+                    <!-- x:Name agregado al nombre del usuario para cambiarlo por código luego -->
+                    <TextBlock x:Name="lblUsuarioLogueado" Text="Administrador" Foreground="White" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <!-- TARJETAS SUPERIORES (UniformGrid divide en partes iguales) -->
+            <UniformGrid Grid.Row="1" Columns="4" Rows="1" HorizontalAlignment="Stretch" Margin="0,0,0,20">
+
+                <!-- Tarjeta 1: Ventas Totales -->
+                <Border Background="#1E1E28" CornerRadius="10" Padding="20" Margin="0,0,15,0">
+                    <StackPanel>
+                        <TextBlock Text="Ventas Totales" Foreground="#A0A0A0" FontSize="14"/>
+                        <TextBlock Text="124" Foreground="White" FontSize="28" FontWeight="Bold" Margin="0,10,0,5"/>
+                        <TextBlock Text="↗ 5.2% vs ayer" Foreground="#B2FF05" FontSize="12"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tarjeta 2: Ingresos -->
+                <Border Background="#1E1E28" CornerRadius="10" Padding="20" Margin="0,0,15,0">
+                    <StackPanel>
+                        <TextBlock Text="Ingresos del Día" Foreground="#A0A0A0" FontSize="14"/>
+                        <TextBlock Text="$ 45.000" Foreground="White" FontSize="28" FontWeight="Bold" Margin="0,10,0,5"/>
+                        <TextBlock Text="↗ 2.1% vs ayer" Foreground="#B2FF05" FontSize="12"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tarjeta 3: Stock Bajo (Alerta) -->
+                <Border Background="#1E1E28" CornerRadius="10" Padding="20" Margin="0,0,15,0">
+                    <StackPanel>
+                        <TextBlock Text="Stock Crítico" Foreground="#A0A0A0" FontSize="14"/>
+                        <TextBlock Text="12" Foreground="White" FontSize="28" FontWeight="Bold" Margin="0,10,0,5"/>
+                        <TextBlock Text="Artículos por reponer" Foreground="#FF4C4C" FontSize="12"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- Tarjeta 4: Clientes -->
+                <Border Background="#1E1E28" CornerRadius="10" Padding="20">
+                    <StackPanel>
+                        <TextBlock Text="Nuevos Clientes" Foreground="#A0A0A0" FontSize="14"/>
+                        <TextBlock Text="8" Foreground="White" FontSize="28" FontWeight="Bold" Margin="0,10,0,5"/>
+                        <TextBlock Text="Registrados hoy" Foreground="#B2FF05" FontSize="12"/>
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- ESPACIO PARA GRÁFICOS (Fila 2) -->
+            <Grid Grid.Row="2" Margin="0,0,0,20">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2*"/>
+                    <!-- Ocupa más espacio -->
+                    <ColumnDefinition Width="1*"/>
+                    <!-- Ocupa menos espacio -->
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" Background="#1E1E28" CornerRadius="10" Margin="0,0,15,0" Padding="20">
+                    <TextBlock Text="[ Aquí irá el gráfico de líneas de Fluctuación ]" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+
+                <Border Grid.Column="1" Background="#1E1E28" CornerRadius="10" Padding="20">
+                    <TextBlock Text="[ Gráfico Circular (Hogar/Tecnología) ]" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+            </Grid>
+
+            <!-- LISTA INFERIOR -->
+            <Border Grid.Row="3" Background="#1E1E28" CornerRadius="10" Padding="20" Height="150">
+                <TextBlock Text="[ Aquí irá tu DataGrid con las últimas ventas de Tienda OGA ]" Foreground="#555" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            </Border>
+
+        </Grid>
+    </Grid>
+</Window>
