@@ -23,29 +23,42 @@ namespace TiendaOga
         {
             InitializeComponent();
         }
-        private void btnMenuDashboard_Click(object sender, RoutedEventArgs e)
+        private void btnMenuUsuarios_Click(object sender, RoutedEventArgs e)
         {
-            // Aquí programaremos qué hace el botón Dashboard en el futuro
+            // Mostrar pantalla de Usuarios
+        }
+
+        private void btnMenuBackUp_Click(object sender, RoutedEventArgs e)
+        {
+            // Mostrar pantalla de Back Up
         }
 
         private void btnMenuVentas_Click(object sender, RoutedEventArgs e)
         {
-            // Aquí programaremos qué hace el botón Ventas
-        }
-
-        private void btnMenuProductos_Click(object sender, RoutedEventArgs e)
-        {
-            // Aquí programaremos qué hace el botón Productos
+            // Mostrar pantalla de Ventas
         }
 
         private void btnMenuClientes_Click(object sender, RoutedEventArgs e)
         {
-            // Aquí programaremos qué hace el botón Clientes
+            // Mostrar pantalla de Clientes
         }
 
-        private void btnNuevaVenta_Click(object sender, RoutedEventArgs e)
+        private void btnMenuProductos_Click(object sender, RoutedEventArgs e)
         {
-            // Aquí programaremos qué hace el botón Nueva Venta
+            // Mostrar pantalla de Productos
+        }
+
+        private void btnMenuReportes_Click(object sender, RoutedEventArgs e)
+        {
+            // Mostrar pantalla de Reportes
+        }
+
+        private void btnMenuSalir_Click(object sender, RoutedEventArgs e)
+        {
+            // Volver al Login
+            MainWindow login = new MainWindow();
+            login.Show();
+            this.Close();
         }
     }
 }
