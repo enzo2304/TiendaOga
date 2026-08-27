@@ -27,30 +27,47 @@ namespace TiendaOga
 
         private void btnIngresar_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Capturamos lo que escribió el usuario (Trim borra espacios accidentales)
+            // 1. Capturamos el usuario y contraseña
             string usuario = txtUsuario.Text.Trim();
-            string password = txtPassword.Password.Trim(); // Ojo: PasswordBox usa .Password, no .Text
+            string password = txtPassword.Password.Trim();
 
-            // 2. CONDICIÓN: Validar que no estén vacíos
+            // Capturamos el rol
+            ComboBoxItem itemSeleccionado = (ComboBoxItem)cmbRol.SelectedItem;
+            string rol = itemSeleccionado.Content.ToString();
+
+            // 2. Validar que no estén vacíos
             if (string.IsNullOrEmpty(usuario) || string.IsNullOrEmpty(password))
             {
                 MessageBox.Show("Por favor, ingrese un usuario y una contraseña.", "Datos faltantes", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return; // El "return" frena el código acá, no sigue leyendo hacia abajo
+                return;
             }
 
-            // 3. SIMULACIÓN DE BASE DE DATOS (Temporal)
-            // Cuando conectemos la BD, reemplazaremos este "if" por un "SELECT * FROM Usuario..."
-            if (usuario == "admin" && password == "1234")
+            // 3. SIMULACIÓN DE LOS 3 ROLES
+            if (usuario == "admin" && password == "1234" && rol == "Administrador")
             {
-                // Si ingresa bien, abrimos el Dashboard
+                MessageBox.Show("¡Bienvenido Administrador!", "Acceso concedido");
                 Window1 ventanaDashboard = new Window1();
                 ventanaDashboard.Show();
-                this.Close(); // Cierra el login
+                this.Close();
+            }
+            else if (usuario == "enzo" && password == "1234" && rol == "Vendedor")
+            {
+                MessageBox.Show("¡Bienvenido Vendedor!", "Acceso concedido");
+                Window1 ventanaDashboard = new Window1();
+                ventanaDashboard.Show();
+                this.Close();
+            }
+            else if (usuario == "jefe" && password == "1234" && rol == "Gerente")
+            {
+                MessageBox.Show("¡Bienvenido Gerente! Acceso total a reportes.", "Acceso concedido");
+                Window1 ventanaDashboard = new Window1();
+                ventanaDashboard.Show();
+                this.Close();
             }
             else
             {
-                // Si ingresa mal, mostramos error
-                MessageBox.Show("Usuario o contraseña incorrectos.", "Error de acceso", MessageBoxButton.OK, MessageBoxImage.Error);
+                // Si se equivoca en cualquier cosa
+                MessageBox.Show("Usuario, contraseña o rol incorrectos.", "Error de acceso", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }
