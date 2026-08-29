@@ -1,73 +1,132 @@
 ﻿<Window x:Class="TiendaOga.Window1"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Tienda OGA - Dashboard" Height="768" Width="1366"
+        Title="Tienda OGA - Sistema de Gestión" Height="720" Width="1150"
         WindowStartupLocation="CenterScreen"
-        Background="#12121A">
-    <!-- Fondo oscuro principal -->
+        Background="#F4F5F7">
+
+    <Window.Resources>
+        <!-- Estilo base para los botones de navegación lateral -->
+        <Style x:Key="BotonNavegacion" TargetType="Button">
+            <Setter Property="Height" Value="42"/>
+            <Setter Property="Margin" Value="0,2"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#4A5568"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="Medium"/>
+            <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Setter Property="Padding" Value="16,0,0,0"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="borderBoton" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="borderBoton" Property="Background" Value="#FFF0E6"/>
+                                <Setter Property="Foreground" Value="#FF6B00"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="borderBoton" Property="Background" Value="#FFE0CC"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Estilo para los títulos de sección del menú -->
+        <Style x:Key="TituloSeccion" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="#A0AEC0"/>
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+            <Setter Property="Margin" Value="16,16,0,6"/>
+        </Style>
+    </Window.Resources>
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="220"/>
-            <!-- Ancho del Menú Lateral -->
+            <!-- Barra lateral de navegación -->
+            <ColumnDefinition Width="260"/>
+            <!-- Área de contenido dinámico -->
             <ColumnDefinition Width="*"/>
-            <!-- Resto de la pantalla -->
         </Grid.ColumnDefinitions>
 
-        <!-- ========================================== -->
-        <!-- 1. MENÚ LATERAL (SIDEBAR)                  -->
-        <!-- ========================================== -->
-        <Border Grid.Column="0" Background="#1A1A24" BorderBrush="#252530" BorderThickness="0,0,1,0" Padding="15,20,15,0">
-            <StackPanel>
-                <!-- Logo Tienda OGA -->
-                <TextBlock Text="🏪 TIENDA OGA" Foreground="#B2FF05" FontSize="20" FontWeight="Bold" Margin="0,0,0,40"/>
+        <!-- SIDEBAR LATERAL -->
+        <Border Grid.Column="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,1,0">
+            <DockPanel LastChildFill="True">
 
-                <!-- Todos los botones ahora tienen el mismo estilo inactivo -->
-                <Button x:Name="btnMenuUsuarios" Click="btnMenuUsuarios_Click" Content="Usuarios" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,0,0,10"/>
-                <Button x:Name="btnMenuBackUp" Click="btnMenuBackUp_Click" Content="Back Up" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,0,0,10"/>
-                <Button x:Name="btnMenuVentas" Click="btnMenuVentas_Click" Content="Ventas" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,0,0,10"/>
-                <Button x:Name="btnMenuClientes" Click="btnMenuClientes_Click" Content="Clientes" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,0,0,10"/>
-                <Button x:Name="btnMenuProductos" Click="btnMenuProductos_Click" Content="Productos" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,0,0,10"/>
-                <Button x:Name="btnMenuReportes" Click="btnMenuReportes_Click" Content="Reportes" Background="Transparent" Foreground="#A0A0A0" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,0,0,10"/>
+                <!-- Header: Marca y Datos de Sesión -->
+                <StackPanel DockPanel.Dock="Top" Margin="20,24,20,16">
+                    <TextBlock Text="TIENDA OGA" Foreground="#FF6B00" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left"/>
+                    <TextBlock Text="Sistema de Gestión Comercial" Foreground="#718096" FontSize="11" Margin="0,2,0,0"/>
+                    
+                    <Border Background="#F7FAFC" BorderBrush="#EDF2F7" BorderThickness="1" CornerRadius="6" Margin="0,16,0,0" Padding="12,10">
+                        <StackPanel>
+                            <TextBlock x:Name="lblUsuarioActivo" Text="Usuario: admin" Foreground="#2D3748" FontSize="13" FontWeight="SemiBold"/>
+                            <TextBlock x:Name="lblRolActivo" Text="Rol: Administrador" Foreground="#FF6B00" FontSize="12" Margin="0,2,0,0"/>
+                        </StackPanel>
+                    </Border>
+                </StackPanel>
 
-                <!-- Botón Salir -->
-                <Button x:Name="btnMenuSalir" Click="btnMenuSalir_Click" Content="Salir" Background="Transparent" Foreground="#FF4C4C" BorderThickness="0" Height="40" HorizontalAlignment="Left" Margin="10,40,0,10"/>
-            </StackPanel>
+                <!-- Footer: Botón Cerrar Sesión -->
+                <Button x:Name="btnCerrarSesion" DockPanel.Dock="Bottom" Click="btnCerrarSesion_Click"
+                        Height="40" Margin="16,0,16,20" Background="#FFFFFF" Foreground="#E53E3E" 
+                        BorderBrush="#FEB2B2" BorderThickness="1" Cursor="Hand" FontWeight="SemiBold">
+                    <Button.Template>
+                        <ControlTemplate TargetType="Button">
+                            <Border Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                                <TextBlock Text="Cerrar Sesion" FontSize="13" Foreground="{TemplateBinding Foreground}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Button.Template>
+                </Button>
+
+                <!-- Menú de Opciones -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
+                    <StackPanel Margin="10,0">
+
+                        <!-- MÓDULO OPERATIVO (Todos los roles) -->
+                        <TextBlock Text="VENTAS Y MOSTRADOR" Style="{StaticResource TituloSeccion}"/>
+                        <Button x:Name="btnVentas" Click="btnVentas_Click" Content="Ventas" Style="{StaticResource BotonNavegacion}"/>
+                        <Button x:Name="btnConsultarStock" Click="btnConsultarStock_Click" Content="Consultar Catalogo" Style="{StaticResource BotonNavegacion}"/>
+
+                        <!-- MÓDULO ADMINISTRATIVO -->
+                        <TextBlock x:Name="lblHeaderAdmin" Text="ADMINISTRACION" Style="{StaticResource TituloSeccion}"/>
+                        <Button x:Name="btnProductos" Click="btnProductos_Click" Content="Gestion de Productos" Style="{StaticResource BotonNavegacion}"/>
+                        <Button x:Name="btnInventario" Click="btnInventario_Click" Content="Entrada de Stock" Style="{StaticResource BotonNavegacion}"/>
+                        <Button x:Name="btnEntidades" Click="btnEntidades_Click" Content="Clientes y Proveedores" Style="{StaticResource BotonNavegacion}"/>
+                        <Button x:Name="btnUsuarios" Click="btnUsuarios_Click" Content="Usuarios y Permisos" Style="{StaticResource BotonNavegacion}"/>
+
+                        <!-- MÓDULO GERENCIA -->
+                        <TextBlock x:Name="lblHeaderGerente" Text="GERENCIA Y REPORTES" Style="{StaticResource TituloSeccion}"/>
+                        <Button x:Name="btnReportesVentas" Click="btnReportesVentas_Click" Content="Reportes de Ventas" Style="{StaticResource BotonNavegacion}"/>
+                        <Button x:Name="btnStockCritico" Click="btnStockCritico_Click" Content="Rotacion de Inventario" Style="{StaticResource BotonNavegacion}"/>
+
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
         </Border>
 
-        <!-- ========================================== -->
-        <!-- 2. CONTENIDO PRINCIPAL (INICIO)            -->
-        <!-- ========================================== -->
-        <Grid Grid.Column="1" Margin="30">
+        <!-- ÁREA CENTRAL -->
+        <Grid Grid.Column="1">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <!-- Header -->
+                <RowDefinition Height="65"/>
                 <RowDefinition Height="*"/>
-                <!-- Espacio de bienvenida -->
             </Grid.RowDefinitions>
 
-            <!-- HEADER GENÉRICO -->
-            <Grid Grid.Row="0">
-                <StackPanel VerticalAlignment="Center">
-                    <!-- Títulos cambiados para una pantalla de inicio -->
-                    <TextBlock x:Name="txtTituloSeccion" Text="Menú Principal" Foreground="White" FontSize="24" FontWeight="Bold"/>
-                    <TextBlock x:Name="txtSubtituloSeccion" Text="Seleccione un módulo en el menú lateral para comenzar." Foreground="#808080" FontSize="14"/>
-                </StackPanel>
-
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                    <TextBlock x:Name="txtRolActual" Text="Administrador" Foreground="White" VerticalAlignment="Center"/>
-                </StackPanel>
-            </Grid>
-
-            <!-- PANTALLA DE BIENVENIDA -->
-            <Border Grid.Row="1" Background="#1E1E28" CornerRadius="10" Margin="0,20,0,0" Padding="20">
-                <!-- Un mensaje amigable o el logo grande para rellenar el espacio vacío -->
-                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <TextBlock Text="🏪" FontFamily="Segoe UI Emoji" FontSize="80" HorizontalAlignment="Center" Margin="0,0,0,10"/>
-                    <TextBlock Text="Bienvenido al Sistema de Gestión" Foreground="#A0A0A0" FontSize="22" HorizontalAlignment="Center" Margin="0,0,0,5"/>
-                    <TextBlock Text="Utilice la barra lateral para navegar por las distintas opciones." Foreground="#555" FontSize="14" HorizontalAlignment="Center"/>
-                </StackPanel>
+            <!-- Barra Superior -->
+            <Border Grid.Row="0" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="25,0">
+                <Grid VerticalAlignment="Center">
+                    <TextBlock x:Name="lblTituloModulo" Text="Panel Principal" Foreground="#2D3748" FontSize="17" FontWeight="SemiBold"/>
+                </Grid>
             </Border>
+
+            <!-- Contenedor de Formularios Hijos -->
+            <Frame x:Name="ContenedorPrincipal" Grid.Row="1" NavigationUIVisibility="Hidden" Margin="20"/>
         </Grid>
     </Grid>
 </Window>
