@@ -71,6 +71,10 @@
     <Compile Include="Migrations\202608300310207_CreacionInicial.Designer.cs">
       <DependentUpon>202608300310207_CreacionInicial.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202608300412070_AgregarForeignKeyPerfil.cs" />
+    <Compile Include="Migrations\202608300412070_AgregarForeignKeyPerfil.Designer.cs">
+      <DependentUpon>202608300412070_AgregarForeignKeyPerfil.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Tablas\Perfil.cs" />
     <Compile Include="Tablas\Usuario.cs" />
@@ -110,6 +114,9 @@
     </Compile>
     <EmbeddedResource Include="Migrations\202608300310207_CreacionInicial.resx">
       <DependentUpon>202608300310207_CreacionInicial.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202608300412070_AgregarForeignKeyPerfil.resx">
+      <DependentUpon>202608300412070_AgregarForeignKeyPerfil.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>

@@ -21,5 +21,8 @@ namespace TiendaOga.Tablas
         public string password { get; set; }
         public string email { get; set; }
         public bool Activo { get; set; }
+
+        [ForeignKey("id_perfil")]
+        public virtual Perfil Perfil { get; set; } // <- Navegación (FK)
     }
 }

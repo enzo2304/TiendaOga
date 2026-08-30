@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Data.SqlClient;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using TiendaOga.Datos;
+using TiendaOga.Datos; // TiendaContext
 
 namespace TiendaOga
 {
@@ -26,7 +26,6 @@ namespace TiendaOga
 
             string rolSeleccionado = ((ComboBoxItem)cmbRol.SelectedItem).Content.ToString();
 
-            // Validar campos vacíos
             if (string.IsNullOrEmpty(usuarioIngresado) || string.IsNullOrEmpty(passwordIngresado))
             {
                 MessageBox.Show("Por favor, complete su usuario y contraseña.", "Campos vacios", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -35,42 +34,33 @@ namespace TiendaOga
 
             try
             {
-                using (SqlConnection conn = ConexionBD.ObtenerConexion())
+                using (var db = new TiendaContext())
                 {
-                    conn.Open();
+                    // Traemos el usuario junto con su perfil (join automático vía navegación)
+                    var usuarioEncontrado = db.Usuarios
+                        .FirstOrDefault(u => u.usuario == usuarioIngresado
+                                          && u.password == passwordIngresado
+                                          && u.Perfil.nombre_perfil == rolSeleccionado);
 
-                    // Consulta SQL según el DER (Usuario + Perfiles)
-                    string query = @"SELECT u.nombre, u.apellido, p.nombre_perfil 
-                                     FROM Usuario u 
-                                     INNER JOIN Perfiles p ON u.id_perfil = p.id_perfil 
-                                     WHERE u.usuario = @usuario 
-                                       AND u.password = @pass 
-                                       AND p.nombre_perfil = @rol 
-                                       AND u.Activo = 1";
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    if (usuarioEncontrado != null)
                     {
-                        cmd.Parameters.AddWithValue("@usuario", usuarioIngresado);
-                        cmd.Parameters.AddWithValue("@pass", passwordIngresado);
-                        cmd.Parameters.AddWithValue("@rol", rolSeleccionado);
-
-                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        if (usuarioEncontrado.Activo)
                         {
-                            if (reader.Read())
-                            {
-                                string nombreCompleto = $"{reader["nombre"]} {reader["apellido"]}";
-                                string rol = reader["nombre_perfil"].ToString();
+                            string nombreCompleto = $"{usuarioEncontrado.nombre} {usuarioEncontrado.apellido}";
+                            string rol = usuarioEncontrado.Perfil.nombre_perfil;
 
-                                // Abre el panel principal enviándole el nombre real y rol de la BD
-                                Window1 dashboard = new Window1(nombreCompleto, rol);
-                                dashboard.Show();
-                                this.Close();
-                            }
-                            else
-                            {
-                                MessageBox.Show("Usuario, contrasena o rol incorrectos.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Error);
-                            }
+                            Window1 dashboard = new Window1(nombreCompleto, rol);
+                            dashboard.Show();
+                            this.Close();
                         }
+                        else
+                        {
+                            MessageBox.Show("Tu cuenta se encuentra inactiva.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Usuario, contraseña o rol incorrectos.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Error);
                     }
                 }
             }
