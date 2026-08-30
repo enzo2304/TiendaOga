@@ -7,30 +7,15 @@ namespace TiendaOga.Datos
     // Al heredar de DbContext, esta clase se convierte en el puente oficial
     public class TiendaContext : DbContext
     {
-        // El constructor llama al método que decide qué conexión usar según la PC
-        public TiendaContext() : base(ObtenerCadenaConexion())
+        // El constructor ahora lee la conexión desde App.config (sección <connectionStrings>)
+        // Cada PC (la tuya, la de tu compañero, cualquier otra) define su propia
+        // cadena en su App.config local, sin tocar este código.
+        public TiendaContext() : base("name=TiendaConnection")
         {
         }
 
         // Le avisamos a Entity Framework qué tablas tiene que manejar
         public DbSet<Usuario> Usuarios { get; set; }
         public DbSet<Perfil> Perfil { get; set; }
-
-        // Método inteligente para evitar el error entre tu PC y la de tu compañero
-        private static string ObtenerCadenaConexion()
-        {
-            string nombrePC = Environment.MachineName;
-
-            // Tu nombre de PC (el que vimos en tu captura de SQL Server)
-            if (nombrePC == "DESKTOP-JRPDUIS")
-            {
-                return @"Server=(localdb)\ProjectModels;Database=TiendaOgaDB;Integrated Security=True;";
-            }
-            else
-            {
-                // La conexión de tu compañero (se puede ajustar el nombre de su PC luego si hace falta)
-                return @"Server=localhost\MSSQLSERVER01;Database=TiendaOgaDB;Integrated Security=True;";
-            }
-        }
     }
 }
