@@ -63,7 +63,7 @@
                 <StackPanel DockPanel.Dock="Top" Margin="20,24,20,16">
                     <TextBlock Text="TIENDA OGA" Foreground="#FF6B00" FontSize="22" FontWeight="Bold" HorizontalAlignment="Left"/>
                     <TextBlock Text="Sistema de Gestión Comercial" Foreground="#718096" FontSize="11" Margin="0,2,0,0"/>
-                    
+
                     <Border Background="#F7FAFC" BorderBrush="#EDF2F7" BorderThickness="1" CornerRadius="6" Margin="0,16,0,0" Padding="12,10">
                         <StackPanel>
                             <TextBlock x:Name="lblUsuarioActivo" Text="Usuario: admin" Foreground="#2D3748" FontSize="13" FontWeight="SemiBold"/>
@@ -96,9 +96,9 @@
 
                         <!-- MÓDULO ADMINISTRATIVO -->
                         <TextBlock x:Name="lblHeaderAdmin" Text="ADMINISTRACION" Style="{StaticResource TituloSeccion}"/>
+                        <Button x:Name="btnEntidades" Click="btnEntidades_Click" Content="Clientes" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnProductos" Click="btnProductos_Click" Content="Gestion de Productos" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnInventario" Click="btnInventario_Click" Content="Entrada de Stock" Style="{StaticResource BotonNavegacion}"/>
-                        <Button x:Name="btnEntidades" Click="btnEntidades_Click" Content="Clientes" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnUsuarios" Click="btnUsuarios_Click" Content="Usuarios y Permisos" Style="{StaticResource BotonNavegacion}"/>
 
                         <!-- MÓDULO GERENCIA -->
