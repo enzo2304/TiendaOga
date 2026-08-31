@@ -26,21 +26,18 @@ namespace TiendaOga
             // Restricciones de acceso según perfil
             if (rolActual == "Vendedor")
             {
-                // Ocultar sección de Administración
                 lblHeaderAdmin.Visibility = Visibility.Collapsed;
                 btnProductos.Visibility = Visibility.Collapsed;
                 btnInventario.Visibility = Visibility.Collapsed;
                 btnEntidades.Visibility = Visibility.Collapsed;
                 btnUsuarios.Visibility = Visibility.Collapsed;
 
-                // Ocultar sección de Gerencia
                 lblHeaderGerente.Visibility = Visibility.Collapsed;
                 btnReportesVentas.Visibility = Visibility.Collapsed;
                 btnStockCritico.Visibility = Visibility.Collapsed;
             }
             else if (rolActual == "Gerente")
             {
-                // El perfil Gerente no opera la gestión técnica de inventario ni cuentas
                 btnUsuarios.Visibility = Visibility.Collapsed;
                 btnInventario.Visibility = Visibility.Collapsed;
             }
@@ -53,19 +50,29 @@ namespace TiendaOga
             this.Close();
         }
 
+        // ==========================================
+        // ACÁ ESTÁ EL CAMBIO PRINCIPAL
+        // ==========================================
         private void btnVentas_Click(object sender, RoutedEventArgs e)
         {
-            lblTituloModulo.Text = "Modulo de Ventas y Facturacion";
+            // 1. Actualizamos el título de la barra superior
+            lblTituloModulo.Text = "Módulo de Ventas y Facturación";
+
+            // 2. Cargamos la página de ventas adentro del Frame
+            ContenedorPrincipal.Navigate(new Ventas());
         }
 
+        // Para los próximos módulos, la lógica será idéntica a btnVentas_Click
         private void btnConsultarStock_Click(object sender, RoutedEventArgs e)
         {
-            lblTituloModulo.Text = "Consulta de Catalogo y Stock";
+            lblTituloModulo.Text = "Consulta de Catálogo y Stock";
+            // FramePrincipal.Navigate(new PaginaCatalogo());
         }
 
         private void btnProductos_Click(object sender, RoutedEventArgs e)
         {
-            lblTituloModulo.Text = "Administracion de Productos y Rubros";
+            lblTituloModulo.Text = "Administración de Productos y Rubros";
+            // FramePrincipal.Navigate(new PaginaProductos());
         }
 
         private void btnInventario_Click(object sender, RoutedEventArgs e)
@@ -75,12 +82,12 @@ namespace TiendaOga
 
         private void btnEntidades_Click(object sender, RoutedEventArgs e)
         {
-            lblTituloModulo.Text = "Padron de Clientes y Proveedores";
+            lblTituloModulo.Text = "Padrón de Clientes y Proveedores";
         }
 
         private void btnUsuarios_Click(object sender, RoutedEventArgs e)
         {
-            lblTituloModulo.Text = "Gestion de Cuentas de Usuario y Roles";
+            lblTituloModulo.Text = "Gestión de Cuentas de Usuario y Roles";
         }
 
         private void btnReportesVentas_Click(object sender, RoutedEventArgs e)
@@ -90,7 +97,7 @@ namespace TiendaOga
 
         private void btnStockCritico_Click(object sender, RoutedEventArgs e)
         {
-            lblTituloModulo.Text = "Rotacion de Productos y Stock Critico";
+            lblTituloModulo.Text = "Rotación de Productos y Stock Crítico";
         }
     }
 }

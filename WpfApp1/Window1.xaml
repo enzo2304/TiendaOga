@@ -98,7 +98,7 @@
                         <TextBlock x:Name="lblHeaderAdmin" Text="ADMINISTRACION" Style="{StaticResource TituloSeccion}"/>
                         <Button x:Name="btnProductos" Click="btnProductos_Click" Content="Gestion de Productos" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnInventario" Click="btnInventario_Click" Content="Entrada de Stock" Style="{StaticResource BotonNavegacion}"/>
-                        <Button x:Name="btnEntidades" Click="btnEntidades_Click" Content="Clientes y Proveedores" Style="{StaticResource BotonNavegacion}"/>
+                        <Button x:Name="btnEntidades" Click="btnEntidades_Click" Content="Clientes" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnUsuarios" Click="btnUsuarios_Click" Content="Usuarios y Permisos" Style="{StaticResource BotonNavegacion}"/>
 
                         <!-- MÓDULO GERENCIA -->
