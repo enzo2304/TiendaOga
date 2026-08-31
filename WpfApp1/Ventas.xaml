@@ -72,14 +72,15 @@
                     </Grid>
                 </Border>
 
-                <!-- Fila 3: Grilla de Detalle de Venta -->
+                <!-- Fila 3: Grilla de Detalle de Venta (Corregida) -->
                 <DataGrid Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" Background="White" BorderBrush="#E2E8F0">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID Producto" Width="90" Binding="{Binding id_producto}"/>
-                        <DataGridTextColumn Header="Descripción" Width="*" Binding="{Binding descripcion}"/>
+                        <DataGridTextColumn Header="Nombre" Width="*" Binding="{Binding nombre}"/>
+                        <DataGridTextColumn Header="Precio Venta" Width="110" Binding="{Binding precio_ventas}"/>
                         <DataGridTextColumn Header="Cantidad" Width="90" Binding="{Binding cantidad}"/>
-                        <DataGridTextColumn Header="Subtotal" Width="100" Binding="{Binding sub_total}"/>
-                        <DataGridTemplateColumn Header="Acción" Width="80">
+
+                        <DataGridTemplateColumn Header="Eliminar" Width="80">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
                                     <Button Content="Eliminar" Background="#E53E3E" Foreground="White" BorderThickness="0" Padding="5,2" Cursor="Hand"/>
