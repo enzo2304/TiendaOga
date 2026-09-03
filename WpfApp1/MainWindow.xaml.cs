@@ -1,13 +1,15 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
-using TiendaOga.Datos; // TiendaContext
+using Microsoft.Data.SqlClient;
+using TiendaOga.Datos;
 
 namespace TiendaOga
 {
     public partial class MainWindow : Window
     {
+        private ConexionBD conexionBD = new ConexionBD();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -34,33 +36,50 @@ namespace TiendaOga
 
             try
             {
-                using (var db = new TiendaContext())
+                using (SqlConnection conn = conexionBD.ObtenerConexion())
                 {
-                    // Traemos el usuario junto con su perfil (join automático vía navegación)
-                    var usuarioEncontrado = db.Usuarios
-                        .FirstOrDefault(u => u.usuario == usuarioIngresado
-                                          && u.password == passwordIngresado
-                                          && u.Perfil.nombre_perfil == rolSeleccionado);
+                    conn.Open();
 
-                    if (usuarioEncontrado != null)
-                    {
-                        if (usuarioEncontrado.Activo)
-                        {
-                            string nombreCompleto = $"{usuarioEncontrado.nombre} {usuarioEncontrado.apellido}";
-                            string rol = usuarioEncontrado.Perfil.nombre_perfil;
+                    // Consultamos la base de datos haciendo un JOIN entre Usuario y Perfiles
+                    string query = @"SELECT u.nombre, u.apellido, u.Activo, p.nombre_perfil 
+                                     FROM Usuario u 
+                                     INNER JOIN Perfiles p ON u.id_perfil = p.id_perfil 
+                                     WHERE u.usuario = @usuario AND u.password = @password AND p.nombre_perfil = @rol";
 
-                            Window1 dashboard = new Window1(nombreCompleto, rol);
-                            dashboard.Show();
-                            this.Close();
-                        }
-                        else
-                        {
-                            MessageBox.Show("Tu cuenta se encuentra inactiva.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Warning);
-                        }
-                    }
-                    else
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        MessageBox.Show("Usuario, contraseña o rol incorrectos.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Error);
+                        cmd.Parameters.AddWithValue("@usuario", usuarioIngresado);
+                        cmd.Parameters.AddWithValue("@password", passwordIngresado);
+                        cmd.Parameters.AddWithValue("@rol", rolSeleccionado);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                bool activo = reader.GetBoolean(reader.GetOrdinal("Activo"));
+
+                                if (activo)
+                                {
+                                    string nombre = reader.GetString(reader.GetOrdinal("nombre"));
+                                    string apellido = reader.GetString(reader.GetOrdinal("apellido"));
+                                    string rol = reader.GetString(reader.GetOrdinal("nombre_perfil"));
+
+                                    string nombreCompleto = $"{nombre} {apellido}";
+
+                                    Window1 dashboard = new Window1(nombreCompleto, rol);
+                                    dashboard.Show();
+                                    this.Close();
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Tu cuenta se encuentra inactiva.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Usuario, contraseña o rol incorrectos.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Error);
+                            }
+                        }
                     }
                 }
             }
