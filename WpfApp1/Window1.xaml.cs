@@ -72,9 +72,8 @@ namespace TiendaOga
         private void btnProductos_Click(object sender, RoutedEventArgs e)
         {
             lblTituloModulo.Text = "Administración de Productos y Rubros";
-            // FramePrincipal.Navigate(new PaginaProductos());
+            ContenedorPrincipal.Navigate(new Productos());
         }
-
         private void btnInventario_Click(object sender, RoutedEventArgs e)
         {
             lblTituloModulo.Text = "Registro de Entrada y Ajuste de Stock";

@@ -163,6 +163,9 @@
     </ApplicationDefinition>
     <Compile Include="Datos\ConexionBD.cs" />
     <Compile Include="Datos\PerfilRepository.cs" />
+    <Compile Include="Productos.xaml.cs">
+      <DependentUpon>Productos.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Tablas\Perfil.cs" />
     <Compile Include="Tablas\Usuario.cs" />
     <Compile Include="Ventas.xaml.cs">
@@ -183,6 +186,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Productos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Ventas.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
