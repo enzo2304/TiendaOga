@@ -16,12 +16,18 @@
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
+                    <!-- Fila 0: Vendedor / Cliente -->
                     <RowDefinition Height="Auto"/>
+                    <!-- Fila 1: Selección de productos -->
                     <RowDefinition Height="*"/>
+                    <!-- Fila 2: Grilla de detalle -->
                     <RowDefinition Height="Auto"/>
+                    <!-- Fila 3: Sección de Pago (NUEVA) -->
+                    <RowDefinition Height="Auto"/>
+                    <!-- Fila 4: Total y botones -->
                 </Grid.RowDefinitions>
 
-                <!-- Fila 1: Vendedor y Cliente -->
+                <!-- Fila 0: Vendedor y Cliente -->
                 <Grid Grid.Row="0" Margin="0,0,0,15">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
@@ -41,12 +47,14 @@
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
                             <TextBox x:Name="txtCliente" Height="30" Padding="5"/>
-                            <Button Grid.Column="1" Content="Buscar" Width="75" Height="30" Margin="5,0,0,0" Background="#EDF2F7" Cursor="Hand"/>
+                            <Button x:Name="btnBuscarCliente" Click="BtnBuscarCliente_Click"
+                                    Grid.Column="1" Content="Buscar" Width="75" Height="30" Margin="5,0,0,0"
+                                    Background="#EDF2F7" Cursor="Hand"/>
                         </Grid>
                     </StackPanel>
                 </Grid>
 
-                <!-- Fila 2: Selección de Productos -->
+                <!-- Fila 1: Selección de Productos -->
                 <Border Grid.Row="1" Background="#F7FAFC" Padding="15" CornerRadius="6" Margin="0,0,0,15">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -58,40 +66,82 @@
 
                         <StackPanel Grid.Column="0" Margin="0,0,10,0">
                             <TextBlock Text="Producto / Descripción" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
-                            <TextBox Height="28" Margin="0,3,0,0"/>
+                            <TextBox x:Name="txtProductoBusqueda" Height="28" Margin="0,3,0,0"/>
                         </StackPanel>
                         <StackPanel Grid.Column="1" Margin="0,0,10,0">
                             <TextBlock Text="Precio Unitario" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
-                            <TextBox Height="28" Margin="0,3,0,0" IsReadOnly="True"/>
+                            <TextBox x:Name="txtPrecioUnitario" Height="28" Margin="0,3,0,0" IsReadOnly="True"/>
                         </StackPanel>
                         <StackPanel Grid.Column="2" Margin="0,0,10,0">
                             <TextBlock Text="Cantidad" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
-                            <TextBox Height="28" Margin="0,3,0,0" Text="1"/>
+                            <TextBox x:Name="txtCantidad" Height="28" Margin="0,3,0,0" Text="1"/>
                         </StackPanel>
-                        <Button Grid.Column="3" Content="Agregar" Width="80" Height="28" VerticalAlignment="Bottom" Background="#3182CE" Foreground="White" Cursor="Hand" BorderThickness="0"/>
+                        <Button x:Name="btnAgregar" Click="BtnAgregar_Click"
+                                Grid.Column="3" Content="Agregar" Width="80" Height="28" VerticalAlignment="Bottom"
+                                Background="#3182CE" Foreground="White" Cursor="Hand" BorderThickness="0"/>
                     </Grid>
                 </Border>
 
-                <!-- Fila 3: Grilla de Detalle de Venta (Corregida) -->
-                <DataGrid Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False" Background="White" BorderBrush="#E2E8F0">
+                <!-- Fila 2: Grilla de Detalle de Venta -->
+                <DataGrid x:Name="dgDetalleVenta" Grid.Row="2" AutoGenerateColumns="False" CanUserAddRows="False"
+                          Background="White" BorderBrush="#E2E8F0">
                     <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID Producto" Width="90" Binding="{Binding id_producto}"/>
-                        <DataGridTextColumn Header="Nombre" Width="*" Binding="{Binding nombre}"/>
-                        <DataGridTextColumn Header="Precio Venta" Width="110" Binding="{Binding precio_ventas}"/>
-                        <DataGridTextColumn Header="Cantidad" Width="90" Binding="{Binding cantidad}"/>
+                        <DataGridTextColumn Header="ID Producto" Width="90" Binding="{Binding IdProducto}"/>
+                        <DataGridTextColumn Header="Nombre" Width="*" Binding="{Binding Nombre}"/>
+                        <DataGridTextColumn Header="Precio Venta" Width="110" Binding="{Binding PrecioVenta, StringFormat={}{0:N2}}"/>
+                        <DataGridTextColumn Header="Cantidad" Width="90" Binding="{Binding Cantidad}"/>
+                        <DataGridTextColumn Header="Subtotal" Width="110" Binding="{Binding Subtotal, StringFormat={}{0:N2}}"/>
 
                         <DataGridTemplateColumn Header="Eliminar" Width="80">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Content="Eliminar" Background="#E53E3E" Foreground="White" BorderThickness="0" Padding="5,2" Cursor="Hand"/>
+                                    <Button Content="Eliminar" Click="BtnEliminarItem_Click" Tag="{Binding}"
+                                            Background="#E53E3E" Foreground="White" BorderThickness="0"
+                                            Padding="5,2" Cursor="Hand"/>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
 
+                <!-- Fila 3: Sección de Pago (NUEVA) -->
+                <Border Grid.Row="3" Background="#F7FAFC" Padding="15" CornerRadius="6" Margin="0,15,0,0">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Tipo de Pago -->
+                        <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Text="Tipo de Pago" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
+                            <ComboBox x:Name="cmbTipoPago" Height="30" Margin="0,3,0,0"
+                                      SelectionChanged="CmbTipoPago_SelectionChanged">
+                                <ComboBoxItem Content="Efectivo" IsSelected="True"/>
+                                <ComboBoxItem Content="Tarjeta"/>
+                                <ComboBoxItem Content="Transferencia"/>
+                            </ComboBox>
+                        </StackPanel>
+
+                        <!-- Monto Recibido (solo aplica/edita en Efectivo) -->
+                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                            <TextBlock Text="Monto Recibido" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
+                            <TextBox x:Name="txtMontoRecibido" Height="30" Padding="5" Margin="0,3,0,0"
+                                     TextChanged="TxtMontoRecibido_TextChanged"/>
+                        </StackPanel>
+
+                        <!-- Vuelto (calculado, solo lectura) -->
+                        <StackPanel Grid.Column="2">
+                            <TextBlock Text="Vuelto" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
+                            <TextBox x:Name="txtVuelto" Height="30" Padding="5" Margin="0,3,0,0"
+                                     IsReadOnly="True" Background="#EDF2F7" Text="$ 0.00" FontWeight="Bold"/>
+                        </StackPanel>
+                    </Grid>
+                </Border>
+
                 <!-- Fila 4: Total y Botones de Acción -->
-                <Grid Grid.Row="3" Margin="0,15,0,0">
+                <Grid Grid.Row="4" Margin="0,15,0,0">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition Width="*"/>
                         <ColumnDefinition Width="Auto"/>
@@ -103,8 +153,12 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Orientation="Horizontal">
-                        <Button Content="Guardar Venta" Width="110" Height="38" Background="#38A169" Foreground="White" FontWeight="Bold" Margin="0,0,10,0" Cursor="Hand" BorderThickness="0"/>
-                        <Button Content="Cancelar" Width="90" Height="38" Background="#E53E3E" Foreground="White" FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
+                        <Button x:Name="btnGuardarVenta" Click="BtnGuardarVenta_Click"
+                                Content="Guardar Venta" Width="110" Height="38" Background="#38A169"
+                                Foreground="White" FontWeight="Bold" Margin="0,0,10,0" Cursor="Hand" BorderThickness="0"/>
+                        <Button x:Name="btnCancelarVenta" Click="BtnCancelarVenta_Click"
+                                Content="Cancelar" Width="90" Height="38" Background="#E53E3E"
+                                Foreground="White" FontWeight="Bold" Cursor="Hand" BorderThickness="0"/>
                     </StackPanel>
                 </Grid>
             </Grid>
