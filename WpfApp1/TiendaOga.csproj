@@ -163,18 +163,23 @@
     </ApplicationDefinition>
     <Compile Include="Datos\ConexionBD.cs" />
     <Compile Include="Datos\PerfilRepository.cs" />
-    <Compile Include="Productos.xaml.cs">
+    <Compile Include="Entidades\CategoriaItem.cs" />
+    <Compile Include="Entidades\ItemVenta.cs" />
+    <Compile Include="Entidades\ProductoRow.cs" />
+    <Compile Include="Negocio\ProductoNegocio.cs" />
+    <Compile Include="Negocio\VentaNegocio.cs" />
+    <Compile Include="Vistas\Productos.xaml.cs">
       <DependentUpon>Productos.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Tablas\Perfil.cs" />
-    <Compile Include="Tablas\Usuario.cs" />
-    <Compile Include="Ventas.xaml.cs">
+    <Compile Include="Entidades\Perfil.cs" />
+    <Compile Include="Entidades\Usuario.cs" />
+    <Compile Include="Vistas\Ventas.xaml.cs">
       <DependentUpon>Ventas.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Window1.xaml.cs">
+    <Compile Include="Vistas\Window1.xaml.cs">
       <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
-    <Page Include="MainWindow.xaml">
+    <Page Include="Vistas\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -182,19 +187,19 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
+    <Compile Include="Vistas\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Productos.xaml">
+    <Page Include="Vistas\Productos.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Ventas.xaml">
+    <Page Include="Vistas\Ventas.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Window1.xaml">
+    <Page Include="Vistas\Window1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -226,6 +231,7 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\packages\Microsoft.Data.SqlClient.SNI.6.0.2\build\net462\Microsoft.Data.SqlClient.SNI.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

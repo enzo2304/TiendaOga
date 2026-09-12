@@ -4,7 +4,7 @@ using System.Windows.Controls;
 using Microsoft.Data.SqlClient;
 using TiendaOga.Datos;
 
-namespace TiendaOga
+namespace TiendaOga.Vistas
 {
     public partial class MainWindow : Window
     {

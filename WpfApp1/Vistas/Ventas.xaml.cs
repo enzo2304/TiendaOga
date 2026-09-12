@@ -2,13 +2,15 @@
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
+using TiendaOga.Entidades;
+using TiendaOga.Negocio;
 
-namespace TiendaOga
+namespace TiendaOga.Vistas
 {
     /// <summary>
     /// Vista de Nueva Venta. Contiene ÚNICAMENTE lógica de interfaz:
-    /// alta/baja de ítems en la grilla (en memoria), cálculo de total
-    /// y cálculo de vuelto según el monto recibido.
+    /// alta/baja de ítems en la grilla (en memoria) y refresco de pantalla.
+    /// El cálculo y la validación viven en TiendaOga.Negocio.VentaNegocio.
     /// NO incluye persistencia contra base de datos (queda fuera de alcance).
     /// </summary>
     public partial class Ventas : Page
@@ -53,10 +55,11 @@ namespace TiendaOga
             }
 
             int cantidad;
-            if (!int.TryParse(txtCantidad.Text, out cantidad) || cantidad <= 0)
+            int.TryParse(txtCantidad.Text, out cantidad);
+
+            if (!VentaNegocio.ValidarCantidad(cantidad, out string mensajeError))
             {
-                MessageBox.Show("La cantidad debe ser un número entero mayor a cero.", "Datos incompletos",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(mensajeError, "Datos incompletos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -91,22 +94,12 @@ namespace TiendaOga
         }
 
         // ==========================================================
-        // Cálculo de Total y Vuelto
+        // Refresco de Total y Vuelto (el cálculo real vive en VentaNegocio)
         // ==========================================================
-
-        private decimal ObtenerTotal()
-        {
-            decimal total = 0;
-            foreach (var item in _detalleVenta)
-            {
-                total += item.Subtotal;
-            }
-            return total;
-        }
 
         private void ActualizarTotal()
         {
-            decimal total = ObtenerTotal();
+            decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
             txtPrecioTotal.Text = total.ToString("C2", CultureInfo.GetCultureInfo("es-AR"));
             ActualizarEstadoPago();
         }
@@ -130,7 +123,7 @@ namespace TiendaOga
         {
             if (cmbTipoPago == null || txtMontoRecibido == null || txtVuelto == null) return;
 
-            decimal total = ObtenerTotal();
+            decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
 
             if (string.IsNullOrWhiteSpace(txtMontoRecibido.Text))
             {
@@ -144,12 +137,12 @@ namespace TiendaOga
         {
             if (txtMontoRecibido == null || txtVuelto == null) return;
 
-            decimal total = ObtenerTotal();
+            decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
 
             decimal recibido;
             decimal.TryParse(txtMontoRecibido.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out recibido);
 
-            decimal vuelto = recibido - total;
+            decimal vuelto = VentaNegocio.CalcularVuelto(total, recibido);
 
             txtVuelto.Text = vuelto.ToString("C2", CultureInfo.GetCultureInfo("es-AR"));
             txtVuelto.Foreground = vuelto < 0
@@ -158,27 +151,19 @@ namespace TiendaOga
         }
 
         // ==========================================================
-        // Guardar / Cancelar (solo validación de UI, sin persistencia)
+        // Guardar / Cancelar (la validación real vive en VentaNegocio)
         // ==========================================================
 
         private void BtnGuardarVenta_Click(object sender, RoutedEventArgs e)
         {
-            if (_detalleVenta.Count == 0)
-            {
-                MessageBox.Show("Agregá al menos un producto antes de guardar la venta.", "Venta vacía",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            decimal total = ObtenerTotal();
+            decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
 
             decimal recibido;
             decimal.TryParse(txtMontoRecibido.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out recibido);
 
-            if (recibido < total)
+            if (!VentaNegocio.ValidarVenta(_detalleVenta.Count, total, recibido, out string mensajeError))
             {
-                MessageBox.Show("El monto recibido es menor al total de la venta.", "Pago insuficiente",
-                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(mensajeError, "No se puede guardar", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -199,17 +184,5 @@ namespace TiendaOga
             cmbTipoPago.SelectedIndex = 0;
             ActualizarTotal();
         }
-    }
-
-    /// <summary>
-    /// Ítem de detalle de venta usado solo por la grilla (UI en memoria).
-    /// </summary>
-    public class ItemVenta
-    {
-        public int IdProducto { get; set; }
-        public string Nombre { get; set; }
-        public decimal PrecioVenta { get; set; }
-        public int Cantidad { get; set; }
-        public decimal Subtotal => PrecioVenta * Cantidad;
     }
 }

@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace TiendaOga.Tablas
+namespace TiendaOga.Entidades
 {
     [Table("Usuario")]
     public class Usuario

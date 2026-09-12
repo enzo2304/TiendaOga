@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
+using TiendaOga.Entidades;
+using TiendaOga.Negocio;
 
-namespace TiendaOga
+namespace TiendaOga.Vistas
 {
     /// <summary>
     /// Página de gestión de productos (Panel Principal > Gestión de Productos).
@@ -146,7 +148,7 @@ namespace TiendaOga
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidarFormulario(out string mensajeError))
+            if (!ProductoNegocio.ValidarProducto(txtNombre.Text, txtPrecioVenta.Text, txtStock.Text, out string mensajeError))
             {
                 MessageBox.Show(mensajeError, "Datos incompletos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -163,30 +165,6 @@ namespace TiendaOga
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)
         {
             LimpiarFormulario();
-        }
-
-        private bool ValidarFormulario(out string mensajeError)
-        {
-            if (string.IsNullOrWhiteSpace(txtNombre.Text))
-            {
-                mensajeError = "El nombre del producto es obligatorio.";
-                return false;
-            }
-
-            if (!decimal.TryParse(txtPrecioVenta.Text, out _))
-            {
-                mensajeError = "El precio de venta debe ser un número válido.";
-                return false;
-            }
-
-            if (!int.TryParse(txtStock.Text, out _))
-            {
-                mensajeError = "El stock debe ser un número entero válido.";
-                return false;
-            }
-
-            mensajeError = string.Empty;
-            return true;
         }
 
         private void LimpiarFormulario()
@@ -210,26 +188,5 @@ namespace TiendaOga
             rbHogar.IsChecked = true;
             dgProductos.SelectedItem = null;
         }
-    }
-
-    // ==========================================================
-    // Modelos auxiliares para el diseño (reemplazar por las
-    // entidades / DTOs reales del proyecto)
-    // ==========================================================
-
-    public class CategoriaItem
-    {
-        public int IdCategoria { get; set; }
-        public string Nombre { get; set; }
-    }
-
-    public class ProductoRow
-    {
-        public int IdProducto { get; set; }
-        public string NombreProducto { get; set; }
-        public string NombreCategoria { get; set; }
-        public decimal PrecioVentas { get; set; }
-        public int Stock { get; set; }
-        public string TipoProducto { get; set; } // "Hogar" o "Tecnologia"
     }
 }

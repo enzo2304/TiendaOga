@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace TiendaOga.Tablas
+namespace TiendaOga.Entidades
 {
     [Table("Perfil")]
     public class Perfil

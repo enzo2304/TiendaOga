@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace TiendaOga
+namespace TiendaOga.Vistas
 {
     public partial class Window1 : Window
     {
