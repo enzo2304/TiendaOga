@@ -16,15 +16,7 @@
 
             <!-- Campo Contraseña -->
             <TextBlock Text="Contrasena" Foreground="#4A5568" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-            <PasswordBox x:Name="txtPassword" Height="38" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Foreground="#2D3748" VerticalContentAlignment="Center" Padding="8,0" FontSize="13" Margin="0,0,0,16"/>
-
-            <!-- Campo Rol -->
-            <TextBlock Text="Perfil / Rol" Foreground="#4A5568" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-            <ComboBox x:Name="cmbRol" Height="38" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Foreground="#2D3748" VerticalContentAlignment="Center" Padding="8,0" FontSize="13" Margin="0,0,0,24">
-                <ComboBoxItem Content="Vendedor" IsSelected="True"/>
-                <ComboBoxItem Content="Administrador"/>
-                <ComboBoxItem Content="Gerente"/>
-            </ComboBox>
+            <PasswordBox x:Name="txtPassword" Height="38" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Foreground="#2D3748" VerticalContentAlignment="Center" Padding="8,0" FontSize="13" Margin="0,0,0,24"/>
 
             <!-- Botón Ingresar -->
             <Button x:Name="btnIngresar" Click="btnIngresar_Click" Height="42" Background="#FF6B00" Foreground="#FFFFFF" FontWeight="Bold" FontSize="14" Cursor="Hand" BorderThickness="0">

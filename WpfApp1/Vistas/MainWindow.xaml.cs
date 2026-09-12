@@ -3,30 +3,25 @@ using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Data.SqlClient;
 using TiendaOga.Datos;
+using TiendaOga.Negocio;
 
 namespace TiendaOga.Vistas
 {
     public partial class MainWindow : Window
     {
+
         private ConexionBD conexionBD = new ConexionBD();
 
         public MainWindow()
         {
             InitializeComponent();
+
         }
 
         private void btnIngresar_Click(object sender, RoutedEventArgs e)
         {
             string usuarioIngresado = txtUsuario.Text.Trim();
             string passwordIngresado = txtPassword.Password.Trim();
-
-            if (cmbRol.SelectedItem == null)
-            {
-                MessageBox.Show("Por favor, seleccione un rol.", "Rol requerido", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
-            string rolSeleccionado = ((ComboBoxItem)cmbRol.SelectedItem).Content.ToString();
 
             if (string.IsNullOrEmpty(usuarioIngresado) || string.IsNullOrEmpty(passwordIngresado))
             {
@@ -40,22 +35,32 @@ namespace TiendaOga.Vistas
                 {
                     conn.Open();
 
-                    // Consultamos la base de datos haciendo un JOIN entre Usuario y Perfiles
-                    string query = @"SELECT u.nombre, u.apellido, u.Activo, p.nombre_perfil 
+                    // El rol ya no se filtra por lo que elige el usuario: sale del JOIN
+                    // según el id_perfil que tiene asignado en la base de datos.
+                    // Tampoco se filtra por password en el WHERE: está hasheada en la
+                    // base, así que no se puede comparar con "=". Se trae el hash
+                    // guardado y se verifica en código con BCrypt.
+                    string query = @"SELECT u.nombre, u.apellido, u.Activo, u.password, p.nombre_perfil 
                                      FROM Usuario u 
                                      INNER JOIN Perfiles p ON u.id_perfil = p.id_perfil 
-                                     WHERE u.usuario = @usuario AND u.password = @password AND p.nombre_perfil = @rol";
+                                     WHERE u.usuario = @usuario";
 
                     using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@usuario", usuarioIngresado);
-                        cmd.Parameters.AddWithValue("@password", passwordIngresado);
-                        cmd.Parameters.AddWithValue("@rol", rolSeleccionado);
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             if (reader.Read())
                             {
+                                string hashGuardado = reader.GetString(reader.GetOrdinal("password"));
+
+                                if (!SeguridadNegocio.VerificarPassword(passwordIngresado, hashGuardado))
+                                {
+                                    MessageBox.Show("Usuario o contraseña incorrectos.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Error);
+                                    return;
+                                }
+
                                 bool activo = reader.GetBoolean(reader.GetOrdinal("Activo"));
 
                                 if (activo)
@@ -77,7 +82,7 @@ namespace TiendaOga.Vistas
                             }
                             else
                             {
-                                MessageBox.Show("Usuario, contraseña o rol incorrectos.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Error);
+                                MessageBox.Show("Usuario o contraseña incorrectos.", "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Error);
                             }
                         }
                     }
