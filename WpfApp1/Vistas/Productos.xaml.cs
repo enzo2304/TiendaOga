@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
 
 namespace TiendaOga.Vistas
 {
-    /// <summary>
-    /// Página de gestión de productos (Panel Principal > Gestión de Productos).
-    /// Estilo dashboard minimalista: tarjetas blancas sobre fondo gris claro,
-    /// acento naranja, formulario condicional Hogar / Tecnología.
-    /// </summary>
     public partial class Productos : Page
     {
         public Productos()
@@ -21,14 +18,8 @@ namespace TiendaOga.Vistas
             CargarProductos();
         }
 
-        // ==========================================================
-        // Carga inicial (reemplazar con las llamadas reales a tu capa
-        // de datos / servicio de productos y categorías)
-        // ==========================================================
-
         private void CargarCategorias()
         {
-            // TODO: reemplazar por la consulta real a la tabla `categoria`
             var categorias = new List<CategoriaItem>
             {
                 new CategoriaItem { IdCategoria = 0, Nombre = "Todas" },
@@ -43,28 +34,18 @@ namespace TiendaOga.Vistas
 
         private void CargarProductos()
         {
-            // TODO: reemplazar por la consulta real a la tabla `producto`
-            // (con join a producto_hogar / producto_tecnologia según corresponda)
             dgProductos.ItemsSource = new List<ProductoRow>();
-
             ActualizarResumenInventario();
         }
 
         private void ActualizarResumenInventario()
         {
-            // TODO: calcular a partir de dgProductos.ItemsSource
             txtNumeroProductos.Text = "0";
             txtPrecioTotalInventario.Text = "0.00";
         }
 
-        // ==========================================================
-        // Alternancia de paneles Hogar / Tecnología
-        // ==========================================================
-
         private void TipoProducto_Checked(object sender, RoutedEventArgs e)
         {
-            // panelHogar / panelTecnologia pueden no existir aún si el evento
-            // se dispara durante InitializeComponent()
             if (panelHogar == null || panelTecnologia == null) return;
 
             bool esHogar = rbHogar.IsChecked == true;
@@ -72,22 +53,11 @@ namespace TiendaOga.Vistas
             panelTecnologia.Visibility = esHogar ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        // ==========================================================
-        // Búsqueda y filtro
-        // ==========================================================
-
         private void BtnBuscar_Click(object sender, RoutedEventArgs e)
         {
             var termino = txtBusqueda.Text?.Trim();
             var categoriaSeleccionada = cmbFiltroCategoria.SelectedValue as int?;
-
-            // TODO: aplicar filtro real por id_categoria y por ID/Nombre
-            // dgProductos.ItemsSource = servicioProductos.Buscar(termino, categoriaSeleccionada);
         }
-
-        // ==========================================================
-        // Selección de fila en la grilla -> cargar formulario
-        // ==========================================================
 
         private void DgProductos_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -102,26 +72,17 @@ namespace TiendaOga.Vistas
             if (string.Equals(producto.TipoProducto, "Hogar", StringComparison.OrdinalIgnoreCase))
             {
                 rbHogar.IsChecked = true;
-                // TODO: cargar txtMaterial, txtDimensiones, txtPeso, txtAmbiente
-                // desde producto_hogar
             }
             else
             {
                 rbTecnologia.IsChecked = true;
-                // TODO: cargar txtMarca, txtModelo, txtGarantia, txtVoltaje
-                // desde producto_tecnologia
             }
         }
-
-        // ==========================================================
-        // Acciones de fila: Editar / Eliminar
-        // ==========================================================
 
         private void BtnEditar_Click(object sender, RoutedEventArgs e)
         {
             var boton = sender as Button;
             if (boton == null || !(boton.Tag is int idProducto)) return;
-            // TODO: cargar el producto por idProducto en el formulario inferior
         }
 
         private void BtnEliminar_Click(object sender, RoutedEventArgs e)
@@ -137,29 +98,135 @@ namespace TiendaOga.Vistas
 
             if (resultado == MessageBoxResult.Yes)
             {
-                // TODO: eliminar producto por idProducto y recargar la grilla
                 CargarProductos();
             }
         }
 
         // ==========================================================
-        // Guardar / Cancelar formulario
+        // VALIDACIÓN Y GUARDADO DE FORMULARIO
         // ==========================================================
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            if (!ProductoNegocio.ValidarProducto(txtNombre.Text, txtPrecioVenta.Text, txtStock.Text, out string mensajeError))
+            if (!ValidarFormularioCompleto(out string errorValidacion))
             {
-                MessageBox.Show(mensajeError, "Datos incompletos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(errorValidacion, "Validación de Formulario", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // TODO: mapear los campos del formulario a la entidad Producto
-            // (+ ProductoHogar o ProductoTecnologia según rbHogar/rbTecnologia)
-            // y persistir vía el servicio correspondiente.
+            // Si pasa todas las validaciones de frontend:
+            MessageBox.Show("¡Producto validado correctamente! Listo para guardar en la base de datos.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
 
             LimpiarFormulario();
             CargarProductos();
+        }
+
+        private bool ValidarFormularioCompleto(out string error)
+        {
+            // 1. Validaciones Generales
+            if (string.IsNullOrWhiteSpace(txtNombre.Text))
+            {
+                error = "El nombre del producto es obligatorio.";
+                txtNombre.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPrecioCosto.Text) ||
+                !decimal.TryParse(txtPrecioCosto.Text.Replace('.', ','), out decimal pCosto) || pCosto <= 0)
+            {
+                error = "Debe ingresar un precio de costo válido mayor a 0.";
+                txtPrecioCosto.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtPrecioVenta.Text) ||
+                !decimal.TryParse(txtPrecioVenta.Text.Replace('.', ','), out decimal pVenta) || pVenta <= 0)
+            {
+                error = "Debe ingresar un precio de venta válido mayor a 0.";
+                txtPrecioVenta.Focus();
+                return false;
+            }
+
+            if (pVenta < pCosto)
+            {
+                error = "El precio de venta no puede ser inferior al precio de costo.";
+                txtPrecioVenta.Focus();
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtStock.Text) || !int.TryParse(txtStock.Text, out int stock) || stock < 0)
+            {
+                error = "Debe ingresar una cantidad de stock válida (número entero >= 0).";
+                txtStock.Focus();
+                return false;
+            }
+
+            // 2. Validaciones Condicionales según el tipo de producto
+            if (rbHogar.IsChecked == true)
+            {
+                if (string.IsNullOrWhiteSpace(txtMaterial.Text))
+                {
+                    error = "Para productos de Hogar, el campo Material es obligatorio.";
+                    txtMaterial.Focus();
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtAmbiente.Text))
+                {
+                    error = "Para productos de Hogar, el campo Ambiente es obligatorio.";
+                    txtAmbiente.Focus();
+                    return false;
+                }
+            }
+            else if (rbTecnologia.IsChecked == true)
+            {
+                if (string.IsNullOrWhiteSpace(txtMarca.Text))
+                {
+                    error = "Para productos de Tecnología, la Marca es obligatoria.";
+                    txtMarca.Focus();
+                    return false;
+                }
+
+                if (string.IsNullOrWhiteSpace(txtModelo.Text))
+                {
+                    error = "Para productos de Tecnología, el Modelo es obligatorio.";
+                    txtModelo.Focus();
+                    return false;
+                }
+
+                if (!string.IsNullOrWhiteSpace(txtGarantia.Text) && !int.TryParse(txtGarantia.Text, out int garantiaMeses))
+                {
+                    error = "La garantía debe ser un número entero de meses.";
+                    txtGarantia.Focus();
+                    return false;
+                }
+            }
+
+            error = string.Empty;
+            return true;
+        }
+
+        // ==========================================================
+        // FILTROS EN TIEMPO REAL (PREVIEW TEXT INPUT)
+        // ==========================================================
+
+        public void ValidarSoloEnteros(object sender, TextCompositionEventArgs e)
+        {
+            // Solo dígitos 0 al 9
+            Regex regex = new Regex("[^0-9]+");
+            e.Handled = regex.IsMatch(e.Text);
+        }
+
+        public void ValidarSoloDecimales(object sender, TextCompositionEventArgs e)
+        {
+            TextBox textBox = sender as TextBox;
+            if (textBox == null) return;
+
+            string textoNuevo = textBox.Text.Insert(textBox.SelectionStart, e.Text);
+
+            // Permite dígitos y un único separador (. o ,) con hasta 2 decimales
+            Regex regex = new Regex(@"^\d*([.,]\d{0,2})?$");
+            e.Handled = !regex.IsMatch(textoNuevo);
         }
 
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)

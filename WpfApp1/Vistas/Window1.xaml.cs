@@ -77,11 +77,13 @@ namespace TiendaOga.Vistas
         private void btnInventario_Click(object sender, RoutedEventArgs e)
         {
             lblTituloModulo.Text = "Registro de Entrada y Ajuste de Stock";
+            ContenedorPrincipal.Navigate(new EntradaStock());
         }
 
         private void btnEntidades_Click(object sender, RoutedEventArgs e)
         {
-            lblTituloModulo.Text = "Padrón de Clientes y Proveedores";
+            lblTituloModulo.Text = "Padrón de Clientes";
+            ContenedorPrincipal.Navigate(new Clientes());
         }
 
         private void btnUsuarios_Click(object sender, RoutedEventArgs e)

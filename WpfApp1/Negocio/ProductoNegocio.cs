@@ -1,33 +1,86 @@
+using System;
+
 namespace TiendaOga.Negocio
 {
-    /// <summary>
-    /// Reglas de validación del formulario de Productos.
-    /// No conoce controles de UI: recibe texto plano y devuelve
-    /// si es válido más un mensaje de error listo para mostrar.
-    /// </summary>
     public static class ProductoNegocio
     {
-        public static bool ValidarProducto(string nombre, string precioVentaTexto, string stockTexto, out string mensajeError)
+        public static bool ValidarIngresoStock(
+            string nombre,
+            int indiceCategoria,
+            string txtCosto,
+            string txtVenta,
+            string txtStock,
+            bool esHogar,
+            string material,
+            string ambiente,
+            string marca,
+            string modelo,
+            out string mensaje)
         {
             if (string.IsNullOrWhiteSpace(nombre))
             {
-                mensajeError = "El nombre del producto es obligatorio.";
+                mensaje = "Debe ingresar el nombre del producto.";
                 return false;
             }
 
-            if (!decimal.TryParse(precioVentaTexto, out _))
+            if (indiceCategoria == -1)
             {
-                mensajeError = "El precio de venta debe ser un número válido.";
+                mensaje = "Seleccione una categoría.";
                 return false;
             }
 
-            if (!int.TryParse(stockTexto, out _))
+            if (string.IsNullOrWhiteSpace(txtCosto) || !decimal.TryParse(txtCosto.Replace('.', ','), out decimal costo) || costo <= 0)
             {
-                mensajeError = "El stock debe ser un número entero válido.";
+                mensaje = "El precio de costo debe ser mayor a 0.";
                 return false;
             }
 
-            mensajeError = string.Empty;
+            if (string.IsNullOrWhiteSpace(txtVenta) || !decimal.TryParse(txtVenta.Replace('.', ','), out decimal venta) || venta <= 0)
+            {
+                mensaje = "El precio de venta debe ser mayor a 0.";
+                return false;
+            }
+
+            if (venta < costo)
+            {
+                mensaje = "El precio de venta no puede ser menor al precio de costo.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(txtStock) || !int.TryParse(txtStock, out int stock) || stock <= 0)
+            {
+                mensaje = "La cantidad a ingresar debe ser un número entero mayor a 0.";
+                return false;
+            }
+
+            if (esHogar)
+            {
+                if (string.IsNullOrWhiteSpace(material))
+                {
+                    mensaje = "Indique el material para el producto de Hogar.";
+                    return false;
+                }
+                if (string.IsNullOrWhiteSpace(ambiente))
+                {
+                    mensaje = "Indique el ambiente para el producto de Hogar.";
+                    return false;
+                }
+            }
+            else
+            {
+                if (string.IsNullOrWhiteSpace(marca))
+                {
+                    mensaje = "Indique la marca para el producto tecnológico.";
+                    return false;
+                }
+                if (string.IsNullOrWhiteSpace(modelo))
+                {
+                    mensaje = "Indique el modelo para el producto tecnológico.";
+                    return false;
+                }
+            }
+
+            mensaje = string.Empty;
             return true;
         }
     }

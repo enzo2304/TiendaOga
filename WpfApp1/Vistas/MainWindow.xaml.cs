@@ -15,7 +15,6 @@ namespace TiendaOga.Vistas
         public MainWindow()
         {
             InitializeComponent();
-
         }
 
         private void btnIngresar_Click(object sender, RoutedEventArgs e)

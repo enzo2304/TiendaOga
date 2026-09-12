@@ -27,11 +27,11 @@
 
         <!-- ===== Efecto de sombra sutil para las tarjetas ===== -->
         <DropShadowEffect x:Key="CardShadow"
-                           Color="#000000"
-                           Opacity="0.06"
-                           BlurRadius="12"
-                           ShadowDepth="2"
-                           Direction="270"/>
+                          Color="#000000"
+                          Opacity="0.06"
+                          BlurRadius="12"
+                          ShadowDepth="2"
+                          Direction="270"/>
 
         <!-- ===== Estilo base: Tarjeta (Border blanco redondeado) ===== -->
         <Style x:Key="CardStyle" TargetType="Border">
@@ -58,15 +58,15 @@
             <Setter Property="Margin" Value="0,0,0,4"/>
         </Style>
 
-        <!-- ===== Estilo Flat: TextBox ===== -->
+        <!-- ===== Estilo Flat: TextBox (Texto completo sin recorte) ===== -->
         <Style x:Key="FlatTextBox" TargetType="TextBox">
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Padding" Value="8,6"/>
+            <Setter Property="Padding" Value="8,5"/>
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="Height" Value="34"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -76,15 +76,18 @@
                                 BorderThickness="{TemplateBinding BorderThickness}"
                                 CornerRadius="4">
                             <ScrollViewer x:Name="PART_ContentHost"
+                                          Focusable="False"
+                                          HorizontalScrollBarVisibility="Hidden"
+                                          VerticalScrollBarVisibility="Hidden"
                                           Margin="{TemplateBinding Padding}"
-                                          VerticalAlignment="Center"/>
+                                          VerticalAlignment="Stretch"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <!-- Trigger de foco con borde naranja (fuera del template para no romper VS designer) -->
+        <!-- Trigger de foco con borde naranja -->
         <Style x:Key="FlatTextBoxFocusable" TargetType="TextBox" BasedOn="{StaticResource FlatTextBox}">
             <Style.Triggers>
                 <Trigger Property="IsFocused" Value="True">
@@ -100,7 +103,7 @@
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="8,4"/>
-            <Setter Property="Height" Value="32"/>
+            <Setter Property="Height" Value="34"/>
             <Setter Property="FontSize" Value="13"/>
         </Style>
 
@@ -161,7 +164,7 @@
             </Setter>
         </Style>
 
-        <!-- ===== Botón: Icono pequeño (editar / eliminar en la grilla) ===== -->
+        <!-- ===== Botón: Icono pequeño ===== -->
         <Style x:Key="IconButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -183,7 +186,7 @@
             </Setter>
         </Style>
 
-        <!-- ===== DataGrid: Encabezado de columna flat ===== -->
+        <!-- ===== DataGrid: Encabezado ===== -->
         <Style x:Key="FlatColumnHeader" TargetType="DataGridColumnHeader">
             <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
             <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
@@ -195,7 +198,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
         </Style>
 
-        <!-- ===== DataGrid: Fila con alternancia sutil ===== -->
+        <!-- ===== DataGrid: Fila con alternancia ===== -->
         <Style x:Key="FlatRowStyle" TargetType="DataGridRow">
             <Setter Property="Background" Value="White"/>
             <Style.Triggers>
@@ -208,7 +211,7 @@
             </Style.Triggers>
         </Style>
 
-        <!-- ===== RadioButton estilo "chip" para Hogar/Tecnología ===== -->
+        <!-- ===== RadioButton estilo chip ===== -->
         <Style x:Key="TipoRadioStyle" TargetType="RadioButton">
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
             <Setter Property="FontSize" Value="13"/>
@@ -224,11 +227,8 @@
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
-            <!-- Filtros / Búsqueda -->
             <RowDefinition Height="*"/>
-            <!-- Grilla de productos -->
             <RowDefinition Height="Auto"/>
-            <!-- Formulario de detalles -->
         </Grid.RowDefinitions>
 
         <!--=================================================
@@ -370,22 +370,28 @@
                         <TextBox x:Name="txtNombre" Style="{StaticResource FlatTextBoxFocusable}"/>
                     </StackPanel>
 
-                    <!-- Precio Costo -->
+                    <!-- Precio Costo (Solo Decimales) -->
                     <StackPanel Grid.Column="2" Margin="0,0,10,0">
                         <TextBlock Text="Precio Costo" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="txtPrecioCosto" Style="{StaticResource FlatTextBoxFocusable}"/>
+                        <TextBox x:Name="txtPrecioCosto" 
+                                 Style="{StaticResource FlatTextBoxFocusable}"
+                                 PreviewTextInput="ValidarSoloDecimales"/>
                     </StackPanel>
 
-                    <!-- Precio Venta -->
+                    <!-- Precio Venta (Solo Decimales) -->
                     <StackPanel Grid.Column="3" Margin="0,0,10,0">
                         <TextBlock Text="Precio Venta" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="txtPrecioVenta" Style="{StaticResource FlatTextBoxFocusable}"/>
+                        <TextBox x:Name="txtPrecioVenta" 
+                                 Style="{StaticResource FlatTextBoxFocusable}"
+                                 PreviewTextInput="ValidarSoloDecimales"/>
                     </StackPanel>
 
-                    <!-- Stock -->
+                    <!-- Stock (Solo Enteros) -->
                     <StackPanel Grid.Column="4">
                         <TextBlock Text="Stock" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="txtStock" Style="{StaticResource FlatTextBoxFocusable}"/>
+                        <TextBox x:Name="txtStock" 
+                                 Style="{StaticResource FlatTextBoxFocusable}"
+                                 PreviewTextInput="ValidarSoloEnteros"/>
                     </StackPanel>
                 </Grid>
 
@@ -409,8 +415,7 @@
                                  Checked="TipoProducto_Checked"/>
                 </StackPanel>
 
-                <!-- Detalles condicionales: Hogar / Tecnología ocupan la MISMA celda
-                     (superpuestos), así solo cambia el contenido visible, nunca la posición -->
+                <!-- Detalles condicionales: Hogar / Tecnología -->
                 <Grid Margin="0,0,0,20">
 
                     <!-- Panel: Detalles para Hogar -->
@@ -441,7 +446,9 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Margin="0,0,10,0">
                                     <TextBlock Text="Peso (kg)" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtPeso" Style="{StaticResource FlatTextBoxFocusable}"/>
+                                    <TextBox x:Name="txtPeso" 
+                                             Style="{StaticResource FlatTextBoxFocusable}"
+                                             PreviewTextInput="ValidarSoloDecimales"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="3">
                                     <TextBlock Text="Ambiente" Style="{StaticResource FieldLabelStyle}"/>
@@ -451,7 +458,7 @@
                         </StackPanel>
                     </Border>
 
-                    <!-- Panel: Detalles para Tecnología (misma celda que panelHogar) -->
+                    <!-- Panel: Detalles para Tecnología -->
                     <Border x:Name="panelTecnologia"
                             Background="#FAFAFA"
                             CornerRadius="6"
@@ -480,7 +487,9 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Margin="0,0,10,0">
                                     <TextBlock Text="Garantía (meses)" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtGarantia" Style="{StaticResource FlatTextBoxFocusable}"/>
+                                    <TextBox x:Name="txtGarantia" 
+                                             Style="{StaticResource FlatTextBoxFocusable}"
+                                             PreviewTextInput="ValidarSoloEnteros"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="3">
                                     <TextBlock Text="Voltaje" Style="{StaticResource FieldLabelStyle}"/>

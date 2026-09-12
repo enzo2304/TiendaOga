@@ -167,11 +167,39 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            // Fuera de alcance: acá iría la persistencia en
-            // venta_cabecera, venta_detalle y pago.
+            // 1. Armar el detalle en texto con los productos agregados a la grilla
+            // Ejemplo: "Reflector LED x2, Cámara de Seguridad x1"
+            var listaNombres = new System.Collections.Generic.List<string>();
+            foreach (var item in _detalleVenta)
+            {
+                listaNombres.Add($"{item.Nombre} x{item.Cantidad}");
+            }
+            string detalleProductos = string.Join(", ", listaNombres);
 
-            MessageBox.Show("Venta lista para guardar (persistencia pendiente de integrar).",
-                "Validación OK", MessageBoxButton.OK, MessageBoxImage.Information);
+            // 2. Tomar el nombre del cliente (o asignarle Consumidor Final si está vacío)
+            string nombreCliente = string.IsNullOrWhiteSpace(txtCliente.Text)
+                ? "Consumidor Final"
+                : txtCliente.Text.Trim();
+
+            // 3. Tomar el método de pago seleccionado en el ComboBox
+            string metodoPago = cmbTipoPago.SelectedItem is ComboBoxItem itemCombo
+                ? itemCombo.Content.ToString()
+                : cmbTipoPago.Text;
+
+            // 4. REGISTRAR EN EL PADRÓN DE CLIENTES (DatosGlobales)
+            DatosGlobales.RegistrarCompraCliente(
+                nombre: nombreCliente,
+                dni: "", // Si no tenés campo DNI en Ventas se guarda sin DNI
+                telefono: "",
+                detalle: detalleProductos,
+                total: total,
+                metodoPago: metodoPago
+            );
+
+            MessageBox.Show("¡Venta registrada con éxito y asociada al cliente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+
+            // Limpiar el formulario para la siguiente venta
+            BtnCancelarVenta_Click(sender, e);
         }
 
         private void BtnCancelarVenta_Click(object sender, RoutedEventArgs e)
