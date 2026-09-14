@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Windows;
 using System.Windows.Controls;
 using Microsoft.Data.SqlClient;
@@ -9,7 +10,6 @@ namespace TiendaOga.Vistas
 {
     public partial class MainWindow : Window
     {
-
         private ConexionBD conexionBD = new ConexionBD();
 
         public MainWindow()
@@ -34,19 +34,10 @@ namespace TiendaOga.Vistas
                 {
                     conn.Open();
 
-                    // El rol ya no se filtra por lo que elige el usuario: sale del JOIN
-                    // según el id_perfil que tiene asignado en la base de datos.
-                    // Tampoco se filtra por password en el WHERE: está hasheada en la
-                    // base, así que no se puede comparar con "=". Se trae el hash
-                    // guardado y se verifica en código con BCrypt.
-                    string query = @"SELECT u.nombre, u.apellido, u.Activo, u.password, p.nombre_perfil 
-                                     FROM Usuario u 
-                                     INNER JOIN Perfiles p ON u.id_perfil = p.id_perfil 
-                                     WHERE u.usuario = @usuario";
-
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    using (SqlCommand cmd = new SqlCommand("dbo.sp_ObtenerUsuarioPorLogin", conn))
                     {
-                        cmd.Parameters.AddWithValue("@usuario", usuarioIngresado);
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.Add("@usuario", SqlDbType.VarChar, 50).Value = usuarioIngresado;
 
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {

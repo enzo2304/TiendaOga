@@ -167,12 +167,17 @@
     </ApplicationDefinition>
     <Compile Include="Datos\ConexionBD.cs" />
     <Compile Include="Datos\PerfilRepository.cs" />
+    <Compile Include="Datos\UsuarioDatos.cs" />
     <Compile Include="Entidades\CategoriaItem.cs" />
     <Compile Include="Entidades\DatosGlobales.cs" />
     <Compile Include="Entidades\ItemVenta.cs" />
+    <Compile Include="Entidades\PerfilItem.cs" />
     <Compile Include="Entidades\ProductoRow.cs" />
+    <Compile Include="Entidades\UsuarioRow.cs" />
+    <Compile Include="Negocio\PermisosNegocio.cs" />
     <Compile Include="Negocio\ProductoNegocio.cs" />
     <Compile Include="Negocio\SeguridadNegocio.cs" />
+    <Compile Include="Negocio\UsuarioNegocio.cs" />
     <Compile Include="Negocio\VentaNegocio.cs" />
     <Compile Include="Vistas\Clientes.xaml.cs">
       <DependentUpon>Clientes.xaml</DependentUpon>
@@ -185,6 +190,9 @@
     </Compile>
     <Compile Include="Entidades\Perfil.cs" />
     <Compile Include="Entidades\Usuario.cs" />
+    <Compile Include="Vistas\Usuarios.xaml.cs">
+      <DependentUpon>Usuarios.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vistas\Ventas.xaml.cs">
       <DependentUpon>Ventas.xaml</DependentUpon>
     </Compile>
@@ -212,6 +220,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Vistas\Productos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vistas\Usuarios.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

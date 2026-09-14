@@ -37,14 +37,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-        <!-- Estilo para los títulos de sección del menú -->
-        <Style x:Key="TituloSeccion" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="#A0AEC0"/>
-            <Setter Property="FontSize" Value="11"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="Margin" Value="16,16,0,6"/>
-        </Style>
     </Window.Resources>
 
     <Grid>
@@ -85,27 +77,19 @@
                     </Button.Template>
                 </Button>
 
-                <!-- Menú de Opciones -->
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,0,0,10">
+                <!-- Menú de Opciones: lista plana, sin secciones fijas.
+                     La visibilidad de cada botón según el rol se resuelve
+                     por código en Window1.xaml.cs (Visibility = Visible/Collapsed) -->
+                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,10">
                     <StackPanel Margin="10,0">
-
-                        <!-- MÓDULO OPERATIVO (Todos los roles) -->
-                        <TextBlock Text="VENTAS Y MOSTRADOR" Style="{StaticResource TituloSeccion}"/>
                         <Button x:Name="btnVentas" Click="btnVentas_Click" Content="Ventas" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnConsultarStock" Click="btnConsultarStock_Click" Content="Consultar Catalogo" Style="{StaticResource BotonNavegacion}"/>
-
-                        <!-- MÓDULO ADMINISTRATIVO -->
-                        <TextBlock x:Name="lblHeaderAdmin" Text="ADMINISTRACION" Style="{StaticResource TituloSeccion}"/>
-                        <Button x:Name="btnEntidades" Click="btnEntidades_Click" Content="Clientes" Style="{StaticResource BotonNavegacion}"/>
+                        <Button x:Name="btnClientes" Click="btnClientes_Click" Content="Clientes" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnProductos" Click="btnProductos_Click" Content="Productos" Style="{StaticResource BotonNavegacion}"/>
-                        <Button x:Name="btnInventario" Click="btnInventario_Click" Content="Entrada de Stock" Style="{StaticResource BotonNavegacion}"/>
+                        <Button x:Name="btnEntradaStock" Click="btnEntradaStock_Click" Content="Entrada de Stock" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnUsuarios" Click="btnUsuarios_Click" Content="Usuarios y Permisos" Style="{StaticResource BotonNavegacion}"/>
-
-                        <!-- MÓDULO GERENCIA -->
-                        <TextBlock x:Name="lblHeaderGerente" Text="GERENCIA Y REPORTES" Style="{StaticResource TituloSeccion}"/>
                         <Button x:Name="btnReportesVentas" Click="btnReportesVentas_Click" Content="Reportes de Ventas" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnStockCritico" Click="btnStockCritico_Click" Content="Rotacion de Inventario" Style="{StaticResource BotonNavegacion}"/>
-
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>
