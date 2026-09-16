@@ -32,7 +32,17 @@ namespace TiendaOga.Entidades
     {
         public static ObservableCollection<ClienteItem> Clientes { get; set; } = new ObservableCollection<ClienteItem>();
 
-        public static void RegistrarCompraCliente(string nombre, string dni, string telefono, string detalle, decimal total, string metodoPago)
+        public static List<ProductoRow> Productos { get; set; } = new List<ProductoRow>
+    {
+        new ProductoRow { IdProducto = 1, NombreProducto = "Sofá 3 Cuerpos", NombreCategoria = "Hogar", PrecioVentas = 185000, Stock = 5, TipoProducto = "Hogar" },
+        new ProductoRow { IdProducto = 2, NombreProducto = "Sofá Cama", NombreCategoria = "Hogar", PrecioVentas = 145000, Stock = 3, TipoProducto = "Hogar" },
+        new ProductoRow { IdProducto = 3, NombreProducto = "Foco Inteligente LED Wi-Fi", NombreCategoria = "Tecnologia", PrecioVentas = 3200, Stock = 40, TipoProducto = "Tecnologia" },
+        new ProductoRow { IdProducto = 4, NombreProducto = "Cámara de Seguridad Interior", NombreCategoria = "Tecnologia", PrecioVentas = 18900, Stock = 12, TipoProducto = "Tecnologia" },
+        new ProductoRow { IdProducto = 5, NombreProducto = "Altavoz Asistente de Voz", NombreCategoria = "Tecnologia", PrecioVentas = 21500, Stock = 20, TipoProducto = "Tecnologia" },
+        new ProductoRow { IdProducto = 6, NombreProducto = "Campera Rompeviento", NombreCategoria = "Accesorios", PrecioVentas = 32000, Stock = 15, TipoProducto = "Accesorios" }
+    };
+
+        public static void RegistrarCompraCliente(string nombre, string dni, string telefono, string detalle, decimal total, string metodoPago, DateTime? fecha = null)
         {
             if (string.IsNullOrWhiteSpace(nombre)) return;
 
@@ -43,10 +53,12 @@ namespace TiendaOga.Entidades
                 (!string.IsNullOrEmpty(dni) && c.Dni == dniLimpio) ||
                 c.NombreCompleto.Equals(nombreLimpio, StringComparison.OrdinalIgnoreCase));
 
+            DateTime fechaPago = fecha ?? DateTime.Now;
+
             var nuevaCompra = new CompraCliente
             {
                 NroComprobante = $"VTA-{DateTime.Now:HHmmss}",
-                Fecha = DateTime.Now.ToString("dd/MM/yyyy HH:mm"),
+                Fecha = fechaPago.ToString("dd/MM/yyyy HH:mm"),
                 DetalleProductos = detalle,
                 Total = total,
                 MetodoPago = string.IsNullOrWhiteSpace(metodoPago) ? "Efectivo" : metodoPago

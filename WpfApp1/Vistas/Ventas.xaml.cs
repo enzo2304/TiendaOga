@@ -1,5 +1,7 @@
-﻿using System.Collections.ObjectModel;
+﻿using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using TiendaOga.Entidades;
@@ -17,10 +19,17 @@ namespace TiendaOga.Vistas
     {
         private readonly ObservableCollection<ItemVenta> _detalleVenta = new ObservableCollection<ItemVenta>();
 
+        // Catálogo de productos usado para el autocompletado (en memoria, sin conexión a BD)
+        private readonly List<ProductoRow> _todosLosProductos = DatosGlobales.Productos;
+
+        // Evita que el TextChanged dispare el filtro cuando el texto lo pone el propio código
+        private bool _seleccionandoProgramaticamente = false;
+
         public Ventas()
         {
             InitializeComponent();
             dgDetalleVenta.ItemsSource = _detalleVenta;
+            dpFechaPago.SelectedDate = System.DateTime.Today;
             ActualizarEstadoPago();
         }
 
@@ -34,12 +43,57 @@ namespace TiendaOga.Vistas
         }
 
         // ==========================================================
+        // Autocompletado de Producto (filtra en vivo y completa precio)
+        // ==========================================================
+
+        private void CmbProductoBusqueda_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_seleccionandoProgramaticamente) return;
+
+            string texto = cmbProductoBusqueda.Text?.Trim();
+
+            if (string.IsNullOrWhiteSpace(texto))
+            {
+                cmbProductoBusqueda.ItemsSource = null;
+                cmbProductoBusqueda.IsDropDownOpen = false;
+                txtPrecioUnitario.Clear();
+                return;
+            }
+
+            var coincidencias = _todosLosProductos
+                .Where(p => p.NombreProducto.ToLower().Contains(texto.ToLower()))
+                .ToList();
+
+            string textoActual = cmbProductoBusqueda.Text;
+
+            cmbProductoBusqueda.ItemsSource = coincidencias;
+            cmbProductoBusqueda.Text = textoActual;
+            cmbProductoBusqueda.IsDropDownOpen = coincidencias.Count > 0;
+        }
+
+        private void CmbProductoBusqueda_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (cmbProductoBusqueda.SelectedItem is ProductoRow producto)
+            {
+                _seleccionandoProgramaticamente = true;
+
+                cmbProductoBusqueda.Text = producto.NombreProducto;
+                txtPrecioUnitario.Text = producto.PrecioVentas.ToString("N2", CultureInfo.InvariantCulture);
+                cmbProductoBusqueda.IsDropDownOpen = false;
+
+                _seleccionandoProgramaticamente = false;
+
+                txtCantidad.Focus();
+            }
+        }
+
+        // ==========================================================
         // Alta / baja de ítems en la grilla de detalle (en memoria)
         // ==========================================================
 
         private void BtnAgregar_Click(object sender, RoutedEventArgs e)
         {
-            string nombre = txtProductoBusqueda.Text?.Trim();
+            string nombre = cmbProductoBusqueda.Text?.Trim();
 
             if (string.IsNullOrWhiteSpace(nombre))
             {
@@ -63,9 +117,13 @@ namespace TiendaOga.Vistas
                 return;
             }
 
+            // Si el nombre coincide exactamente con un producto del catálogo, tomamos su IdProducto real
+            var productoSeleccionado = _todosLosProductos
+                .FirstOrDefault(p => p.NombreProducto.Equals(nombre, System.StringComparison.OrdinalIgnoreCase));
+
             var item = new ItemVenta
             {
-                IdProducto = 0, // Sin conexión a BD: se completa al integrar el catálogo real
+                IdProducto = productoSeleccionado?.IdProducto ?? 0,
                 Nombre = nombre,
                 PrecioVenta = precioUnitario,
                 Cantidad = cantidad
@@ -74,7 +132,8 @@ namespace TiendaOga.Vistas
             _detalleVenta.Add(item);
 
             // Limpiar campos de carga rápida
-            txtProductoBusqueda.Clear();
+            cmbProductoBusqueda.Text = string.Empty;
+            cmbProductoBusqueda.ItemsSource = null;
             txtPrecioUnitario.Clear();
             txtCantidad.Text = "1";
 
@@ -186,14 +245,18 @@ namespace TiendaOga.Vistas
                 ? itemCombo.Content.ToString()
                 : cmbTipoPago.Text;
 
-            // 4. REGISTRAR EN EL PADRÓN DE CLIENTES (DatosGlobales)
+            // 4. Tomar la fecha de pago elegida (si no seleccionó ninguna, se usa hoy)
+            System.DateTime fechaPago = dpFechaPago.SelectedDate ?? System.DateTime.Today;
+
+            // 5. REGISTRAR EN EL PADRÓN DE CLIENTES (DatosGlobales)
             DatosGlobales.RegistrarCompraCliente(
                 nombre: nombreCliente,
                 dni: "", // Si no tenés campo DNI en Ventas se guarda sin DNI
                 telefono: "",
                 detalle: detalleProductos,
                 total: total,
-                metodoPago: metodoPago
+                metodoPago: metodoPago,
+                fecha: fechaPago
             );
 
             MessageBox.Show("¡Venta registrada con éxito y asociada al cliente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
@@ -206,10 +269,12 @@ namespace TiendaOga.Vistas
         {
             _detalleVenta.Clear();
             txtCliente.Clear();
-            txtProductoBusqueda.Clear();
+            cmbProductoBusqueda.Text = string.Empty;
+            cmbProductoBusqueda.ItemsSource = null;
             txtPrecioUnitario.Clear();
             txtCantidad.Text = "1";
             cmbTipoPago.SelectedIndex = 0;
+            dpFechaPago.SelectedDate = System.DateTime.Today;
             ActualizarTotal();
         }
     }
