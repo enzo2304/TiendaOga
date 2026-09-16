@@ -115,6 +115,28 @@
             <Border Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="1" CornerRadius="8" Padding="24" Margin="0,0,0,20">
                 <StackPanel>
                     <TextBlock Text="Usuarios Registrados" Foreground="#2D3748" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,16"/>
+
+                    <!-- Buscador -->
+                    <Grid Margin="0,0,0,12">
+                        <TextBox x:Name="txtBuscarUsuario" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1"
+                                 Padding="30,0,8,0" VerticalContentAlignment="Center" FontSize="13"
+                                 TextChanged="TxtBuscarUsuario_TextChanged"/>
+                        <TextBlock Text="🔍" FontSize="13" Foreground="#A0AEC0" VerticalAlignment="Center" Margin="8,0,0,0" IsHitTestVisible="False"/>
+                        <TextBlock Text="Buscar usuario..." Foreground="#A0AEC0" FontSize="13" Margin="30,0,0,0"
+                                   VerticalAlignment="Center" IsHitTestVisible="False">
+                            <TextBlock.Style>
+                                <Style TargetType="TextBlock">
+                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding Text, ElementName=txtBuscarUsuario}" Value="">
+                                            <Setter Property="Visibility" Value="Visible"/>
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </TextBlock.Style>
+                        </TextBlock>
+                    </Grid>
+
                     <DataGrid x:Name="dgUsuarios" AutoGenerateColumns="False" IsReadOnly="True"
                               SelectionChanged="DgUsuarios_SelectionChanged"
                               Height="260" Background="#FFFFFF" BorderThickness="0" RowHeight="34" HeadersVisibility="Column">

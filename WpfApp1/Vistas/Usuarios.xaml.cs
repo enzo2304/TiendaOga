@@ -1,4 +1,7 @@
-﻿using System.Text.RegularExpressions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -12,6 +15,7 @@ namespace TiendaOga.Vistas
         private int? _idUsuarioSeleccionado;
         private bool _usuarioSeleccionadoActivo = true;
         private bool _sincronizandoPassword = false;
+        private List<UsuarioRow> _todosLosUsuarios = new List<UsuarioRow>();
 
         private static readonly Regex RegexSoloLetras = new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$");
 
@@ -29,7 +33,39 @@ namespace TiendaOga.Vistas
 
         private void CargarUsuarios()
         {
-            dgUsuarios.ItemsSource = UsuarioNegocio.ObtenerUsuarios();
+            _todosLosUsuarios = UsuarioNegocio.ObtenerUsuarios().ToList();
+            AplicarFiltro();
+        }
+
+        private void TxtBuscarUsuario_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            AplicarFiltro();
+        }
+
+        private void AplicarFiltro()
+        {
+            string filtro = txtBuscarUsuario?.Text?.Trim().ToLower() ?? string.Empty;
+
+            if (string.IsNullOrEmpty(filtro))
+            {
+                dgUsuarios.ItemsSource = _todosLosUsuarios;
+                return;
+            }
+
+            // Separamos la búsqueda en palabras (por si escriben "Juan Perez")
+            string[] palabras = filtro.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+            dgUsuarios.ItemsSource = _todosLosUsuarios.Where(u =>
+            {
+                // Armamos un solo texto con todos los campos del usuario
+                string textoCompleto = string.Join(" ", new[]
+                {
+            u.Nombre, u.Apellido, u.UsuarioLogin, u.Email, u.NombrePerfil
+        }).ToLower();
+
+                // Todas las palabras escritas tienen que aparecer en algún lado
+                return palabras.All(p => textoCompleto.Contains(p));
+            }).ToList();
         }
 
         private void ModoOperacion_Checked(object sender, RoutedEventArgs e)
@@ -227,7 +263,6 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            // Confirmación antes de aplicar los cambios
             var confirmacion = MessageBox.Show(
                 $"¿Estás seguro de modificar los datos del usuario \"{usuario}\"?",
                 "Confirmar modificación",
