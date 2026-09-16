@@ -91,7 +91,9 @@ namespace TiendaOga.Vistas
         private void btnReportesVentas_Click(object sender, RoutedEventArgs e)
         {
             lblTituloModulo.Text = "Reportes y Rendimiento de Ventas";
+            ContenedorPrincipal.Navigate(new ReportesVendedor());
         }
+        
 
         private void btnStockCritico_Click(object sender, RoutedEventArgs e)
         {

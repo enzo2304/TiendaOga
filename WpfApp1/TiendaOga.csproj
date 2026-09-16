@@ -190,6 +190,9 @@
     </Compile>
     <Compile Include="Entidades\Perfil.cs" />
     <Compile Include="Entidades\Usuario.cs" />
+    <Compile Include="Vistas\ReporteVendedor.xaml.cs">
+      <DependentUpon>ReporteVendedor.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vistas\Usuarios.xaml.cs">
       <DependentUpon>Usuarios.xaml</DependentUpon>
     </Compile>
@@ -220,6 +223,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Vistas\Productos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vistas\ReporteVendedor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
