@@ -33,12 +33,20 @@
 
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Nombre" Foreground="#4A5568" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                            <TextBox x:Name="txtNombre" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Padding="8,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            <TextBox x:Name="txtNombre" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1"
+                                     Padding="8,0" VerticalContentAlignment="Center" FontSize="13"
+                                     PreviewTextInput="SoloLetras_PreviewTextInput"
+                                     DataObject.Pasting="SoloLetras_Pasting"
+                                     MaxLength="100"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="Apellido" Foreground="#4A5568" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                            <TextBox x:Name="txtApellido" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Padding="8,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            <TextBox x:Name="txtApellido" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1"
+                                     Padding="8,0" VerticalContentAlignment="Center" FontSize="13"
+                                     PreviewTextInput="SoloLetras_PreviewTextInput"
+                                     DataObject.Pasting="SoloLetras_Pasting"
+                                     MaxLength="100"/>
                         </StackPanel>
                     </Grid>
 
@@ -56,7 +64,19 @@
 
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="Contraseña" Foreground="#4A5568" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                            <PasswordBox x:Name="txtPassword" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Padding="8,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            <Grid>
+                                <PasswordBox x:Name="txtPassword" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1"
+                                             Padding="8,0,32,0" VerticalContentAlignment="Center" FontSize="13"
+                                             PasswordChanged="TxtPassword_PasswordChanged"/>
+                                <TextBox x:Name="txtPasswordVisible" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1"
+                                         Padding="8,0,32,0" VerticalContentAlignment="Center" FontSize="13"
+                                         Visibility="Collapsed"
+                                         TextChanged="TxtPasswordVisible_TextChanged"/>
+                                <ToggleButton x:Name="btnMostrarPassword" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                              Width="28" Height="26" Margin="0,0,4,0" Background="Transparent" BorderThickness="0"
+                                              Content="👁" FontSize="14" Cursor="Hand"
+                                              Checked="BtnMostrarPassword_Checked" Unchecked="BtnMostrarPassword_Unchecked"/>
+                            </Grid>
                         </StackPanel>
                     </Grid>
 
@@ -98,6 +118,29 @@
                     <DataGrid x:Name="dgUsuarios" AutoGenerateColumns="False" IsReadOnly="True"
                               SelectionChanged="DgUsuarios_SelectionChanged"
                               Height="260" Background="#FFFFFF" BorderThickness="0" RowHeight="34" HeadersVisibility="Column">
+
+                        <DataGrid.RowStyle>
+                            <Style TargetType="DataGridRow">
+                                <Style.Triggers>
+                                    <!-- Fila inactiva, sin seleccionar -->
+                                    <DataTrigger Binding="{Binding Activo}" Value="False">
+                                        <Setter Property="Background" Value="#FDE2E2"/>
+                                        <Setter Property="Foreground" Value="#9B2C2C"/>
+                                    </DataTrigger>
+
+                                    <!-- Fila inactiva Y seleccionada: mantiene tono rojo, más oscuro para diferenciar -->
+                                    <MultiDataTrigger>
+                                        <MultiDataTrigger.Conditions>
+                                            <Condition Binding="{Binding Activo}" Value="False"/>
+                                            <Condition Binding="{Binding RelativeSource={RelativeSource Self}, Path=IsSelected}" Value="True"/>
+                                        </MultiDataTrigger.Conditions>
+                                        <Setter Property="Background" Value="#F5B7B1"/>
+                                        <Setter Property="Foreground" Value="#7B241C"/>
+                                    </MultiDataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </DataGrid.RowStyle>
+
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding IdUsuario}" Width="50"/>
                             <DataGridTextColumn Header="Nombre" Binding="{Binding Nombre}" Width="120"/>

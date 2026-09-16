@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
 
@@ -9,6 +11,9 @@ namespace TiendaOga.Vistas
     {
         private int? _idUsuarioSeleccionado;
         private bool _usuarioSeleccionadoActivo = true;
+        private bool _sincronizandoPassword = false;
+
+        private static readonly Regex RegexSoloLetras = new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$");
 
         public Usuarios()
         {
@@ -27,18 +32,8 @@ namespace TiendaOga.Vistas
             dgUsuarios.ItemsSource = UsuarioNegocio.ObtenerUsuarios();
         }
 
-        // ==========================================================
-        // Cambio de modo: Alta / Modificar / Dar de Baja
-        // ==========================================================
-
         private void ModoOperacion_Checked(object sender, RoutedEventArgs e)
         {
-            // Los controles todavía pueden no existir mientras se arma
-            // el XAML (InitializeComponent dispara Checked del RadioButton
-            // marcado por defecto antes de terminar de crear el resto de
-            // la pantalla). dgUsuarios está en la segunda tarjeta, así que
-            // es de los últimos controles en crearse: si todavía es null,
-            // significa que la ventana no terminó de armarse.
             if (dgUsuarios == null) return;
 
             _idUsuarioSeleccionado = null;
@@ -62,9 +57,6 @@ namespace TiendaOga.Vistas
             }
             else if (rbBaja.IsChecked == true)
             {
-                // Textos por defecto (sin selección todavía). Se ajustan
-                // en DgUsuarios_SelectionChanged según el estado real
-                // del usuario que se seleccione.
                 lblTituloFormulario.Text = "Dar de Baja / Reactivar Usuario";
                 txtAyudaModo.Text = "Seleccioná un usuario de la lista de abajo y confirmá la acción.";
                 btnGuardar.Content = "Confirmar";
@@ -78,17 +70,15 @@ namespace TiendaOga.Vistas
             txtApellido.IsEnabled = habilitado;
             txtUsuario.IsEnabled = habilitado;
             txtPassword.IsEnabled = habilitado;
+            txtPasswordVisible.IsEnabled = habilitado;
+            btnMostrarPassword.IsEnabled = habilitado;
             txtEmail.IsEnabled = habilitado;
             cmbPerfil.IsEnabled = habilitado;
         }
 
-        // ==========================================================
-        // Selección de fila -> cargar formulario (Modificar / Baja)
-        // ==========================================================
-
         private void DgUsuarios_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (rbAlta.IsChecked == true) return; // en Alta no se edita un usuario existente
+            if (rbAlta.IsChecked == true) return;
 
             var fila = dgUsuarios.SelectedItem as UsuarioRow;
             if (fila == null) return;
@@ -102,6 +92,7 @@ namespace TiendaOga.Vistas
             txtEmail.Text = fila.Email;
             cmbPerfil.SelectedValue = fila.IdPerfil;
             txtPassword.Clear();
+            txtPasswordVisible.Clear();
 
             if (rbBaja.IsChecked == true)
             {
@@ -109,11 +100,6 @@ namespace TiendaOga.Vistas
             }
         }
 
-        /// <summary>
-        /// En modo Baja, el título/ayuda/botón cambian según si el
-        /// usuario seleccionado está activo (se puede dar de baja) o
-        /// inactivo (se puede reactivar).
-        /// </summary>
         private void ActualizarTextosModoBaja()
         {
             if (_usuarioSeleccionadoActivo)
@@ -130,9 +116,56 @@ namespace TiendaOga.Vistas
             }
         }
 
-        // ==========================================================
-        // Guardar: se comporta distinto según el modo activo
-        // ==========================================================
+        private void SoloLetras_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !RegexSoloLetras.IsMatch(e.Text);
+        }
+
+        private void SoloLetras_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string textoPegado = (string)e.DataObject.GetData(typeof(string));
+                if (!RegexSoloLetras.IsMatch(textoPegado))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
+        private void TxtPassword_PasswordChanged(object sender, RoutedEventArgs e)
+        {
+            if (_sincronizandoPassword) return;
+            _sincronizandoPassword = true;
+            txtPasswordVisible.Text = txtPassword.Password;
+            _sincronizandoPassword = false;
+        }
+
+        private void TxtPasswordVisible_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (_sincronizandoPassword) return;
+            _sincronizandoPassword = true;
+            txtPassword.Password = txtPasswordVisible.Text;
+            _sincronizandoPassword = false;
+        }
+
+        private void BtnMostrarPassword_Checked(object sender, RoutedEventArgs e)
+        {
+            txtPasswordVisible.Text = txtPassword.Password;
+            txtPasswordVisible.Visibility = Visibility.Visible;
+            txtPassword.Visibility = Visibility.Collapsed;
+        }
+
+        private void BtnMostrarPassword_Unchecked(object sender, RoutedEventArgs e)
+        {
+            txtPassword.Password = txtPasswordVisible.Text;
+            txtPassword.Visibility = Visibility.Visible;
+            txtPasswordVisible.Visibility = Visibility.Collapsed;
+        }
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
@@ -184,7 +217,7 @@ namespace TiendaOga.Vistas
             string nombre = txtNombre.Text.Trim();
             string apellido = txtApellido.Text.Trim();
             string usuario = txtUsuario.Text.Trim();
-            string password = txtPassword.Password.Trim(); // vacío = no cambiar la contraseña
+            string password = txtPassword.Password.Trim();
             string email = txtEmail.Text.Trim();
             int? idPerfil = cmbPerfil.SelectedValue as int?;
 
@@ -193,6 +226,15 @@ namespace TiendaOga.Vistas
                 MessageBox.Show(mensajeError, "Datos incompletos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
+
+            // Confirmación antes de aplicar los cambios
+            var confirmacion = MessageBox.Show(
+                $"¿Estás seguro de modificar los datos del usuario \"{usuario}\"?",
+                "Confirmar modificación",
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+
+            if (confirmacion != MessageBoxResult.Yes) return;
 
             UsuarioNegocio.ModificarUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, password, email, idPerfil.Value);
 
@@ -252,6 +294,7 @@ namespace TiendaOga.Vistas
             txtApellido.Clear();
             txtUsuario.Clear();
             txtPassword.Clear();
+            txtPasswordVisible.Clear();
             txtEmail.Clear();
             cmbPerfil.SelectedIndex = -1;
         }
