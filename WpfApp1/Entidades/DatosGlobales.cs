@@ -20,9 +20,13 @@ namespace TiendaOga.Entidades
         public string Dni { get; set; }
         public string NombreCompleto { get; set; }
         public string Telefono { get; set; }
+        public string TipoCliente { get; set; } = "Consumidor Final";
+        public string TipoDocumento { get; set; } = "DNI";
+        public bool Activo { get; set; } = true;
         public int CantidadCompras => HistorialCompras.Count;
         public List<CompraCliente> HistorialCompras { get; set; } = new List<CompraCliente>();
     }
+
 
     public static class DatosGlobales
     {

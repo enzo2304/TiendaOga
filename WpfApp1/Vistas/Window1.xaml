@@ -89,6 +89,7 @@
                         <Button x:Name="btnUsuarios" Click="btnUsuarios_Click" Content="Usuarios y Permisos" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnReportesVentas" Click="btnReportesVentas_Click" Content="Reportes del vendedor" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnStockCritico" Click="btnStockCritico_Click" Content="Reporte del adminitrador" Style="{StaticResource BotonNavegacion}"/>
+                        <Button x:Name="btnStockBackup" Click="btnStockCritico_Click" Content="Backup" Style="{StaticResource BotonNavegacion}"/>
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>

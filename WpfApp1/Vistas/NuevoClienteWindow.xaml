@@ -1,0 +1,120 @@
+﻿<Window x:Class="TiendaOga.Vistas.NuevoClienteWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Nuevo Cliente"
+        Width="420"
+        SizeToContent="Height"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        FontFamily="Segoe UI"
+        Background="#F4F5F7">
+
+    <Window.Resources>
+        <SolidColorBrush x:Key="AccentBrush" Color="#E8792D"/>
+        <SolidColorBrush x:Key="AccentBrushHover" Color="#D96C22"/>
+
+        <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Foreground" Value="#4A4A4A"/>
+            <Setter Property="Margin" Value="0,0,0,4"/>
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Padding" Value="8,5"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Height" Value="36"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="4">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{StaticResource AccentBrushHover}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="SecondaryButton" TargetType="Button" BasedOn="{StaticResource PrimaryButton}">
+            <Setter Property="Background" Value="#E0E0E0"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#CFCFCF"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="24">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <TextBlock Grid.Row="0" Text="Datos del Nuevo Cliente" FontSize="16" FontWeight="SemiBold" Foreground="#333333" Margin="0,0,0,18"/>
+
+        <StackPanel Grid.Row="1">
+            <TextBlock Text="Tipo de Cliente:" Style="{StaticResource FieldLabelStyle}"/>
+            <ComboBox x:Name="cmbTipoCliente" SelectedIndex="0">
+                <ComboBoxItem Content="Consumidor Final"/>
+                <ComboBoxItem Content="Responsable Inscripto"/>
+                <ComboBoxItem Content="Monotributista"/>
+            </ComboBox>
+
+            <TextBlock Text="Nombre / Razón Social:" Style="{StaticResource FieldLabelStyle}"/>
+            <TextBox x:Name="txtNombre"/>
+
+            <TextBlock Text="Tipo de Documento:" Style="{StaticResource FieldLabelStyle}"/>
+            <ComboBox x:Name="cmbTipoDocumento" SelectedIndex="0">
+                <ComboBoxItem Content="DNI"/>
+                <ComboBoxItem Content="CUIT"/>
+                <ComboBoxItem Content="CUIL"/>
+                <ComboBoxItem Content="Pasaporte"/>
+            </ComboBox>
+
+            <TextBlock Text="Nro. Documento:" Style="{StaticResource FieldLabelStyle}"/>
+            <TextBox x:Name="txtNroDocumento"/>
+
+            <TextBlock Text="Teléfono:" Style="{StaticResource FieldLabelStyle}"/>
+            <TextBox x:Name="txtTelefono" Margin="0,0,0,14"/>
+
+            <CheckBox x:Name="chkActivo" Content="Cliente Activo" IsChecked="True" FontSize="13" Foreground="#4A4A4A" Margin="0,4,0,10"/>
+        </StackPanel>
+
+        <Grid Grid.Row="2" Margin="0,18,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Column="0" Content="Cancelar" Style="{StaticResource SecondaryButton}" Click="BtnCancelar_Click"/>
+            <Button Grid.Column="2" Content="Aceptar" Style="{StaticResource PrimaryButton}" Click="BtnAceptar_Click"/>
+        </Grid>
+    </Grid>
+</Window>

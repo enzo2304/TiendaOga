@@ -139,18 +139,22 @@
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Buscador -->
+        <!-- Buscador + botón nuevo cliente -->
         <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="0,0,0,16">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="12"/>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="12"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                <StackPanel Grid.Column="0" Margin="0,0,0,0">
                     <TextBlock Text="Buscar Cliente (por Nombre o DNI):" Style="{StaticResource FieldLabelStyle}"/>
                     <TextBox x:Name="txtBuscar" Style="{StaticResource FlatTextBoxFocusable}" TextChanged="TxtBuscar_TextChanged"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="Limpiar" VerticalAlignment="Bottom" Height="34" Width="90" Style="{StaticResource PrimaryButton}" Click="BtnLimpiar_Click"/>
+                <Button Grid.Column="2" Content="+ Nuevo Cliente" VerticalAlignment="Bottom" Height="34" Width="140" Style="{StaticResource PrimaryButton}" Click="BtnNuevoCliente_Click"/>
+                <Button Grid.Column="4" Content="Limpiar" VerticalAlignment="Bottom" Height="34" Width="90" Style="{StaticResource PrimaryButton}" Click="BtnLimpiar_Click"/>
             </Grid>
         </Border>
 

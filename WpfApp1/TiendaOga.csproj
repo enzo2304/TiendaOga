@@ -185,6 +185,9 @@
     <Compile Include="Vistas\EntradaStock.xaml.cs">
       <DependentUpon>EntradaStock.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vistas\NuevoClienteWindow.xaml.cs">
+      <DependentUpon>NuevoClienteWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vistas\Productos.xaml.cs">
       <DependentUpon>Productos.xaml</DependentUpon>
     </Compile>
@@ -222,6 +225,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Vistas\NuevoClienteWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Vistas\Productos.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

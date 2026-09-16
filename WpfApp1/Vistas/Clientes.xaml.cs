@@ -61,5 +61,21 @@ namespace TiendaOga.Vistas
             txtBuscar.Clear();
             dgClientes.ItemsSource = DatosGlobales.Clientes;
         }
+
+        private void BtnNuevoCliente_Click(object sender, RoutedEventArgs e)
+        {
+            var ventana = new NuevoClienteWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            bool? resultado = ventana.ShowDialog();
+
+            if (resultado == true && ventana.ClienteCreado != null)
+            {
+                DatosGlobales.Clientes.Insert(0, ventana.ClienteCreado);
+                CargarListaClientes();
+            }
+        }
     }
 }
