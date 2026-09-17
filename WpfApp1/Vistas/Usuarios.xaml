@@ -173,6 +173,9 @@
                             <DataGridTextColumn Header="Activo" Binding="{Binding Activo}" Width="70"/>
                         </DataGrid.Columns>
                     </DataGrid>
+
+                    <!-- Paginación -->
+                    <StackPanel x:Name="pnlPaginacion" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0"/>
                 </StackPanel>
             </Border>
         </StackPanel>

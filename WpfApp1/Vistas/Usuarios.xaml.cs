@@ -5,6 +5,8 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
+using Microsoft.Data.SqlClient;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
 
@@ -16,6 +18,10 @@ namespace TiendaOga.Vistas
         private bool _usuarioSeleccionadoActivo = true;
         private bool _sincronizandoPassword = false;
         private List<UsuarioRow> _todosLosUsuarios = new List<UsuarioRow>();
+        private List<UsuarioRow> _usuariosFiltrados = new List<UsuarioRow>();
+
+        private const int TAMANIO_PAGINA = 10;
+        private int _paginaActual = 1;
 
         private static readonly Regex RegexSoloLetras = new Regex(@"^[a-zA-ZáéíóúÁÉÍÓÚñÑüÜ\s]+$");
 
@@ -39,6 +45,7 @@ namespace TiendaOga.Vistas
 
         private void TxtBuscarUsuario_TextChanged(object sender, TextChangedEventArgs e)
         {
+            _paginaActual = 1; // Al buscar, siempre volvemos a la primera página
             AplicarFiltro();
         }
 
@@ -48,21 +55,158 @@ namespace TiendaOga.Vistas
 
             if (string.IsNullOrEmpty(filtro))
             {
-                dgUsuarios.ItemsSource = _todosLosUsuarios;
-                return;
+                _usuariosFiltrados = _todosLosUsuarios;
+            }
+            else
+            {
+                string[] palabras = filtro.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+                _usuariosFiltrados = _todosLosUsuarios.Where(u =>
+                {
+                    string textoCompleto = string.Join(" ", new[]
+                    {
+                        u.Nombre, u.Apellido, u.UsuarioLogin, u.Email, u.NombrePerfil
+                    }).ToLower();
+
+                    return palabras.All(p => textoCompleto.Contains(p));
+                }).ToList();
             }
 
-            string[] palabras = filtro.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            RenderizarPagina();
+        }
 
-            dgUsuarios.ItemsSource = _todosLosUsuarios.Where(u =>
+        private void RenderizarPagina()
+        {
+            int totalPaginas = Math.Max(1, (int)Math.Ceiling(_usuariosFiltrados.Count / (double)TAMANIO_PAGINA));
+
+            if (_paginaActual > totalPaginas) _paginaActual = totalPaginas;
+            if (_paginaActual < 1) _paginaActual = 1;
+
+            dgUsuarios.ItemsSource = _usuariosFiltrados
+                .Skip((_paginaActual - 1) * TAMANIO_PAGINA)
+                .Take(TAMANIO_PAGINA)
+                .ToList();
+
+            RenderizarPaginacion(totalPaginas);
+        }
+
+        private void RenderizarPaginacion(int totalPaginas)
+        {
+            pnlPaginacion.Children.Clear();
+
+            // Si hay 10 o menos usuarios en total, no mostramos nada de paginación
+            if (_usuariosFiltrados.Count <= TAMANIO_PAGINA)
+                return;
+
+            pnlPaginacion.Children.Add(CrearBotonPaginacion("‹ Previo", _paginaActual > 1, () =>
             {
-                string textoCompleto = string.Join(" ", new[]
-                {
-                    u.Nombre, u.Apellido, u.UsuarioLogin, u.Email, u.NombrePerfil
-                }).ToLower();
+                _paginaActual--;
+                RenderizarPagina();
+            }));
 
-                return palabras.All(p => textoCompleto.Contains(p));
-            }).ToList();
+            // Números de página, con "..." si hay muchas
+            var numerosAMostrar = ObtenerNumerosDePagina(_paginaActual, totalPaginas);
+
+            foreach (var numero in numerosAMostrar)
+            {
+                if (numero == null)
+                {
+                    var puntos = new TextBlock
+                    {
+                        Text = "...",
+                        VerticalAlignment = VerticalAlignment.Center,
+                        Margin = new Thickness(6, 0, 6, 0),
+                        Foreground = (Brush)new BrushConverter().ConvertFrom("#718096")
+                    };
+                    pnlPaginacion.Children.Add(puntos);
+                }
+                else
+                {
+                    int pagina = numero.Value;
+                    bool esActual = pagina == _paginaActual;
+
+                    var boton = new Button
+                    {
+                        Content = pagina.ToString(),
+                        Width = 32,
+                        Height = 32,
+                        Margin = new Thickness(2, 0, 2, 0),
+                        Background = esActual ? (Brush)new BrushConverter().ConvertFrom("#FF6B00") : Brushes.White,
+                        Foreground = esActual ? Brushes.White : (Brush)new BrushConverter().ConvertFrom("#4A5568"),
+                        BorderBrush = (Brush)new BrushConverter().ConvertFrom("#CBD5E0"),
+                        BorderThickness = new Thickness(1),
+                        FontWeight = esActual ? FontWeights.Bold : FontWeights.Normal,
+                        Cursor = Cursors.Hand,
+                        IsEnabled = !esActual
+                    };
+
+                    boton.Click += (s, e) =>
+                    {
+                        _paginaActual = pagina;
+                        RenderizarPagina();
+                    };
+
+                    pnlPaginacion.Children.Add(boton);
+                }
+            }
+
+            pnlPaginacion.Children.Add(CrearBotonPaginacion("Siguiente ›", _paginaActual < totalPaginas, () =>
+            {
+                _paginaActual++;
+                RenderizarPagina();
+            }));
+        }
+
+        private Button CrearBotonPaginacion(string texto, bool habilitado, Action alHacerClick)
+        {
+            var boton = new Button
+            {
+                Content = texto,
+                Height = 32,
+                Padding = new Thickness(10, 0, 10, 0),
+                Margin = new Thickness(2, 0, 2, 0),
+                Background = Brushes.White,
+                Foreground = (Brush)new BrushConverter().ConvertFrom("#4A5568"),
+                BorderBrush = (Brush)new BrushConverter().ConvertFrom("#CBD5E0"),
+                BorderThickness = new Thickness(1),
+                IsEnabled = habilitado,
+                Cursor = habilitado ? Cursors.Hand : Cursors.Arrow
+            };
+
+            boton.Click += (s, e) => alHacerClick();
+
+            return boton;
+        }
+
+        // Arma la lista de números a mostrar, con null representando "..."
+        // Ejemplo con 7 páginas y página actual 1: [1, 2, 3, null, 7]
+        private List<int?> ObtenerNumerosDePagina(int paginaActual, int totalPaginas)
+        {
+            var resultado = new List<int?>();
+
+            if (totalPaginas <= 5)
+            {
+                for (int i = 1; i <= totalPaginas; i++) resultado.Add(i);
+                return resultado;
+            }
+
+            resultado.Add(1);
+
+            if (paginaActual > 3)
+                resultado.Add(null);
+
+            int inicio = Math.Max(2, paginaActual - 1);
+            int fin = Math.Min(totalPaginas - 1, paginaActual + 1);
+
+            for (int i = inicio; i <= fin; i++)
+                resultado.Add(i);
+
+            if (paginaActual < totalPaginas - 2)
+                resultado.Add(null);
+
+            resultado.Add(totalPaginas);
+
+            return resultado;
         }
 
         private void ModoOperacion_Checked(object sender, RoutedEventArgs e)
@@ -225,14 +369,21 @@ namespace TiendaOga.Vistas
             string email = txtEmail.Text.Trim();
             int? idPerfil = cmbPerfil.SelectedValue as int?;
 
-            // Se pasa email a la validación de negocio
             if (!UsuarioNegocio.ValidarAltaUsuario(nombre, apellido, usuario, password, email, idPerfil, out string mensajeError))
             {
                 MessageBox.Show(mensajeError, "Datos incompletos o inválidos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            UsuarioNegocio.AltaUsuario(nombre, apellido, usuario, password, email, idPerfil.Value);
+            try
+            {
+                UsuarioNegocio.AltaUsuario(nombre, apellido, usuario, password, email, idPerfil.Value);
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                MessageBox.Show("Ya existe un usuario con ese nombre de usuario o correo electrónico.", "Dato duplicado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             MessageBox.Show("Usuario registrado correctamente.", "Alta exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -255,8 +406,7 @@ namespace TiendaOga.Vistas
             string email = txtEmail.Text.Trim();
             int? idPerfil = cmbPerfil.SelectedValue as int?;
 
-            // Se pasa email a la validación de modificación
-            if (!UsuarioNegocio.ValidarModificacionUsuario(nombre, apellido, usuario, email, idPerfil, out string mensajeError))
+            if (!UsuarioNegocio.ValidarModificacionUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, email, idPerfil, out string mensajeError))
             {
                 MessageBox.Show(mensajeError, "Datos incompletos o inválidos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
@@ -270,7 +420,15 @@ namespace TiendaOga.Vistas
 
             if (confirmacion != MessageBoxResult.Yes) return;
 
-            UsuarioNegocio.ModificarUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, password, email, idPerfil.Value);
+            try
+            {
+                UsuarioNegocio.ModificarUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, password, email, idPerfil.Value);
+            }
+            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+            {
+                MessageBox.Show("Ya existe otro usuario con ese nombre de usuario o correo electrónico.", "Dato duplicado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             MessageBox.Show("Usuario modificado correctamente.", "Modificación exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
@@ -288,6 +446,12 @@ namespace TiendaOga.Vistas
             }
 
             bool vaAReactivar = !_usuarioSeleccionadoActivo;
+
+            if (!vaAReactivar && !UsuarioNegocio.ValidarBajaUsuario(_idUsuarioSeleccionado.Value, SesionActual.IdUsuario, out string mensajeErrorBaja))
+            {
+                MessageBox.Show(mensajeErrorBaja, "Operación no permitida", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
             string pregunta = vaAReactivar
                 ? $"¿Estás seguro de reactivar al usuario \"{txtUsuario.Text}\"?"

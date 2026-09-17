@@ -145,6 +145,24 @@ namespace TiendaOga.Datos
             }
         }
 
+        public bool ExisteEmail(string email, int? idUsuarioExcluir = null)
+        {
+            using (SqlConnection conn = conexionBD.ObtenerConexion())
+            using (SqlCommand cmd = new SqlCommand("dbo.sp_Existe_Email", conn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.Add("@email", SqlDbType.VarChar, 100).Value = email;
+
+                SqlParameter pIdExcluir = new SqlParameter("@id_usuario_excluir", SqlDbType.Int);
+                pIdExcluir.Value = idUsuarioExcluir.HasValue ? (object)idUsuarioExcluir.Value : DBNull.Value;
+                cmd.Parameters.Add(pIdExcluir);
+
+                conn.Open();
+                int cantidad = (int)cmd.ExecuteScalar();
+                return cantidad > 0;
+            }
+        }
+
         public void ReactivarUsuario(int idUsuario)
         {
             EjecutarABMUsuario('R', idUsuario: idUsuario);

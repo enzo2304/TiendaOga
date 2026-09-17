@@ -177,6 +177,7 @@
     <Compile Include="Negocio\PermisosNegocio.cs" />
     <Compile Include="Negocio\ProductoNegocio.cs" />
     <Compile Include="Negocio\SeguridadNegocio.cs" />
+    <Compile Include="Negocio\SesionActual.cs" />
     <Compile Include="Negocio\UsuarioNegocio.cs" />
     <Compile Include="Negocio\VentaNegocio.cs" />
     <Compile Include="Vistas\Clientes.xaml.cs">

@@ -55,11 +55,18 @@ namespace TiendaOga.Vistas
 
                                 if (activo)
                                 {
+                                    int idUsuario = reader.GetInt32(reader.GetOrdinal("id_usuario"));
                                     string nombre = reader.GetString(reader.GetOrdinal("nombre"));
                                     string apellido = reader.GetString(reader.GetOrdinal("apellido"));
                                     string rol = reader.GetString(reader.GetOrdinal("nombre_perfil"));
 
                                     string nombreCompleto = $"{nombre} {apellido}";
+
+                                    // Guardamos la sesión antes de abrir el dashboard,
+                                    // para que cualquier vista pueda saber quién está logueado.
+                                    SesionActual.IdUsuario = idUsuario;
+                                    SesionActual.NombreCompleto = nombreCompleto;
+                                    SesionActual.Rol = rol;
 
                                     Window1 dashboard = new Window1(nombreCompleto, rol);
                                     dashboard.Show();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using TiendaOga.Datos;
 using TiendaOga.Entidades;
@@ -13,6 +14,8 @@ namespace TiendaOga.Negocio
     public static class UsuarioNegocio
     {
         private static readonly UsuarioDatos usuarioDatos = new UsuarioDatos();
+
+        private const string PERFIL_ADMINISTRADOR = "Administrador";
 
         public static List<PerfilItem> ObtenerPerfiles()
         {
@@ -99,6 +102,13 @@ namespace TiendaOga.Negocio
                 return false;
             }
 
+            // 8. Validar duplicidad de Email
+            if (usuarioDatos.ExisteEmail(email.Trim().ToLower()))
+            {
+                mensajeError = "Ya existe un usuario registrado con ese correo electrónico.";
+                return false;
+            }
+
             mensajeError = string.Empty;
             return true;
         }
@@ -119,7 +129,7 @@ namespace TiendaOga.Negocio
             usuarioDatos.GuardarUsuario(nuevoUsuario);
         }
 
-        public static bool ValidarModificacionUsuario(string nombre, string apellido, string usuario, string email, int? idPerfil, out string mensajeError)
+        public static bool ValidarModificacionUsuario(int idUsuario, string nombre, string apellido, string usuario, string email, int? idPerfil, out string mensajeError)
         {
             if (string.IsNullOrWhiteSpace(nombre))
             {
@@ -163,6 +173,36 @@ namespace TiendaOga.Negocio
                 return false;
             }
 
+            // Validar duplicidad de Email, excluyendo al propio usuario que se está editando
+            if (usuarioDatos.ExisteEmail(email.Trim().ToLower(), idUsuario))
+            {
+                mensajeError = "Ya existe otro usuario registrado con ese correo electrónico.";
+                return false;
+            }
+
+            // Si se le está sacando el rol de Administrador a alguien, verificar
+            // que no sea el último administrador activo del sistema.
+            var usuarios = usuarioDatos.ObtenerUsuarios();
+            var usuarioActual = usuarios.FirstOrDefault(u => u.IdUsuario == idUsuario);
+
+            if (usuarioActual != null
+                && usuarioActual.NombrePerfil == PERFIL_ADMINISTRADOR
+                && usuarioActual.Activo)
+            {
+                var perfilNuevo = usuarioDatos.ObtenerPerfiles().FirstOrDefault(p => p.IdPerfil == idPerfil);
+                bool dejaDeSerAdmin = perfilNuevo != null && perfilNuevo.NombrePerfil != PERFIL_ADMINISTRADOR;
+
+                if (dejaDeSerAdmin)
+                {
+                    int adminsActivos = usuarios.Count(u => u.NombrePerfil == PERFIL_ADMINISTRADOR && u.Activo);
+                    if (adminsActivos <= 1)
+                    {
+                        mensajeError = "No se puede quitar el rol de Administrador: debe existir al menos un administrador activo en el sistema.";
+                        return false;
+                    }
+                }
+            }
+
             mensajeError = string.Empty;
             return true;
         }
@@ -181,6 +221,39 @@ namespace TiendaOga.Negocio
                 usuario: usuario.Trim(),
                 password: hashONulo,
                 email: email.Trim().ToLower());
+        }
+
+        /// <summary>
+        /// Reglas de negocio para dar de baja un usuario:
+        /// 1) No podés darte de baja a vos mismo mientras estás logueado.
+        /// 2) No puede quedar el sistema sin al menos un administrador activo.
+        /// </summary>
+        public static bool ValidarBajaUsuario(int idUsuarioADarDeBaja, int idUsuarioLogueado, out string mensajeError)
+        {
+            if (idUsuarioADarDeBaja == idUsuarioLogueado)
+            {
+                mensajeError = "No se puede realizar esta accion.";
+                return false;
+            }
+
+            var usuarios = usuarioDatos.ObtenerUsuarios();
+            var usuarioObjetivo = usuarios.FirstOrDefault(u => u.IdUsuario == idUsuarioADarDeBaja);
+
+            if (usuarioObjetivo != null
+                && usuarioObjetivo.NombrePerfil == PERFIL_ADMINISTRADOR
+                && usuarioObjetivo.Activo)
+            {
+                int adminsActivos = usuarios.Count(u => u.NombrePerfil == PERFIL_ADMINISTRADOR && u.Activo);
+
+                if (adminsActivos <= 1)
+                {
+                    mensajeError = "No se puede dar de baja: debe existir al menos un administrador activo en el sistema.";
+                    return false;
+                }
+            }
+
+            mensajeError = string.Empty;
+            return true;
         }
 
         public static void DarBajaUsuario(int idUsuario)
