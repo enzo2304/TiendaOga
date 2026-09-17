@@ -9,31 +9,21 @@
       FontFamily="Segoe UI"
       d:DesignHeight="800" d:DesignWidth="1200">
 
-    <!--=====================================================
-        RECURSOS: Paleta de colores, estilos flat reutilizables
-    ======================================================-->
     <Page.Resources>
-
         <!-- ===== Paleta de colores ===== -->
         <SolidColorBrush x:Key="BackgroundBrush" Color="#F4F5F7"/>
         <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
         <SolidColorBrush x:Key="BorderBrush" Color="#E0E0E0"/>
         <SolidColorBrush x:Key="TextPrimaryBrush" Color="#333333"/>
-        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#4A4A4A"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#666666"/>
         <SolidColorBrush x:Key="AccentBrush" Color="#E8792D"/>
+        <!-- Naranja OGA -->
         <SolidColorBrush x:Key="AccentBrushHover" Color="#D96C22"/>
-        <SolidColorBrush x:Key="RowAltBrush" Color="#FAFAFA"/>
-        <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="#FBFBFC"/>
 
-        <!-- ===== Efecto de sombra sutil para las tarjetas ===== -->
-        <DropShadowEffect x:Key="CardShadow"
-                          Color="#000000"
-                          Opacity="0.06"
-                          BlurRadius="12"
-                          ShadowDepth="2"
-                          Direction="270"/>
+        <!-- ===== Efecto de sombra sutil ===== -->
+        <DropShadowEffect x:Key="CardShadow" Color="#000000" Opacity="0.06" BlurRadius="12" ShadowDepth="2" Direction="270"/>
 
-        <!-- ===== Estilo base: Tarjeta (Border blanco redondeado) ===== -->
+        <!-- ===== Estilos Base ===== -->
         <Style x:Key="CardStyle" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
             <Setter Property="CornerRadius" Value="8"/>
@@ -43,22 +33,13 @@
             <Setter Property="Padding" Value="20"/>
         </Style>
 
-        <!-- ===== Estilo: Título de sección dentro de una tarjeta ===== -->
-        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="14"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-            <Setter Property="Margin" Value="0,0,0,12"/>
-        </Style>
-
-        <!-- ===== Estilo: Label de campo ===== -->
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
             <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
             <Setter Property="Margin" Value="0,0,0,4"/>
         </Style>
 
-        <!-- ===== Estilo Flat: TextBox (Texto completo sin recorte) ===== -->
+        <!-- TextBox y ComboBox -->
         <Style x:Key="FlatTextBox" TargetType="TextBox">
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
@@ -68,35 +49,8 @@
             <Setter Property="FontSize" Value="13"/>
             <Setter Property="Height" Value="34"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="TextBox">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4">
-                            <ScrollViewer x:Name="PART_ContentHost"
-                                          Focusable="False"
-                                          HorizontalScrollBarVisibility="Hidden"
-                                          VerticalScrollBarVisibility="Hidden"
-                                          Margin="{TemplateBinding Padding}"
-                                          VerticalAlignment="Stretch"/>
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
 
-        <!-- Trigger de foco con borde naranja -->
-        <Style x:Key="FlatTextBoxFocusable" TargetType="TextBox" BasedOn="{StaticResource FlatTextBox}">
-            <Style.Triggers>
-                <Trigger Property="IsFocused" Value="True">
-                    <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- ===== Estilo Flat: ComboBox ===== -->
         <Style x:Key="FlatComboBox" TargetType="ComboBox">
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
@@ -107,7 +61,7 @@
             <Setter Property="FontSize" Value="13"/>
         </Style>
 
-        <!-- ===== Botón: Primario (Naranja - Guardar) ===== -->
+        <!-- Botones -->
         <Style x:Key="PrimaryButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
             <Setter Property="Foreground" Value="White"/>
@@ -119,315 +73,183 @@
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                CornerRadius="4"
-                                Padding="{TemplateBinding Padding}">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
                             <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
                         </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="{StaticResource AccentBrushHover}"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style>
 
-        <!-- ===== Botón: Fantasma / Ghost (Cancelar) ===== -->
         <Style x:Key="GhostButton" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="Foreground" Value="{StaticResource AccentBrush}"/>
-            <Setter Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
-            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
+            <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Padding" Value="18,9"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}"
-                                BorderBrush="{TemplateBinding BorderBrush}"
-                                BorderThickness="{TemplateBinding BorderThickness}"
-                                CornerRadius="4"
-                                Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#FFF6EF"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
         </Style>
 
-        <!-- ===== Botón: Icono pequeño ===== -->
         <Style x:Key="IconButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
-            <Setter Property="Padding" Value="6"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate TargetType="Button">
-                        <Border Background="{TemplateBinding Background}" CornerRadius="4" Padding="{TemplateBinding Padding}">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                        </Border>
-                        <ControlTemplate.Triggers>
-                            <Trigger Property="IsMouseOver" Value="True">
-                                <Setter Property="Background" Value="#F0F0F0"/>
-                            </Trigger>
-                        </ControlTemplate.Triggers>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
+            <Setter Property="Padding" Value="2"/>
         </Style>
-
-        <!-- ===== DataGrid: Encabezado ===== -->
-        <Style x:Key="FlatColumnHeader" TargetType="DataGridColumnHeader">
-            <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}"/>
-            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
-            <Setter Property="FontWeight" Value="Bold"/>
-            <Setter Property="FontSize" Value="12"/>
-            <Setter Property="Padding" Value="10,10"/>
-            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
-            <Setter Property="BorderThickness" Value="0,0,0,1"/>
-            <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        </Style>
-
-        <!-- ===== DataGrid: Fila con alternancia ===== -->
-        <Style x:Key="FlatRowStyle" TargetType="DataGridRow">
-            <Setter Property="Background" Value="White"/>
-            <Style.Triggers>
-                <Trigger Property="AlternationIndex" Value="1">
-                    <Setter Property="Background" Value="{StaticResource RowAltBrush}"/>
-                </Trigger>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#FFF3E9"/>
-                </Trigger>
-            </Style.Triggers>
-        </Style>
-
-        <!-- ===== RadioButton estilo chip ===== -->
-        <Style x:Key="TipoRadioStyle" TargetType="RadioButton">
-            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Margin" Value="0,0,20,0"/>
-            <Setter Property="VerticalContentAlignment" Value="Center"/>
-        </Style>
-
     </Page.Resources>
 
-    <!--=====================================================
-        LAYOUT PRINCIPAL
-    ======================================================-->
-    <Grid Margin="20">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
+    <!-- CONTENEDOR PRINCIPAL -->
+    <Grid>
 
-        <!--=================================================
-            SECCIÓN SUPERIOR: FILTROS Y BÚSQUEDA
-        ==================================================-->
-        <Border Grid.Row="0" Style="{StaticResource CardStyle}" Margin="0,0,0,16">
-            <Grid>
+        <!-- =========================================================
+             CAPA 1: VISTA PRINCIPAL DE DATOS (Fondo)
+        ========================================================== -->
+        <Grid Margin="24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <!-- Título y Botón Nuevo -->
+                <RowDefinition Height="Auto"/>
+                <!-- Filtros -->
+                <RowDefinition Height="*"/>
+                <!-- Tabla -->
+            </Grid.RowDefinitions>
+
+            <!-- Encabezado de la vista -->
+            <Grid Grid.Row="0" Margin="0,0,0,24">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="Productos y Rubros" FontSize="24" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <TextBlock Text="Alta, baja y modificación del catálogo" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- BOTÓN PARA ABRIR EL MODAL DE ALTA -->
+                <Button Grid.Column="1" Content="+ Nuevo Producto" Style="{StaticResource PrimaryButton}" Click="BtnNuevoProducto_Click"/>
+            </Grid>
+
+            <!-- Filtros -->
+            <Grid Grid.Row="1" Margin="0,0,0,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="250"/>
+                    <ColumnDefinition Width="300"/>
+                    <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
 
-                <!-- Filtro por categoría -->
-                <StackPanel Grid.Column="0" Margin="0,0,20,0">
-                    <TextBlock Text="Filtrar por Categoría:" Style="{StaticResource FieldLabelStyle}"/>
-                    <ComboBox x:Name="cmbFiltroCategoria"
-                              Style="{StaticResource FlatComboBox}"
-                              HorizontalAlignment="Stretch"
-                              DisplayMemberPath="Nombre"
-                              SelectedValuePath="IdCategoria"/>
+                <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                    <TextBlock Text="Filtrar por rubro:" Style="{StaticResource FieldLabelStyle}"/>
+                    <ComboBox x:Name="cmbFiltroCategoria" Style="{StaticResource FlatComboBox}" DisplayMemberPath="Nombre" SelectedValuePath="IdCategoria"/>
                 </StackPanel>
 
-                <!-- Búsqueda por ID/Nombre -->
-                <StackPanel Grid.Column="1">
-                    <TextBlock Text="Buscar por ID/Nombre:" Style="{StaticResource FieldLabelStyle}"/>
-                    <Grid>
+                <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                    <TextBlock Text="Buscar producto:" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBox x:Name="txtBusqueda" Style="{StaticResource FlatTextBox}" />
+                </StackPanel>
+
+                <Button Grid.Column="2" Content="Buscar" Style="{StaticResource PrimaryButton}" VerticalAlignment="Bottom" Height="34" Padding="16,0" Click="BtnBuscar_Click"/>
+            </Grid>
+
+            <!-- Tabla de Datos (Estilo Clásico) -->
+            <DataGrid x:Name="dgProductos" Grid.Row="2"
+                      AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                      HeadersVisibility="Column" SelectionMode="Single" SelectionChanged="DgProductos_SelectionChanged"
+                      Background="White" FontSize="13" RowHeight="32"
+                      GridLinesVisibility="All" HorizontalGridLinesBrush="#E0E0E0" VerticalGridLinesBrush="#E0E0E0"
+                      BorderBrush="#CCCCCC" BorderThickness="1">
+
+                <DataGrid.Columns>
+                    <!-- Columnas de datos -->
+                    <DataGridTextColumn Header="ID" Binding="{Binding IdProducto}" Width="80"/>
+                    <DataGridTextColumn Header="Nombre" Binding="{Binding NombreProducto}" Width="*"/>
+                    <DataGridTextColumn Header="Rubro" Binding="{Binding NombreCategoria}" Width="150"/>
+                    <DataGridTextColumn Header="Costo" Binding="{Binding PrecioCosto, StringFormat={}{0:C}}" Width="120"/>
+                    <DataGridTextColumn Header="Venta" Binding="{Binding PrecioVentas, StringFormat={}{0:C}}" Width="120"/>
+                    <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
+
+                    <!-- Columna Estado Visual -->
+                    <DataGridTemplateColumn Header="Estado" Width="80">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="Activo" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+
+                    <!-- Acciones: Editar y Eliminar -->
+                    <DataGridTemplateColumn Header="Acciones" Width="90">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <Button Style="{StaticResource IconButtonStyle}" Click="BtnEditar_Click" Tag="{Binding IdProducto}" Margin="0,0,8,0" ToolTip="Editar">
+                                        <TextBlock Text="✏️" FontSize="14"/>
+                                    </Button>
+                                    <Button Style="{StaticResource IconButtonStyle}" Click="BtnEliminar_Click" Tag="{Binding IdProducto}" ToolTip="Eliminar">
+                                        <TextBlock Text="🗑️" FontSize="14"/>
+                                    </Button>
+                                </StackPanel>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <!-- =========================================================
+             CAPA 2: MODAL DE FORMULARIO (Oculto por defecto)
+        ========================================================== -->
+        <Grid x:Name="ModalFormulario" Background="#66000000" Visibility="Collapsed" Panel.ZIndex="100">
+            <!-- Tarjeta del formulario centrada -->
+            <Border Style="{StaticResource CardStyle}" Width="850" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="32">
+                <StackPanel>
+
+                    <TextBlock Text="Datos del Producto" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,24"/>
+
+                    <Grid Margin="0,0,0,16">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="0.5*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="1*"/>
+                            <ColumnDefinition Width="0.8*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="txtBusqueda"
-                                 Grid.Column="0"
-                                 Style="{StaticResource FlatTextBoxFocusable}"
-                                 Margin="0,0,10,0"/>
-                        <Button Grid.Column="1"
-                                Content="🔍 Buscar"
-                                Style="{StaticResource PrimaryButton}"
-                                Click="BtnBuscar_Click"/>
+
+                        <StackPanel Grid.Column="0" Margin="0,0,12,0">
+                            <TextBlock Text="ID" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="txtId" Style="{StaticResource FlatTextBox}" IsReadOnly="True" Background="#F7F7F7"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="1" Margin="0,0,12,0">
+                            <TextBlock Text="Nombre producto" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="txtNombre" Style="{StaticResource FlatTextBox}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="2" Margin="0,0,12,0">
+                            <TextBlock Text="Precio Costo" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="txtPrecioCosto" Style="{StaticResource FlatTextBox}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="3" Margin="0,0,12,0">
+                            <TextBlock Text="Precio Venta" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="txtPrecioVenta" Style="{StaticResource FlatTextBox}"/>
+                        </StackPanel>
+
+                        <StackPanel Grid.Column="4">
+                            <TextBlock Text="Stock" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="txtStock" Style="{StaticResource FlatTextBox}"/>
+                        </StackPanel>
                     </Grid>
-                </StackPanel>
-            </Grid>
-        </Border>
 
-        <!--=================================================
-            SECCIÓN CENTRAL: GRILLA DE PRODUCTOS
-        ==================================================-->
-        <Border Grid.Row="1" Style="{StaticResource CardStyle}" Margin="0,0,0,16">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="*"/>
-                </Grid.RowDefinitions>
-
-                <TextBlock Grid.Row="0" Text="Listado de Productos" Style="{StaticResource SectionTitleStyle}"/>
-
-                <DataGrid x:Name="dgProductos"
-                          Grid.Row="1"
-                          AutoGenerateColumns="False"
-                          CanUserAddRows="False"
-                          CanUserDeleteRows="False"
-                          IsReadOnly="True"
-                          HeadersVisibility="Column"
-                          GridLinesVisibility="Horizontal"
-                          HorizontalGridLinesBrush="#EFEFEF"
-                          RowHeaderWidth="0"
-                          BorderThickness="0"
-                          Background="White"
-                          RowBackground="White"
-                          AlternatingRowBackground="{StaticResource RowAltBrush}"
-                          AlternationCount="2"
-                          RowStyle="{StaticResource FlatRowStyle}"
-                          ColumnHeaderStyle="{StaticResource FlatColumnHeader}"
-                          FontSize="13"
-                          RowHeight="38"
-                          SelectionMode="Single"
-                          SelectionUnit="FullRow"
-                          SelectionChanged="DgProductos_SelectionChanged">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="ID" Binding="{Binding IdProducto}" Width="60"/>
-                        <DataGridTextColumn Header="Nombre" Binding="{Binding NombreProducto}" Width="*"/>
-                        <DataGridTextColumn Header="Categoría" Binding="{Binding NombreCategoria}" Width="150"/>
-                        <DataGridTextColumn Header="Precio Venta" Binding="{Binding PrecioVentas, StringFormat={}{0:N2}}" Width="120"/>
-                        <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
-                        <DataGridTextColumn Header="Tipo Producto" Binding="{Binding TipoProducto}" Width="130"/>
-
-                        <!-- Columna de Acciones: Editar / Eliminar -->
-                        <DataGridTemplateColumn Header="Acciones" Width="90">
-                            <DataGridTemplateColumn.CellTemplate>
-                                <DataTemplate>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                        <Button Style="{StaticResource IconButtonStyle}"
-                                                Click="BtnEditar_Click"
-                                                Tag="{Binding IdProducto}"
-                                                ToolTip="Editar">
-                                            <TextBlock Text="✏️" FontSize="14"/>
-                                        </Button>
-                                        <Button Style="{StaticResource IconButtonStyle}"
-                                                Click="BtnEliminar_Click"
-                                                Tag="{Binding IdProducto}"
-                                                ToolTip="Eliminar"
-                                                Foreground="#D9534F">
-                                            <TextBlock Text="🗑️" FontSize="14"/>
-                                        </Button>
-                                    </StackPanel>
-                                </DataTemplate>
-                            </DataGridTemplateColumn.CellTemplate>
-                        </DataGridTemplateColumn>
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Grid>
-        </Border>
-
-        <!--=================================================
-            SECCIÓN INFERIOR: FORMULARIO DE DETALLES
-        ==================================================-->
-        <Border Grid.Row="2" Style="{StaticResource CardStyle}">
-            <StackPanel>
-
-                <TextBlock Text="Datos Básicos del Producto" Style="{StaticResource SectionTitleStyle}"/>
-
-                <Grid Margin="0,0,0,16">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- ID -->
-                    <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                        <TextBlock Text="ID" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="txtId" Style="{StaticResource FlatTextBox}" IsReadOnly="True" Background="#F7F7F7"/>
+                    <!-- Selector de tipo -->
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
+                        <TextBlock Text="Tipo de Producto:" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                        <RadioButton x:Name="rbHogar" Content="Hogar" GroupName="TipoProd" IsChecked="True" Checked="TipoProducto_Checked" Margin="0,0,20,0"/>
+                        <RadioButton x:Name="rbTecnologia" Content="Tecnología" GroupName="TipoProd" Checked="TipoProducto_Checked"/>
                     </StackPanel>
 
-                    <!-- Nombre -->
-                    <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                        <TextBlock Text="Nombre producto" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="txtNombre" Style="{StaticResource FlatTextBoxFocusable}"/>
-                    </StackPanel>
-
-                    <!-- Precio Costo (Solo Decimales) -->
-                    <StackPanel Grid.Column="2" Margin="0,0,10,0">
-                        <TextBlock Text="Precio Costo" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="txtPrecioCosto" 
-                                 Style="{StaticResource FlatTextBoxFocusable}"
-                                 PreviewTextInput="ValidarSoloDecimales"/>
-                    </StackPanel>
-
-                    <!-- Precio Venta (Solo Decimales) -->
-                    <StackPanel Grid.Column="3" Margin="0,0,10,0">
-                        <TextBlock Text="Precio Venta" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="txtPrecioVenta" 
-                                 Style="{StaticResource FlatTextBoxFocusable}"
-                                 PreviewTextInput="ValidarSoloDecimales"/>
-                    </StackPanel>
-
-                    <!-- Stock (Solo Enteros) -->
-                    <StackPanel Grid.Column="4">
-                        <TextBlock Text="Stock" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="txtStock" 
-                                 Style="{StaticResource FlatTextBoxFocusable}"
-                                 PreviewTextInput="ValidarSoloEnteros"/>
-                    </StackPanel>
-                </Grid>
-
-                <!-- Selector de tipo de producto -->
-                <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                    <TextBlock Text="Seleccionar Tipo de Producto:"
-                               VerticalAlignment="Center"
-                               Foreground="{StaticResource TextPrimaryBrush}"
-                               FontWeight="SemiBold"
-                               Margin="0,0,16,0"/>
-                    <RadioButton x:Name="rbHogar"
-                                 Content="Hogar"
-                                 GroupName="TipoProducto"
-                                 Style="{StaticResource TipoRadioStyle}"
-                                 IsChecked="True"
-                                 Checked="TipoProducto_Checked"/>
-                    <RadioButton x:Name="rbTecnologia"
-                                 Content="Tecnología"
-                                 GroupName="TipoProducto"
-                                 Style="{StaticResource TipoRadioStyle}"
-                                 Checked="TipoProducto_Checked"/>
-                </StackPanel>
-
-                <!-- Detalles condicionales: Hogar / Tecnología -->
-                <Grid Margin="0,0,0,20">
-
-                    <!-- Panel: Detalles para Hogar -->
-                    <Border x:Name="panelHogar"
-                            Background="#FAFAFA"
-                            CornerRadius="6"
-                            BorderBrush="{StaticResource BorderBrush}"
-                            BorderThickness="1"
-                            Padding="16">
-                        <StackPanel>
-                            <TextBlock Text="Detalles para Hogar" FontWeight="SemiBold" FontSize="13"
-                                       Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                    <!-- Paneles condicionales -->
+                    <Grid Height="80" Margin="0,0,0,24">
+                        <Border x:Name="panelHogar" Background="#FAFAFA" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="16">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -435,40 +257,26 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
                                     <TextBlock Text="Material" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtMaterial" Style="{StaticResource FlatTextBoxFocusable}"/>
+                                    <TextBox x:Name="txtMaterial" Style="{StaticResource FlatTextBox}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Margin="0,0,10,0">
                                     <TextBlock Text="Dimensiones" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtDimensiones" Style="{StaticResource FlatTextBoxFocusable}"/>
+                                    <TextBox x:Name="txtDimensiones" Style="{StaticResource FlatTextBox}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Margin="0,0,10,0">
                                     <TextBlock Text="Peso (kg)" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtPeso" 
-                                             Style="{StaticResource FlatTextBoxFocusable}"
-                                             PreviewTextInput="ValidarSoloDecimales"/>
+                                    <TextBox x:Name="txtPeso" Style="{StaticResource FlatTextBox}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="3">
                                     <TextBlock Text="Ambiente" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtAmbiente" Style="{StaticResource FlatTextBoxFocusable}"/>
+                                    <TextBox x:Name="txtAmbiente" Style="{StaticResource FlatTextBox}"/>
                                 </StackPanel>
                             </Grid>
-                        </StackPanel>
-                    </Border>
+                        </Border>
 
-                    <!-- Panel: Detalles para Tecnología -->
-                    <Border x:Name="panelTecnologia"
-                            Background="#FAFAFA"
-                            CornerRadius="6"
-                            BorderBrush="{StaticResource BorderBrush}"
-                            BorderThickness="1"
-                            Padding="16"
-                            Visibility="Collapsed">
-                        <StackPanel>
-                            <TextBlock Text="Detalles para Tecnología" FontWeight="SemiBold" FontSize="13"
-                                       Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+                        <Border x:Name="panelTecnologia" Background="#FAFAFA" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="16" Visibility="Collapsed">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
@@ -476,67 +284,35 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="*"/>
                                 </Grid.ColumnDefinitions>
-
                                 <StackPanel Grid.Column="0" Margin="0,0,10,0">
                                     <TextBlock Text="Marca" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtMarca" Style="{StaticResource FlatTextBoxFocusable}"/>
+                                    <TextBox x:Name="txtMarca" Style="{StaticResource FlatTextBox}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Margin="0,0,10,0">
                                     <TextBlock Text="Modelo" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtModelo" Style="{StaticResource FlatTextBoxFocusable}"/>
+                                    <TextBox x:Name="txtModelo" Style="{StaticResource FlatTextBox}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="2" Margin="0,0,10,0">
                                     <TextBlock Text="Garantía (meses)" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtGarantia" 
-                                             Style="{StaticResource FlatTextBoxFocusable}"
-                                             PreviewTextInput="ValidarSoloEnteros"/>
+                                    <TextBox x:Name="txtGarantia" Style="{StaticResource FlatTextBox}"/>
                                 </StackPanel>
                                 <StackPanel Grid.Column="3">
                                     <TextBlock Text="Voltaje" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtVoltaje" Style="{StaticResource FlatTextBoxFocusable}"/>
+                                    <TextBox x:Name="txtVoltaje" Style="{StaticResource FlatTextBox}"/>
                                 </StackPanel>
                             </Grid>
-                        </StackPanel>
-                    </Border>
-                </Grid>
+                        </Border>
+                    </Grid>
 
-                <!-- Resumen inferior + Botones de acción -->
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-
-                    <!-- Resumen de inventario -->
-                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                        <StackPanel Margin="0,0,30,0">
-                            <TextBlock Text="Número de Productos:" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="txtNumeroProductos" Style="{StaticResource FlatTextBox}"
-                                     IsReadOnly="True" Background="#F7F7F7" Width="140"/>
-                        </StackPanel>
-                        <StackPanel>
-                            <TextBlock Text="Precio Total de Inventario:" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="txtPrecioTotalInventario" Style="{StaticResource FlatTextBox}"
-                                     IsReadOnly="True" Background="#F7F7F7" Width="160"/>
-                        </StackPanel>
+                    <!-- Botones del Modal -->
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                        <Button Content="Cancelar" Style="{StaticResource GhostButton}" Margin="0,0,16,0" Click="BtnCancelar_Click"/>
+                        <Button Content="Guardar Producto" Style="{StaticResource PrimaryButton}" Width="160" Click="BtnGuardar_Click"/>
                     </StackPanel>
 
-                    <!-- Botones de acción -->
-                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Bottom">
-                        <Button Content="Guardar"
-                                Style="{StaticResource PrimaryButton}"
-                                Width="120"
-                                Margin="0,0,10,0"
-                                Click="BtnGuardar_Click"/>
-                        <Button Content="Cancelar"
-                                Style="{StaticResource GhostButton}"
-                                Width="120"
-                                Click="BtnCancelar_Click"/>
-                    </StackPanel>
-                </Grid>
-
-            </StackPanel>
-        </Border>
+                </StackPanel>
+            </Border>
+        </Grid>
 
     </Grid>
 </Page>

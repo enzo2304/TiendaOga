@@ -85,7 +85,6 @@
                         <Button x:Name="btnVentas" Click="btnVentas_Click" Content="Ventas" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnClientes" Click="btnClientes_Click" Content="Clientes" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnProductos" Click="btnProductos_Click" Content="Productos" Style="{StaticResource BotonNavegacion}"/>
-                        <Button x:Name="btnEntradaStock" Click="btnEntradaStock_Click" Content="Entrada de Stock" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnUsuarios" Click="btnUsuarios_Click" Content="Usuarios y Permisos" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnReportesVentas" Click="btnReportesVentas_Click" Content="Reportes del vendedor" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnStockCritico" Click="btnStockCritico_Click" Content="Reporte del adminitrador" Style="{StaticResource BotonNavegacion}"/>

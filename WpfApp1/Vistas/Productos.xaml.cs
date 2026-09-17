@@ -11,6 +11,9 @@ namespace TiendaOga.Vistas
 {
     public partial class Productos : Page
     {
+        // 1. Lista estática que simulará nuestra Base de Datos en memoria
+        private List<ProductoRow> _productosEstaticos;
+
         public Productos()
         {
             InitializeComponent();
@@ -34,14 +37,28 @@ namespace TiendaOga.Vistas
 
         private void CargarProductos()
         {
-            dgProductos.ItemsSource = new List<ProductoRow>();
+            // 2. Llenamos la lista estática solo si está vacía (la primera vez que se abre la ventana)
+            if (_productosEstaticos == null)
+            {
+                _productosEstaticos = new List<ProductoRow>
+                {
+                    new ProductoRow { IdProducto = 1, NombreProducto = "Taladro Percutor 650W", NombreCategoria = "Herramientas", PrecioCosto = 15000, PrecioVentas = 25000, Stock = 10, TipoProducto = "Tecnología" },
+                    new ProductoRow { IdProducto = 2, NombreProducto = "Juego de Ollas 5 piezas", NombreCategoria = "Hogar", PrecioCosto = 8000, PrecioVentas = 14500, Stock = 5, TipoProducto = "Hogar" },
+                    new ProductoRow { IdProducto = 3, NombreProducto = "Escoba de cerdas duras", NombreCategoria = "Limpieza", PrecioCosto = 1200, PrecioVentas = 2000, Stock = 30, TipoProducto = "Hogar" }
+                };
+            }
+
+            // 3. Refrescamos el DataGrid
+            dgProductos.ItemsSource = null;
+            dgProductos.ItemsSource = _productosEstaticos;
             ActualizarResumenInventario();
         }
 
         private void ActualizarResumenInventario()
         {
-            txtNumeroProductos.Text = "0";
-            txtPrecioTotalInventario.Text = "0.00";
+            // Estos campos se eliminaron del XAML para tener un diseño más limpio (Soluciona el error CS0103)
+            // txtNumeroProductos.Text = "0";
+            // txtPrecioTotalInventario.Text = "0.00";
         }
 
         private void TipoProducto_Checked(object sender, RoutedEventArgs e)
@@ -79,10 +96,44 @@ namespace TiendaOga.Vistas
             }
         }
 
+        // ==========================================================
+        // MANEJO DE LA VENTANA MODAL (ALTA Y EDICIÓN)
+        // ==========================================================
+
+        private void BtnNuevoProducto_Click(object sender, RoutedEventArgs e)
+        {
+            LimpiarFormulario();
+            // Muestra el panel modal oscuro por encima
+            ModalFormulario.Visibility = Visibility.Visible;
+        }
+
         private void BtnEditar_Click(object sender, RoutedEventArgs e)
         {
             var boton = sender as Button;
             if (boton == null || !(boton.Tag is int idProducto)) return;
+
+            // 4. Buscar el producto en la lista estática
+            var producto = _productosEstaticos.Find(p => p.IdProducto == idProducto);
+            if (producto == null) return;
+
+            // 5. Cargar los datos en el modal
+            txtId.Text = producto.IdProducto.ToString();
+            txtNombre.Text = producto.NombreProducto;
+            txtPrecioCosto.Text = producto.PrecioCosto.ToString("0.00");
+            txtPrecioVenta.Text = producto.PrecioVentas.ToString("0.00");
+            txtStock.Text = producto.Stock.ToString();
+
+            if (string.Equals(producto.TipoProducto, "Hogar", StringComparison.OrdinalIgnoreCase))
+            {
+                rbHogar.IsChecked = true;
+            }
+            else
+            {
+                rbTecnologia.IsChecked = true;
+            }
+
+            // Muestra el panel modal oscuro por encima
+            ModalFormulario.Visibility = Visibility.Visible;
         }
 
         private void BtnEliminar_Click(object sender, RoutedEventArgs e)
@@ -98,7 +149,14 @@ namespace TiendaOga.Vistas
 
             if (resultado == MessageBoxResult.Yes)
             {
-                CargarProductos();
+                // 6. Eliminar el producto de la lista estática
+                var productoAEliminar = _productosEstaticos.Find(p => p.IdProducto == idProducto);
+                if (productoAEliminar != null)
+                {
+                    _productosEstaticos.Remove(productoAEliminar);
+                    CargarProductos(); // Refresca la tabla
+                    MessageBox.Show("Producto eliminado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
             }
         }
 
@@ -114,11 +172,51 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            // Si pasa todas las validaciones de frontend:
-            MessageBox.Show("¡Producto validado correctamente! Listo para guardar en la base de datos.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            // 7. Simular guardado estático (Alta y Modificación)
+            decimal pCosto = decimal.Parse(txtPrecioCosto.Text.Replace('.', ','));
+            decimal pVenta = decimal.Parse(txtPrecioVenta.Text.Replace('.', ','));
+            int stock = int.Parse(txtStock.Text);
+            string tipoProd = rbHogar.IsChecked == true ? "Hogar" : "Tecnología";
+
+            if (string.IsNullOrEmpty(txtId.Text))
+            {
+                // Es un ALTA (crear ID ficticio)
+                int nuevoId = _productosEstaticos.Count > 0 ? _productosEstaticos[_productosEstaticos.Count - 1].IdProducto + 1 : 1;
+
+                _productosEstaticos.Add(new ProductoRow
+                {
+                    IdProducto = nuevoId,
+                    NombreProducto = txtNombre.Text,
+                    PrecioCosto = pCosto,
+                    PrecioVentas = pVenta,
+                    Stock = stock,
+                    TipoProducto = tipoProd,
+                    NombreCategoria = "Sin Categoría" // Ficticio por ahora
+                });
+
+                MessageBox.Show("¡Producto agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            else
+            {
+                // Es una MODIFICACIÓN
+                int idEditado = int.Parse(txtId.Text);
+                var productoAEditar = _productosEstaticos.Find(p => p.IdProducto == idEditado);
+
+                if (productoAEditar != null)
+                {
+                    productoAEditar.NombreProducto = txtNombre.Text;
+                    productoAEditar.PrecioCosto = pCosto;
+                    productoAEditar.PrecioVentas = pVenta;
+                    productoAEditar.Stock = stock;
+                    productoAEditar.TipoProducto = tipoProd;
+
+                    MessageBox.Show("¡Producto modificado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
 
             LimpiarFormulario();
-            CargarProductos();
+            CargarProductos(); // Refresca la tabla
+            ModalFormulario.Visibility = Visibility.Collapsed;
         }
 
         private bool ValidarFormularioCompleto(out string error)
@@ -232,6 +330,8 @@ namespace TiendaOga.Vistas
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)
         {
             LimpiarFormulario();
+            // Oculta el modal cuando se presiona Cancelar
+            ModalFormulario.Visibility = Visibility.Collapsed;
         }
 
         private void LimpiarFormulario()

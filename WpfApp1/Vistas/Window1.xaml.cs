@@ -27,7 +27,7 @@ namespace TiendaOga.Vistas
             // La decisión de qué puede ver cada rol vive en PermisosNegocio,
             // acá solo se aplica el resultado a los controles.
             btnProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerProductos(rolActual));
-            btnEntradaStock.Visibility = ToVisibility(PermisosNegocio.PuedeVerEntradaStock(rolActual));
+           // btnEntradaStock.Visibility = ToVisibility(PermisosNegocio.PuedeVerEntradaStock(rolActual));
             btnClientes.Visibility = ToVisibility(PermisosNegocio.PuedeVerClientes(rolActual));
             btnUsuarios.Visibility = ToVisibility(PermisosNegocio.PuedeVerUsuarios(rolActual));
             btnReportesVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesGerencia(rolActual));
@@ -71,11 +71,11 @@ namespace TiendaOga.Vistas
             ContenedorPrincipal.Navigate(new Productos());
         }
 
-        private void btnEntradaStock_Click(object sender, RoutedEventArgs e)
+       /* private void btnEntradaStock_Click(object sender, RoutedEventArgs e)
         {
             lblTituloModulo.Text = "Registro de Entrada y Ajuste de Stock";
             ContenedorPrincipal.Navigate(new EntradaStock());
-        }
+        }*/
 
         private void btnClientes_Click(object sender, RoutedEventArgs e)
         {
