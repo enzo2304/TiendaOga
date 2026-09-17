@@ -52,18 +52,15 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            // Separamos la búsqueda en palabras (por si escriben "Juan Perez")
             string[] palabras = filtro.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
             dgUsuarios.ItemsSource = _todosLosUsuarios.Where(u =>
             {
-                // Armamos un solo texto con todos los campos del usuario
                 string textoCompleto = string.Join(" ", new[]
                 {
-            u.Nombre, u.Apellido, u.UsuarioLogin, u.Email, u.NombrePerfil
-        }).ToLower();
+                    u.Nombre, u.Apellido, u.UsuarioLogin, u.Email, u.NombrePerfil
+                }).ToLower();
 
-                // Todas las palabras escritas tienen que aparecer en algún lado
                 return palabras.All(p => textoCompleto.Contains(p));
             }).ToList();
         }
@@ -228,9 +225,10 @@ namespace TiendaOga.Vistas
             string email = txtEmail.Text.Trim();
             int? idPerfil = cmbPerfil.SelectedValue as int?;
 
-            if (!UsuarioNegocio.ValidarAltaUsuario(nombre, apellido, usuario, password, idPerfil, out string mensajeError))
+            // Se pasa email a la validación de negocio
+            if (!UsuarioNegocio.ValidarAltaUsuario(nombre, apellido, usuario, password, email, idPerfil, out string mensajeError))
             {
-                MessageBox.Show(mensajeError, "Datos incompletos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(mensajeError, "Datos incompletos o inválidos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -257,9 +255,10 @@ namespace TiendaOga.Vistas
             string email = txtEmail.Text.Trim();
             int? idPerfil = cmbPerfil.SelectedValue as int?;
 
-            if (!UsuarioNegocio.ValidarModificacionUsuario(nombre, apellido, usuario, idPerfil, out string mensajeError))
+            // Se pasa email a la validación de modificación
+            if (!UsuarioNegocio.ValidarModificacionUsuario(nombre, apellido, usuario, email, idPerfil, out string mensajeError))
             {
-                MessageBox.Show(mensajeError, "Datos incompletos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(mensajeError, "Datos incompletos o inválidos", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
