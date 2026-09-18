@@ -1,6 +1,11 @@
-﻿using System.Windows;
+﻿using System;
+using System.Linq;
+using System.Text.RegularExpressions;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using TiendaOga.Entidades;
+using TiendaOga.Negocio;
 
 namespace TiendaOga.Vistas
 {
@@ -8,9 +13,34 @@ namespace TiendaOga.Vistas
     {
         public ClienteItem ClienteCreado { get; private set; }
 
+        private static readonly Regex RegexSoloNumeros = new Regex(@"^[0-9]+$");
+
         public NuevoClienteWindow()
         {
             InitializeComponent();
+        }
+
+        // Bloquea cualquier tecla que no sea un número del 0 al 9
+        private void SoloNumeros_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !RegexSoloNumeros.IsMatch(e.Text);
+        }
+
+        // Evita que peguen texto con letras o símbolos
+        private void SoloNumeros_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string textoPegado = (string)e.DataObject.GetData(typeof(string));
+                if (!RegexSoloNumeros.IsMatch(textoPegado))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
         }
 
         private void BtnAceptar_Click(object sender, RoutedEventArgs e)
@@ -19,10 +49,10 @@ namespace TiendaOga.Vistas
             string nroDocumento = txtNroDocumento.Text.Trim();
             string telefono = txtTelefono.Text.Trim();
 
-            if (string.IsNullOrWhiteSpace(nombre) || string.IsNullOrWhiteSpace(nroDocumento))
+            // Llamada a la capa de Negocio
+            if (!ClienteNegocio.ValidarAltaCliente(nombre, nroDocumento, telefono, out string mensajeError))
             {
-                MessageBox.Show("Por favor completá el Nombre y el Nro. de Documento.",
-                    "Datos incompletos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(mensajeError, "Dato inválido", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -35,18 +65,10 @@ namespace TiendaOga.Vistas
             if (confirmacion != MessageBoxResult.Yes)
                 return;
 
-            ClienteCreado = new ClienteItem
-            {
-                IdCliente = DatosGlobales.Clientes.Count == 0
-                    ? 1
-                    : System.Linq.Enumerable.Max(System.Linq.Enumerable.Select(DatosGlobales.Clientes, c => c.IdCliente)) + 1,
-                TipoCliente = (cmbTipoCliente.SelectedItem as ComboBoxItem)?.Content.ToString(),
-                NombreCompleto = nombre,
-                TipoDocumento = (cmbTipoDocumento.SelectedItem as ComboBoxItem)?.Content.ToString(),
-                Dni = nroDocumento,
-                Telefono = string.IsNullOrWhiteSpace(telefono) ? "S/D" : telefono,
-                Activo = chkActivo.IsChecked == true
-            };
+            string tipoCliente = (cmbTipoCliente.SelectedItem as ComboBoxItem)?.Content?.ToString();
+            string tipoDocumento = (cmbTipoDocumento.SelectedItem as ComboBoxItem)?.Content?.ToString();
+
+            ClienteCreado = ClienteNegocio.CrearCliente(nombre, nroDocumento, telefono, tipoCliente, tipoDocumento, chkActivo.IsChecked == true);
 
             DialogResult = true;
             Close();
