@@ -26,16 +26,13 @@ namespace TiendaOga.Vistas
 
             // La decisión de qué puede ver cada rol vive en PermisosNegocio,
             // acá solo se aplica el resultado a los controles.
-            btnProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerProductos(rolActual));
-            // btnEntradaStock.Visibility = ToVisibility(PermisosNegocio.PuedeVerEntradaStock(rolActual));
+            btnVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerVentas(rolActual));
             btnClientes.Visibility = ToVisibility(PermisosNegocio.PuedeVerClientes(rolActual));
+            btnProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerProductos(rolActual));
             btnUsuarios.Visibility = ToVisibility(PermisosNegocio.PuedeVerUsuarios(rolActual));
-            btnReportesVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesGerencia(rolActual));
-
-            // OJO: el XAML actual ya no tiene "btnStockCritico" (ese botón se
-            // reemplazó por "btnReporteGeneral" / Panel Gerencial), así que el
-            // permiso de gerencia ahora se aplica sobre ese botón.
-            btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesGerencia(rolActual));
+            btnReportesVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesVendedor(rolActual));
+            btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteGeneral(rolActual));
+            btnStockBackup.Visibility = ToVisibility(PermisosNegocio.PuedeVerBackup(rolActual));
         }
 
         private static Visibility ToVisibility(bool visible)
@@ -52,30 +49,35 @@ namespace TiendaOga.Vistas
 
         private void btnVentas_Click(object sender, RoutedEventArgs e)
         {
+            if (!PermisosNegocio.PuedeVerVentas(rolActual)) return;
             lblTituloModulo.Text = "Módulo de Ventas y Facturación";
             ContenedorPrincipal.Navigate(new Ventas());
         }
 
         private void btnProductos_Click(object sender, RoutedEventArgs e)
         {
+            if (!PermisosNegocio.PuedeVerProductos(rolActual)) return;
             lblTituloModulo.Text = "Administración de Productos y Rubros";
             ContenedorPrincipal.Navigate(new Productos());
         }
 
         private void btnClientes_Click(object sender, RoutedEventArgs e)
         {
+            if (!PermisosNegocio.PuedeVerClientes(rolActual)) return;
             lblTituloModulo.Text = "Padrón de Clientes";
             ContenedorPrincipal.Navigate(new Clientes());
         }
 
         private void btnUsuarios_Click(object sender, RoutedEventArgs e)
         {
+            if (!PermisosNegocio.PuedeVerUsuarios(rolActual)) return;
             lblTituloModulo.Text = "Gestión de Cuentas de Usuario y Roles";
             ContenedorPrincipal.Navigate(new Usuarios());
         }
 
         private void btnReportesVentas_Click(object sender, RoutedEventArgs e)
         {
+            if (!PermisosNegocio.PuedeVerReportesVendedor(rolActual)) return;
             lblTituloModulo.Text = "Reportes y Rendimiento de Ventas";
             ContenedorPrincipal.Navigate(new ReportesVendedor());
         }
@@ -85,12 +87,14 @@ namespace TiendaOga.Vistas
         // ==========================================
         private void btnReporteGeneral_Click(object sender, RoutedEventArgs e)
         {
+            if (!PermisosNegocio.PuedeVerReporteGeneral(rolActual)) return;
             lblTituloModulo.Text = "Panel Gerencial";
             ContenedorPrincipal.Navigate(new ReporteGeneral());
         }
 
         private void btnBackup_Click(object sender, RoutedEventArgs e)
         {
+            if (!PermisosNegocio.PuedeVerBackup(rolActual)) return;
             lblTituloModulo.Text = "Backup del Sistema";
             ContenedorPrincipal.Navigate(new Backup());
         }
