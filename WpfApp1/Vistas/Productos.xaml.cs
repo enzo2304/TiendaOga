@@ -12,8 +12,7 @@ namespace TiendaOga.Vistas
     public partial class Productos : Page
     {
         // 1. Lista estática que simulará nuestra Base de Datos en memoria
-        private List<ProductoRow> _productosEstaticos;
-
+        private List<ProductoRow> _productosEstaticos => DatosGlobales.Productos;
         public Productos()
         {
             InitializeComponent();
@@ -37,18 +36,6 @@ namespace TiendaOga.Vistas
 
         private void CargarProductos()
         {
-            // 2. Llenamos la lista estática solo si está vacía (la primera vez que se abre la ventana)
-            if (_productosEstaticos == null)
-            {
-                _productosEstaticos = new List<ProductoRow>
-                {
-                    new ProductoRow { IdProducto = 1, NombreProducto = "Taladro Percutor 650W", NombreCategoria = "Herramientas", PrecioCosto = 15000, PrecioVentas = 25000, Stock = 10, TipoProducto = "Tecnología" },
-                    new ProductoRow { IdProducto = 2, NombreProducto = "Juego de Ollas 5 piezas", NombreCategoria = "Hogar", PrecioCosto = 8000, PrecioVentas = 14500, Stock = 5, TipoProducto = "Hogar" },
-                    new ProductoRow { IdProducto = 3, NombreProducto = "Escoba de cerdas duras", NombreCategoria = "Limpieza", PrecioCosto = 1200, PrecioVentas = 2000, Stock = 30, TipoProducto = "Hogar" }
-                };
-            }
-
-            // 3. Refrescamos el DataGrid
             dgProductos.ItemsSource = null;
             dgProductos.ItemsSource = _productosEstaticos;
             ActualizarResumenInventario();

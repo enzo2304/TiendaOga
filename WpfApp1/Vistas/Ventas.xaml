@@ -3,7 +3,7 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       Title="Ventas">
 
-    <!-- Contenedor del Formulario de Venta (Solo la parte central) -->
+    <!-- Contenedor del Formulario de Venta -->
     <Grid Margin="10,0,10,10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -22,7 +22,7 @@
                     <RowDefinition Height="*"/>
                     <!-- Fila 2: Grilla de detalle -->
                     <RowDefinition Height="Auto"/>
-                    <!-- Fila 3: Sección de Pago (NUEVA) -->
+                    <!-- Fila 3: Sección de Pago -->
                     <RowDefinition Height="Auto"/>
                     <!-- Fila 4: Total y botones -->
                 </Grid.RowDefinitions>
@@ -40,49 +40,72 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="1" Margin="10,0,0,0">
-                        <TextBlock Text="Cliente:" FontWeight="SemiBold" Foreground="#4A5568" Margin="0,0,0,5"/>
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="Auto"/>
-                            </Grid.ColumnDefinitions>
-                            <TextBox x:Name="txtCliente" Height="30" Padding="5"/>
-                            <Button x:Name="btnBuscarCliente" Click="BtnBuscarCliente_Click"
-                                    Grid.Column="1" Content="Buscar" Width="75" Height="30" Margin="5,0,0,0"
-                                    Background="#EDF2F7" Cursor="Hand"/>
-                        </Grid>
+                        <TextBlock Text="Cliente Registrado:" FontWeight="SemiBold" Foreground="#4A5568" Margin="0,0,0,5"/>
+                        <ComboBox x:Name="cmbCliente" 
+                        Height="30" 
+                        Foreground="#2D3748"
+                        FontSize="13"
+                        IsEditable="False">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding NombreDisplay}" 
+                        Foreground="#2D3748" 
+                        VerticalAlignment="Center" 
+                        Margin="2"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
                     </StackPanel>
                 </Grid>
 
-                <!-- Fila 1: Selección de Productos -->
+                <!-- Fila 1: Selección de Productos con Código e ID -->
                 <Border Grid.Row="1" Background="#F7FAFC" Padding="15" CornerRadius="6" Margin="0,0,0,15">
                     <Grid>
                         <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="90"/>
                             <ColumnDefinition Width="2*"/>
                             <ColumnDefinition Width="1*"/>
                             <ColumnDefinition Width="80"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
+                        <!-- Entrada por Código numérico -->
                         <StackPanel Grid.Column="0" Margin="0,0,10,0">
+                            <TextBlock Text="Cód. / ID" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
+                            <TextBox x:Name="txtCodigoProducto" Height="28" Margin="0,3,0,0"
+                                     PreviewTextInput="TxtCodigoProducto_PreviewTextInput"
+                                     KeyDown="TxtCodigoProducto_KeyDown"/>
+                        </StackPanel>
+
+                        <!-- Selector desplegable -->
+                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
                             <TextBlock Text="Producto / Descripción" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
                             <ComboBox x:Name="cmbProductoBusqueda" Height="28" Margin="0,3,0,0"
-                                      IsEditable="True" IsTextSearchEnabled="False"
-                                      DisplayMemberPath="NombreProducto"
-                                      StaysOpenOnEdit="True"
-                                      TextBoxBase.TextChanged="CmbProductoBusqueda_TextChanged"
-                                      SelectionChanged="CmbProductoBusqueda_SelectionChanged"/>
+                                      SelectedValuePath="IdProducto"
+                                      SelectionChanged="CmbProductoBusqueda_SelectionChanged">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding NombreCompletoDisplay}" VerticalAlignment="Center"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
                         </StackPanel>
-                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                            <TextBlock Text="Precio Unitario" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
-                            <TextBox x:Name="txtPrecioUnitario" Height="28" Margin="0,3,0,0" IsReadOnly="True"/>
-                        </StackPanel>
+
+                        <!-- Precio Unitario -->
                         <StackPanel Grid.Column="2" Margin="0,0,10,0">
-                            <TextBlock Text="Cantidad" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
-                            <TextBox x:Name="txtCantidad" Height="28" Margin="0,3,0,0" Text="1"/>
+                            <TextBlock Text="Precio Unitario" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
+                            <TextBox x:Name="txtPrecioUnitario" Height="28" Margin="0,3,0,0" IsReadOnly="True" Background="#EDF2F7"/>
                         </StackPanel>
+
+                        <!-- Cantidad -->
+                        <StackPanel Grid.Column="3" Margin="0,0,10,0">
+                            <TextBlock Text="Cantidad" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
+                            <TextBox x:Name="txtCantidad" Height="28" Margin="0,3,0,0" Text="1"
+                                     PreviewTextInput="TxtCantidad_PreviewTextInput"/>
+                        </StackPanel>
+
                         <Button x:Name="btnAgregar" Click="BtnAgregar_Click"
-                                Grid.Column="3" Content="Agregar" Width="80" Height="28" VerticalAlignment="Bottom"
+                                Grid.Column="4" Content="Agregar" Width="80" Height="28" VerticalAlignment="Bottom"
                                 Background="#3182CE" Foreground="White" Cursor="Hand" BorderThickness="0"/>
                     </Grid>
                 </Border>
@@ -109,7 +132,7 @@
                     </DataGrid.Columns>
                 </DataGrid>
 
-                <!-- Fila 3: Sección de Pago (NUEVA) -->
+                <!-- Fila 3: Sección de Pago -->
                 <Border Grid.Row="3" Background="#F7FAFC" Padding="15" CornerRadius="6" Margin="0,15,0,0">
                     <Grid>
                         <Grid.ColumnDefinitions>
@@ -136,14 +159,14 @@
                             <DatePicker x:Name="dpFechaPago" Height="30" Margin="0,3,0,0"/>
                         </StackPanel>
 
-                        <!-- Monto Recibido (solo aplica/edita en Efectivo) -->
+                        <!-- Monto Recibido -->
                         <StackPanel Grid.Column="2" Margin="0,0,10,0">
                             <TextBlock Text="Monto Recibido" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
                             <TextBox x:Name="txtMontoRecibido" Height="30" Padding="5" Margin="0,3,0,0"
                                      TextChanged="TxtMontoRecibido_TextChanged"/>
                         </StackPanel>
 
-                        <!-- Vuelto (calculado, solo lectura) -->
+                        <!-- Vuelto -->
                         <StackPanel Grid.Column="3">
                             <TextBlock Text="Vuelto" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
                             <TextBox x:Name="txtVuelto" Height="30" Padding="5" Margin="0,3,0,0"

@@ -1,159 +1,215 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
 
 namespace TiendaOga.Vistas
 {
-    /// <summary>
-    /// Vista de Nueva Venta. Contiene ÚNICAMENTE lógica de interfaz:
-    /// alta/baja de ítems en la grilla (en memoria) y refresco de pantalla.
-    /// El cálculo y la validación viven en TiendaOga.Negocio.VentaNegocio.
-    /// NO incluye persistencia contra base de datos (queda fuera de alcance).
-    /// </summary>
     public partial class Ventas : Page
     {
         private readonly ObservableCollection<ItemVenta> _detalleVenta = new ObservableCollection<ItemVenta>();
-
-        // Catálogo de productos usado para el autocompletado (en memoria, sin conexión a BD)
-        private readonly List<ProductoRow> _todosLosProductos = DatosGlobales.Productos;
-
-        // Evita que el TextChanged dispare el filtro cuando el texto lo pone el propio código
-        private bool _seleccionandoProgramaticamente = false;
+        private static readonly Regex RegexSoloNumeros = new Regex(@"^[0-9]+$");
+        private bool _sincronizandoProducto = false;
 
         public Ventas()
         {
             InitializeComponent();
             dgDetalleVenta.ItemsSource = _detalleVenta;
-            dpFechaPago.SelectedDate = System.DateTime.Today;
+            dpFechaPago.SelectedDate = DateTime.Today;
+
+            // Recarga automática al ingresar o regresar a la pantalla de Ventas
+            this.Loaded += Ventas_Loaded;
+
             ActualizarEstadoPago();
         }
 
-        // ==========================================================
-        // Búsqueda de cliente (placeholder de UI, sin conexión a BD)
-        // ==========================================================
-
-        private void BtnBuscarCliente_Click(object sender, RoutedEventArgs e)
+        private void Ventas_Loaded(object sender, RoutedEventArgs e)
         {
-            // Fuera de alcance: acá iría la búsqueda del cliente.
+            CargarClientes();
+            CargarListaProductos();
+        }
+
+        private void CargarClientes()
+        {
+            if (cmbCliente == null) return;
+
+            cmbCliente.ItemsSource = null;
+            cmbCliente.ItemsSource = DatosGlobales.Clientes;
+
+            if (DatosGlobales.Clientes != null && DatosGlobales.Clientes.Count > 0)
+            {
+                cmbCliente.SelectedIndex = 0;
+            }
+        }
+
+        private void CargarListaProductos()
+        {
+            cmbProductoBusqueda.ItemsSource = null;
+            cmbProductoBusqueda.ItemsSource = DatosGlobales.Productos;
         }
 
         // ==========================================================
-        // Autocompletado de Producto (filtra en vivo y completa precio)
+        // FILTRADO DE TECLADO
         // ==========================================================
 
-        private void CmbProductoBusqueda_TextChanged(object sender, TextChangedEventArgs e)
+        private void TxtCodigoProducto_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
-            if (_seleccionandoProgramaticamente) return;
+            e.Handled = !RegexSoloNumeros.IsMatch(e.Text);
+        }
 
-            string texto = cmbProductoBusqueda.Text?.Trim();
+        private void TxtCantidad_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            e.Handled = !RegexSoloNumeros.IsMatch(e.Text);
+        }
 
-            if (string.IsNullOrWhiteSpace(texto))
+        // ==========================================================
+        // SINCRONIZACIÓN: BÚSQUEDA POR CÓDIGO (ID) Y POR COMBOBOX
+        // ==========================================================
+
+        private void TxtCodigoProducto_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter || e.Key == Key.Tab)
             {
-                cmbProductoBusqueda.ItemsSource = null;
-                cmbProductoBusqueda.IsDropDownOpen = false;
-                txtPrecioUnitario.Clear();
-                return;
+                BuscarPorCodigo();
+                e.Handled = true;
             }
+        }
 
-            var coincidencias = _todosLosProductos
-                .Where(p => p.NombreProducto.ToLower().Contains(texto.ToLower()))
-                .ToList();
+        private void BuscarPorCodigo()
+        {
+            if (string.IsNullOrWhiteSpace(txtCodigoProducto.Text)) return;
 
-            string textoActual = cmbProductoBusqueda.Text;
-
-            cmbProductoBusqueda.ItemsSource = coincidencias;
-            cmbProductoBusqueda.Text = textoActual;
-            cmbProductoBusqueda.IsDropDownOpen = coincidencias.Count > 0;
+            if (int.TryParse(txtCodigoProducto.Text.Trim(), out int idBuscado))
+            {
+                var prod = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == idBuscado);
+                if (prod != null)
+                {
+                    _sincronizandoProducto = true;
+                    cmbProductoBusqueda.SelectedItem = prod;
+                    txtPrecioUnitario.Text = prod.PrecioVentas.ToString("N2", CultureInfo.InvariantCulture);
+                    _sincronizandoProducto = false;
+                    txtCantidad.Focus();
+                }
+                else
+                {
+                    MessageBox.Show($"No se encontró ningún producto con el código {idBuscado}.", "Producto no encontrado", MessageBoxButton.OK, MessageBoxImage.Information);
+                    txtCodigoProducto.SelectAll();
+                    txtCodigoProducto.Focus();
+                }
+            }
         }
 
         private void CmbProductoBusqueda_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
+            if (_sincronizandoProducto) return;
+
             if (cmbProductoBusqueda.SelectedItem is ProductoRow producto)
             {
-                _seleccionandoProgramaticamente = true;
-
-                cmbProductoBusqueda.Text = producto.NombreProducto;
+                _sincronizandoProducto = true;
+                txtCodigoProducto.Text = producto.IdProducto.ToString();
                 txtPrecioUnitario.Text = producto.PrecioVentas.ToString("N2", CultureInfo.InvariantCulture);
-                cmbProductoBusqueda.IsDropDownOpen = false;
-
-                _seleccionandoProgramaticamente = false;
+                _sincronizandoProducto = false;
 
                 txtCantidad.Focus();
+            }
+            else
+            {
+                txtCodigoProducto.Clear();
+                txtPrecioUnitario.Clear();
             }
         }
 
         // ==========================================================
-        // Alta / baja de ítems en la grilla de detalle (en memoria)
+        // DETALLE DE VENTA: AGREGAR / ELIMINAR
         // ==========================================================
 
         private void BtnAgregar_Click(object sender, RoutedEventArgs e)
         {
-            string nombre = cmbProductoBusqueda.Text?.Trim();
+            var productoSeleccionado = cmbProductoBusqueda.SelectedItem as ProductoRow;
 
-            if (string.IsNullOrWhiteSpace(nombre))
+            // Si tipeó el código pero no seleccionó en el combo
+            if (productoSeleccionado == null && !string.IsNullOrWhiteSpace(txtCodigoProducto.Text))
             {
-                MessageBox.Show("Ingresá un producto antes de agregar.", "Datos incompletos",
+                if (int.TryParse(txtCodigoProducto.Text.Trim(), out int id))
+                {
+                    productoSeleccionado = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == id);
+                }
+            }
+
+            if (productoSeleccionado == null)
+            {
+                MessageBox.Show("Seleccioná un producto del catálogo o ingresá un código válido.", "Datos incompletos",
                     MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtCodigoProducto.Focus();
                 return;
             }
 
-            decimal precioUnitario;
-            if (!decimal.TryParse(txtPrecioUnitario.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out precioUnitario))
+            if (!int.TryParse(txtCantidad.Text, out int cantidad) || cantidad <= 0)
             {
-                precioUnitario = 0;
-            }
-
-            int cantidad;
-            int.TryParse(txtCantidad.Text, out cantidad);
-
-            if (!VentaNegocio.ValidarCantidad(cantidad, out string mensajeError))
-            {
-                MessageBox.Show(mensajeError, "Datos incompletos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show("Ingresá una cantidad numérica mayor a 0.", "Cantidad inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
+                txtCantidad.Focus();
                 return;
             }
 
-            // Si el nombre coincide exactamente con un producto del catálogo, tomamos su IdProducto real
-            var productoSeleccionado = _todosLosProductos
-                .FirstOrDefault(p => p.NombreProducto.Equals(nombre, System.StringComparison.OrdinalIgnoreCase));
+            // Validar stock disponible considerando lo que ya esté cargado en la grilla
+            int cantidadYaAgregada = _detalleVenta
+                .Where(i => i.IdProducto == productoSeleccionado.IdProducto)
+                .Sum(i => i.Cantidad);
 
-            var item = new ItemVenta
+            if (!VentaNegocio.ValidarStockDisponible(productoSeleccionado.Stock, cantidadYaAgregada, cantidad, out string errorStock))
             {
-                IdProducto = productoSeleccionado?.IdProducto ?? 0,
-                Nombre = nombre,
-                PrecioVenta = precioUnitario,
-                Cantidad = cantidad
-            };
+                MessageBox.Show(errorStock, "Stock no disponible", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            _detalleVenta.Add(item);
+            // Si el ítem ya existe en la lista sumamos la cantidad, sino agregamos una fila nueva
+            var itemExistente = _detalleVenta.FirstOrDefault(i => i.IdProducto == productoSeleccionado.IdProducto);
+            if (itemExistente != null)
+            {
+                itemExistente.Cantidad += cantidad;
+                dgDetalleVenta.Items.Refresh();
+            }
+            else
+            {
+                _detalleVenta.Add(new ItemVenta
+                {
+                    IdProducto = productoSeleccionado.IdProducto,
+                    Nombre = productoSeleccionado.NombreProducto,
+                    PrecioVenta = productoSeleccionado.PrecioVentas,
+                    Cantidad = cantidad
+                });
+            }
 
-            // Limpiar campos de carga rápida
-            cmbProductoBusqueda.Text = string.Empty;
-            cmbProductoBusqueda.ItemsSource = null;
+            // Limpiar campos de selección rápida
+            _sincronizandoProducto = true;
+            txtCodigoProducto.Clear();
+            cmbProductoBusqueda.SelectedIndex = -1;
             txtPrecioUnitario.Clear();
             txtCantidad.Text = "1";
+            _sincronizandoProducto = false;
 
             ActualizarTotal();
+            txtCodigoProducto.Focus();
         }
 
         private void BtnEliminarItem_Click(object sender, RoutedEventArgs e)
         {
-            var boton = sender as Button;
-            if (boton == null) return;
-
-            var item = boton.Tag as ItemVenta;
-            if (item == null) return;
-
-            _detalleVenta.Remove(item);
-            ActualizarTotal();
+            if (sender is Button boton && boton.Tag is ItemVenta item)
+            {
+                _detalleVenta.Remove(item);
+                ActualizarTotal();
+            }
         }
 
         // ==========================================================
-        // Refresco de Total y Vuelto (el cálculo real vive en VentaNegocio)
+        // CÁLCULO DE TOTALES Y PAGO
         // ==========================================================
 
         private void ActualizarTotal()
@@ -173,18 +229,13 @@ namespace TiendaOga.Vistas
             CalcularVuelto();
         }
 
-        /// <summary>
-        /// Recalcula el vuelto cada vez que cambia el tipo de pago.
-        /// El campo "Monto Recibido" queda siempre editable, sin importar
-        /// el método elegido.
-        /// </summary>
         private void ActualizarEstadoPago()
         {
             if (cmbTipoPago == null || txtMontoRecibido == null || txtVuelto == null) return;
 
             decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
 
-            if (string.IsNullOrWhiteSpace(txtMontoRecibido.Text))
+            if (string.IsNullOrWhiteSpace(txtMontoRecibido.Text) || txtMontoRecibido.Text == "0.00")
             {
                 txtMontoRecibido.Text = total.ToString("N2", CultureInfo.InvariantCulture);
             }
@@ -197,9 +248,7 @@ namespace TiendaOga.Vistas
             if (txtMontoRecibido == null || txtVuelto == null) return;
 
             decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
-
-            decimal recibido;
-            decimal.TryParse(txtMontoRecibido.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out recibido);
+            decimal.TryParse(txtMontoRecibido.Text.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal recibido);
 
             decimal vuelto = VentaNegocio.CalcularVuelto(total, recibido);
 
@@ -210,15 +259,13 @@ namespace TiendaOga.Vistas
         }
 
         // ==========================================================
-        // Guardar / Cancelar (la validación real vive en VentaNegocio)
+        // GUARDAR VENTA
         // ==========================================================
 
         private void BtnGuardarVenta_Click(object sender, RoutedEventArgs e)
         {
             decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
-
-            decimal recibido;
-            decimal.TryParse(txtMontoRecibido.Text, NumberStyles.Any, CultureInfo.InvariantCulture, out recibido);
+            decimal.TryParse(txtMontoRecibido.Text.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal recibido);
 
             if (!VentaNegocio.ValidarVenta(_detalleVenta.Count, total, recibido, out string mensajeError))
             {
@@ -226,55 +273,70 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            // 1. Armar el detalle en texto con los productos agregados a la grilla
-            // Ejemplo: "Reflector LED x2, Cámara de Seguridad x1"
-            var listaNombres = new System.Collections.Generic.List<string>();
+            // Validar selección de cliente
+            var clienteSeleccionado = cmbCliente.SelectedItem as ClienteItem;
+            if (clienteSeleccionado == null)
+            {
+                MessageBox.Show("Por favor seleccioná un cliente registrado para la venta.", "Cliente requerido", MessageBoxButton.OK, MessageBoxImage.Warning);
+                cmbCliente.Focus();
+                return;
+            }
+
+            // 1. Descontar stock de los productos vendidos en memoria
             foreach (var item in _detalleVenta)
             {
-                listaNombres.Add($"{item.Nombre} x{item.Cantidad}");
+                var prod = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == item.IdProducto);
+                if (prod != null)
+                {
+                    prod.Stock -= item.Cantidad;
+                }
             }
+
+            // 2. Registrar compra en el padrón de clientes
+            var listaNombres = _detalleVenta.Select(item => $"{item.Nombre} x{item.Cantidad}").ToList();
             string detalleProductos = string.Join(", ", listaNombres);
 
-            // 2. Tomar el nombre del cliente (o asignarle Consumidor Final si está vacío)
-            string nombreCliente = string.IsNullOrWhiteSpace(txtCliente.Text)
-                ? "Consumidor Final"
-                : txtCliente.Text.Trim();
-
-            // 3. Tomar el método de pago seleccionado en el ComboBox
             string metodoPago = cmbTipoPago.SelectedItem is ComboBoxItem itemCombo
                 ? itemCombo.Content.ToString()
                 : cmbTipoPago.Text;
 
-            // 4. Tomar la fecha de pago elegida (si no seleccionó ninguna, se usa hoy)
-            System.DateTime fechaPago = dpFechaPago.SelectedDate ?? System.DateTime.Today;
+            DateTime fechaPago = dpFechaPago.SelectedDate ?? DateTime.Today;
 
-            // 5. REGISTRAR EN EL PADRÓN DE CLIENTES (DatosGlobales)
             DatosGlobales.RegistrarCompraCliente(
-                nombre: nombreCliente,
-                dni: "", // Si no tenés campo DNI en Ventas se guarda sin DNI
-                telefono: "",
+                nombre: clienteSeleccionado.NombreCompleto,
+                dni: clienteSeleccionado.Dni,
+                telefono: clienteSeleccionado.Telefono,
                 detalle: detalleProductos,
                 total: total,
                 metodoPago: metodoPago,
                 fecha: fechaPago
             );
 
-            MessageBox.Show("¡Venta registrada con éxito y asociada al cliente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show("¡Venta registrada con éxito! El stock y el historial del cliente fueron actualizados.", "Venta Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Limpiar el formulario para la siguiente venta
+            // Refrescar catálogo para mostrar el stock restante actualizado en el ComboBox
+            CargarListaProductos();
             BtnCancelarVenta_Click(sender, e);
         }
 
         private void BtnCancelarVenta_Click(object sender, RoutedEventArgs e)
         {
             _detalleVenta.Clear();
-            txtCliente.Clear();
-            cmbProductoBusqueda.Text = string.Empty;
-            cmbProductoBusqueda.ItemsSource = null;
+
+            if (DatosGlobales.Clientes != null && DatosGlobales.Clientes.Count > 0)
+            {
+                cmbCliente.SelectedIndex = 0;
+            }
+
+            _sincronizandoProducto = true;
+            txtCodigoProducto.Clear();
+            cmbProductoBusqueda.SelectedIndex = -1;
             txtPrecioUnitario.Clear();
             txtCantidad.Text = "1";
+            _sincronizandoProducto = false;
+
             cmbTipoPago.SelectedIndex = 0;
-            dpFechaPago.SelectedDate = System.DateTime.Today;
+            dpFechaPago.SelectedDate = DateTime.Today;
             ActualizarTotal();
         }
     }

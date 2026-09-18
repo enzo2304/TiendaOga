@@ -98,11 +98,17 @@
                 <ComboBoxItem Content="Pasaporte"/>
             </ComboBox>
 
-            <TextBlock Text="Nro. Documento:" Style="{StaticResource FieldLabelStyle}"/>
-            <TextBox x:Name="txtNroDocumento"/>
+           
+            <TextBox x:Name="txtNroDocumento"
+            PreviewTextInput="SoloNumeros_PreviewTextInput"
+            DataObject.Pasting="SoloNumeros_Pasting"
+            MaxLength="8" />
 
-            <TextBlock Text="Teléfono:" Style="{StaticResource FieldLabelStyle}"/>
-            <TextBox x:Name="txtTelefono" Margin="0,0,0,14"/>
+            
+            <TextBox x:Name="txtTelefono"
+            PreviewTextInput="SoloNumeros_PreviewTextInput"
+            DataObject.Pasting="SoloNumeros_Pasting"
+            MaxLength="15" />
 
             <CheckBox x:Name="chkActivo" Content="Cliente Activo" IsChecked="True" FontSize="13" Foreground="#4A4A4A" Margin="0,4,0,10"/>
         </StackPanel>

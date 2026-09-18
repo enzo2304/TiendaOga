@@ -1,22 +1,36 @@
 using System.Collections.Generic;
+using System.Linq;
 using TiendaOga.Entidades;
 
 namespace TiendaOga.Negocio
 {
     /// <summary>
     /// Reglas de cálculo y validación de una venta:
-    /// total del detalle, vuelto, y condiciones para poder guardar.
+    /// stock, totales, vuelto y precondiciones de guardado.
     /// </summary>
     public static class VentaNegocio
     {
+        public static bool ValidarStockDisponible(int stockTotal, int cantidadEnGrilla, int cantidadNueva, out string mensajeError)
+        {
+            if (cantidadNueva <= 0)
+            {
+                mensajeError = "La cantidad debe ser un número entero mayor a cero.";
+                return false;
+            }
+
+            if ((cantidadEnGrilla + cantidadNueva) > stockTotal)
+            {
+                mensajeError = $"Stock insuficiente. Disponible: {stockTotal} unidad(es). Ya agregadas en la orden: {cantidadEnGrilla}.";
+                return false;
+            }
+
+            mensajeError = string.Empty;
+            return true;
+        }
+
         public static decimal CalcularTotal(IEnumerable<ItemVenta> detalleVenta)
         {
-            decimal total = 0;
-            foreach (var item in detalleVenta)
-            {
-                total += item.Subtotal;
-            }
-            return total;
+            return detalleVenta?.Sum(item => item.Subtotal) ?? 0m;
         }
 
         public static decimal CalcularVuelto(decimal total, decimal montoRecibido)
@@ -41,6 +55,12 @@ namespace TiendaOga.Negocio
             if (cantidadItems == 0)
             {
                 mensajeError = "Agregá al menos un producto antes de guardar la venta.";
+                return false;
+            }
+
+            if (total <= 0)
+            {
+                mensajeError = "El monto total de la venta debe ser mayor a 0.";
                 return false;
             }
 

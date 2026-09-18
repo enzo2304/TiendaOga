@@ -5,12 +5,12 @@ namespace TiendaOga.Entidades
         public int IdProducto { get; set; }
         public string NombreProducto { get; set; }
         public string NombreCategoria { get; set; }
-
-        // FALTABA ESTA LÍNEA:
         public decimal PrecioCosto { get; set; }
-
         public decimal PrecioVentas { get; set; }
         public int Stock { get; set; }
         public string TipoProducto { get; set; } // "Hogar" o "Tecnologia"
+
+        // Propiedad de lectura para el selector de Ventas
+        public string NombreCompletoDisplay => $"[{IdProducto}] {NombreProducto} (Stock: {Stock})";
     }
 }
