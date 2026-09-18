@@ -29,8 +29,8 @@
             <Setter Property="CornerRadius" Value="8"/>
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="1"/>
-            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
             <Setter Property="Padding" Value="20"/>
+            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
         </Style>
 
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
@@ -104,18 +104,16 @@
         <!-- =========================================================
              CAPA 1: VISTA PRINCIPAL DE DATOS (Fondo)
         ========================================================== -->
-        <Grid Margin="24">
+        <Grid Margin="10,10,10,20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <!-- Título y Botón Nuevo -->
-                <RowDefinition Height="Auto"/>
-                <!-- Filtros -->
                 <RowDefinition Height="*"/>
-                <!-- Tabla -->
+                <!-- Tarjeta Blanca (Filtros y Tabla) -->
             </Grid.RowDefinitions>
 
             <!-- Encabezado de la vista -->
-            <Grid Grid.Row="0" Margin="0,0,0,24">
+            <Grid Grid.Row="0" Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -129,70 +127,82 @@
                 <Button Grid.Column="1" Content="+ Nuevo Producto" Style="{StaticResource PrimaryButton}" Click="BtnNuevoProducto_Click"/>
             </Grid>
 
-            <!-- Filtros -->
-            <Grid Grid.Row="1" Margin="0,0,0,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="250"/>
-                    <ColumnDefinition Width="300"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+            <!-- RECUADRO BLANCO (Tarjeta) que envuelve Filtros y Tabla -->
+            <Border Grid.Row="1" Style="{StaticResource CardStyle}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <!-- Filtros -->
+                        <RowDefinition Height="*"/>
+                        <!-- Tabla -->
+                    </Grid.RowDefinitions>
 
-                <StackPanel Grid.Column="0" Margin="0,0,16,0">
-                    <TextBlock Text="Filtrar por rubro:" Style="{StaticResource FieldLabelStyle}"/>
-                    <ComboBox x:Name="cmbFiltroCategoria" Style="{StaticResource FlatComboBox}" DisplayMemberPath="Nombre" SelectedValuePath="IdCategoria"/>
-                </StackPanel>
+                    <!-- Filtros -->
+                    <Grid Grid.Row="0" Margin="0,0,0,16">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="250"/>
+                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
 
-                <StackPanel Grid.Column="1" Margin="0,0,16,0">
-                    <TextBlock Text="Buscar producto:" Style="{StaticResource FieldLabelStyle}"/>
-                    <TextBox x:Name="txtBusqueda" Style="{StaticResource FlatTextBox}" />
-                </StackPanel>
+                        <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                            <TextBlock Text="Filtrar por rubro:" Style="{StaticResource FieldLabelStyle}"/>
+                            <ComboBox x:Name="cmbFiltroCategoria" Style="{StaticResource FlatComboBox}" DisplayMemberPath="Nombre" SelectedValuePath="IdCategoria"/>
+                        </StackPanel>
 
-                <Button Grid.Column="2" Content="Buscar" Style="{StaticResource PrimaryButton}" VerticalAlignment="Bottom" Height="34" Padding="16,0" Click="BtnBuscar_Click"/>
-            </Grid>
+                        <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                            <TextBlock Text="Buscar producto:" Style="{StaticResource FieldLabelStyle}"/>
+                            <TextBox x:Name="txtBusqueda" Style="{StaticResource FlatTextBox}" />
+                        </StackPanel>
 
-            <!-- Tabla de Datos (Estilo Clásico) -->
-            <DataGrid x:Name="dgProductos" Grid.Row="2"
-                      AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
-                      HeadersVisibility="Column" SelectionMode="Single" SelectionChanged="DgProductos_SelectionChanged"
-                      Background="White" FontSize="13" RowHeight="32"
-                      GridLinesVisibility="All" HorizontalGridLinesBrush="#E0E0E0" VerticalGridLinesBrush="#E0E0E0"
-                      BorderBrush="#CCCCCC" BorderThickness="1">
+                        <Button Grid.Column="2" Content="Buscar" Style="{StaticResource PrimaryButton}" VerticalAlignment="Bottom" Height="34" Padding="16,0" Click="BtnBuscar_Click"/>
+                    </Grid>
 
-                <DataGrid.Columns>
-                    <!-- Columnas de datos -->
-                    <DataGridTextColumn Header="ID" Binding="{Binding IdProducto}" Width="80"/>
-                    <DataGridTextColumn Header="Nombre" Binding="{Binding NombreProducto}" Width="*"/>
-                    <DataGridTextColumn Header="Rubro" Binding="{Binding NombreCategoria}" Width="150"/>
-                    <DataGridTextColumn Header="Costo" Binding="{Binding PrecioCosto, StringFormat={}{0:C}}" Width="120"/>
-                    <DataGridTextColumn Header="Venta" Binding="{Binding PrecioVentas, StringFormat={}{0:C}}" Width="120"/>
-                    <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
+                    <!-- Tabla de Datos (Estilo Clásico) -->
+                    <DataGrid x:Name="dgProductos" Grid.Row="1"
+                              AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                              HeadersVisibility="Column" SelectionMode="Single" SelectionChanged="DgProductos_SelectionChanged"
+                              Background="White" FontSize="13" RowHeight="32"
+                              GridLinesVisibility="All" HorizontalGridLinesBrush="#E0E0E0" VerticalGridLinesBrush="#E0E0E0"
+                              BorderBrush="#CCCCCC" BorderThickness="1">
 
-                    <!-- Columna Estado Visual -->
-                    <DataGridTemplateColumn Header="Estado" Width="80">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <TextBlock Text="Activo" VerticalAlignment="Center" Margin="5,0,0,0"/>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
+                        <DataGrid.Columns>
+                            <!-- Columnas de datos -->
+                            <DataGridTextColumn Header="ID" Binding="{Binding IdProducto}" Width="80"/>
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding NombreProducto}" Width="*"/>
+                            <DataGridTextColumn Header="Rubro" Binding="{Binding NombreCategoria}" Width="150"/>
+                            <DataGridTextColumn Header="Costo" Binding="{Binding PrecioCosto, StringFormat={}{0:C}}" Width="120"/>
+                            <DataGridTextColumn Header="Venta" Binding="{Binding PrecioVentas, StringFormat={}{0:C}}" Width="120"/>
+                            <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
 
-                    <!-- Acciones: Editar y Eliminar -->
-                    <DataGridTemplateColumn Header="Acciones" Width="90">
-                        <DataGridTemplateColumn.CellTemplate>
-                            <DataTemplate>
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                    <Button Style="{StaticResource IconButtonStyle}" Click="BtnEditar_Click" Tag="{Binding IdProducto}" Margin="0,0,8,0" ToolTip="Editar">
-                                        <TextBlock Text="✏️" FontSize="14"/>
-                                    </Button>
-                                    <Button Style="{StaticResource IconButtonStyle}" Click="BtnEliminar_Click" Tag="{Binding IdProducto}" ToolTip="Eliminar">
-                                        <TextBlock Text="🗑️" FontSize="14"/>
-                                    </Button>
-                                </StackPanel>
-                            </DataTemplate>
-                        </DataGridTemplateColumn.CellTemplate>
-                    </DataGridTemplateColumn>
-                </DataGrid.Columns>
-            </DataGrid>
+                            <!-- Columna Estado Visual -->
+                            <DataGridTemplateColumn Header="Estado" Width="80">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="Activo" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+
+                            <!-- Acciones: Editar y Eliminar -->
+                            <DataGridTemplateColumn Header="Acciones" Width="90">
+                                <DataGridTemplateColumn.CellTemplate>
+                                    <DataTemplate>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                            <Button Style="{StaticResource IconButtonStyle}" Click="BtnEditar_Click" Tag="{Binding IdProducto}" Margin="0,0,8,0" ToolTip="Editar">
+                                                <TextBlock Text="✏️" FontSize="14"/>
+                                            </Button>
+                                            <Button Style="{StaticResource IconButtonStyle}" Click="BtnEliminar_Click" Tag="{Binding IdProducto}" ToolTip="Eliminar">
+                                                <TextBlock Text="🗑️" FontSize="14"/>
+                                            </Button>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                </DataGridTemplateColumn.CellTemplate>
+                            </DataGridTemplateColumn>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </Grid>
+            </Border>
         </Grid>
 
         <!-- =========================================================
@@ -313,6 +323,5 @@
                 </StackPanel>
             </Border>
         </Grid>
-
     </Grid>
 </Page>

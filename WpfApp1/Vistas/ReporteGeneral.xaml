@@ -25,16 +25,6 @@
         </Style>
 
         <!-- **** Tipografia **** -->
-        <Style x:Key="PageTitleStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="24"/>
-            <Setter Property="FontWeight" Value="SemiBold"/>
-            <Setter Property="Foreground" Value="#333333"/>
-        </Style>
-        <Style x:Key="PageSubtitleStyle" TargetType="TextBlock">
-            <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Foreground" Value="#666666"/>
-            <Setter Property="Margin" Value="0,4,0,0"/>
-        </Style>
         <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="15"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -85,22 +75,15 @@
     </Page.Resources>
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Background="#F4F5F7">
-        <Grid Margin="28">
+        <Grid Margin="0,0,0,20">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
 
-            <!-- ==== ENCABEZADO ==== -->
-            <StackPanel Grid.Row="0" Margin="0,0,0,20">
-                <TextBlock Text="Panel Gerencial" Style="{StaticResource PageTitleStyle}"/>
-                <TextBlock Text="Métricas financieras y rendimiento del personal" Style="{StaticResource PageSubtitleStyle}"/>
-            </StackPanel>
-
             <!-- ==== FILA DE KPIs ESTRATÉGICOS ==== -->
-            <UniformGrid Grid.Row="1" Columns="4" Margin="0,0,0,20">
+            <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,20">
 
                 <!-- KPI 1: Ganancia Neta -->
                 <Border Style="{StaticResource CardStyle}" Margin="0,0,12,0">
@@ -129,7 +112,7 @@
                     </StackPanel>
                 </Border>
 
-                <!-- KPI 4: Stock Crítico (Se mantiene) -->
+                <!-- KPI 4: Stock Crítico -->
                 <Border Style="{StaticResource CardStyle}" Margin="12,0,0,0">
                     <StackPanel>
                         <TextBlock Text="⚠️" Style="{StaticResource KpiIconStyle}"/>
@@ -140,7 +123,7 @@
             </UniformGrid>
 
             <!-- ==== GRAFICOS ==== -->
-            <Grid Grid.Row="2" Margin="0,0,0,20">
+            <Grid Grid.Row="1" Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="2*"/>
                     <ColumnDefinition Width="16"/>
@@ -257,7 +240,7 @@
             </Grid>
 
             <!-- ==== TABLAS ==== -->
-            <Grid Grid.Row="3">
+            <Grid Grid.Row="2">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="1*"/>
                     <ColumnDefinition Width="16"/>
