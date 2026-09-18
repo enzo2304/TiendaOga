@@ -27,11 +27,15 @@ namespace TiendaOga.Vistas
             // La decisión de qué puede ver cada rol vive en PermisosNegocio,
             // acá solo se aplica el resultado a los controles.
             btnProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerProductos(rolActual));
-           // btnEntradaStock.Visibility = ToVisibility(PermisosNegocio.PuedeVerEntradaStock(rolActual));
+            // btnEntradaStock.Visibility = ToVisibility(PermisosNegocio.PuedeVerEntradaStock(rolActual));
             btnClientes.Visibility = ToVisibility(PermisosNegocio.PuedeVerClientes(rolActual));
             btnUsuarios.Visibility = ToVisibility(PermisosNegocio.PuedeVerUsuarios(rolActual));
             btnReportesVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesGerencia(rolActual));
-            btnStockCritico.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesGerencia(rolActual));
+
+            // OJO: el XAML actual ya no tiene "btnStockCritico" (ese botón se
+            // reemplazó por "btnReporteGeneral" / Panel Gerencial), así que el
+            // permiso de gerencia ahora se aplica sobre ese botón.
+            btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesGerencia(rolActual));
         }
 
         private static Visibility ToVisibility(bool visible)
@@ -46,23 +50,10 @@ namespace TiendaOga.Vistas
             this.Close();
         }
 
-        // ==========================================
-        // ACÁ ESTÁ EL CAMBIO PRINCIPAL
-        // ==========================================
         private void btnVentas_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Actualizamos el título de la barra superior
             lblTituloModulo.Text = "Módulo de Ventas y Facturación";
-
-            // 2. Cargamos la página de ventas adentro del Frame
             ContenedorPrincipal.Navigate(new Ventas());
-        }
-
-        // Para los próximos módulos, la lógica será idéntica a btnVentas_Click
-        private void btnConsultarStock_Click(object sender, RoutedEventArgs e)
-        {
-            lblTituloModulo.Text = "Consulta de Catálogo y Stock";
-            // ContenedorPrincipal.Navigate(new PaginaCatalogo());
         }
 
         private void btnProductos_Click(object sender, RoutedEventArgs e)
@@ -70,12 +61,6 @@ namespace TiendaOga.Vistas
             lblTituloModulo.Text = "Administración de Productos y Rubros";
             ContenedorPrincipal.Navigate(new Productos());
         }
-
-       /* private void btnEntradaStock_Click(object sender, RoutedEventArgs e)
-        {
-            lblTituloModulo.Text = "Registro de Entrada y Ajuste de Stock";
-            ContenedorPrincipal.Navigate(new EntradaStock());
-        }*/
 
         private void btnClientes_Click(object sender, RoutedEventArgs e)
         {
@@ -88,16 +73,27 @@ namespace TiendaOga.Vistas
             lblTituloModulo.Text = "Gestión de Cuentas de Usuario y Roles";
             ContenedorPrincipal.Navigate(new Usuarios());
         }
+
         private void btnReportesVentas_Click(object sender, RoutedEventArgs e)
         {
             lblTituloModulo.Text = "Reportes y Rendimiento de Ventas";
             ContenedorPrincipal.Navigate(new ReportesVendedor());
         }
-        
 
-        private void btnStockCritico_Click(object sender, RoutedEventArgs e)
+        // ==========================================
+        // CONEXIÓN CON EL PANEL GERENCIAL
+        // ==========================================
+        private void btnReporteGeneral_Click(object sender, RoutedEventArgs e)
         {
-            lblTituloModulo.Text = "Rotación de Productos y Stock Crítico";
+            lblTituloModulo.Text = "Panel Gerencial";
+            ContenedorPrincipal.Navigate(new ReporteGeneral());
+        }
+
+        private void btnBackup_Click(object sender, RoutedEventArgs e)
+        {
+            lblTituloModulo.Text = "Backup del Sistema";
+            // TODO: cuando tengas la vista de Backup armada, navegala igual que las demás:
+            // ContenedorPrincipal.Navigate(new Backup());
         }
     }
 }

@@ -77,9 +77,7 @@
                     </Button.Template>
                 </Button>
 
-                <!-- Menú de Opciones: lista plana, sin secciones fijas.
-                     La visibilidad de cada botón según el rol se resuelve
-                     por código en Window1.xaml.cs (Visibility = Visible/Collapsed) -->
+                <!-- Menú de Opciones -->
                 <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,10,0,10">
                     <StackPanel Margin="10,0">
                         <Button x:Name="btnVentas" Click="btnVentas_Click" Content="Ventas" Style="{StaticResource BotonNavegacion}"/>
@@ -87,8 +85,12 @@
                         <Button x:Name="btnProductos" Click="btnProductos_Click" Content="Productos" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnUsuarios" Click="btnUsuarios_Click" Content="Usuarios y Permisos" Style="{StaticResource BotonNavegacion}"/>
                         <Button x:Name="btnReportesVentas" Click="btnReportesVentas_Click" Content="Reportes del vendedor" Style="{StaticResource BotonNavegacion}"/>
-                        <Button x:Name="btnStockCritico" Click="btnStockCritico_Click" Content="Reporte del adminitrador" Style="{StaticResource BotonNavegacion}"/>
-                        <Button x:Name="btnStockBackup" Click="btnStockCritico_Click" Content="Backup" Style="{StaticResource BotonNavegacion}"/>
+
+
+                        <Button x:Name="btnReporteGeneral" Click="btnReporteGeneral_Click" Content="Reporte General" Style="{StaticResource BotonNavegacion}"/>
+
+                        <!-- CORRECCIÓN: Botón Backup con su propio evento -->
+                        <Button x:Name="btnStockBackup" Click="btnBackup_Click" Content="Backup" Style="{StaticResource BotonNavegacion}"/>
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>

@@ -191,6 +191,9 @@
     </Compile>
     <Compile Include="Entidades\Perfil.cs" />
     <Compile Include="Entidades\Usuario.cs" />
+    <Compile Include="Vistas\ReporteGeneral.xaml.cs">
+      <DependentUpon>ReporteGeneral.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vistas\ReporteVendedor.xaml.cs">
       <DependentUpon>ReporteVendedor.xaml</DependentUpon>
     </Compile>
@@ -224,6 +227,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vistas\Productos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vistas\ReporteGeneral.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
