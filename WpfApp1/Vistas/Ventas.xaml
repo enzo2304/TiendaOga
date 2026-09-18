@@ -105,8 +105,8 @@
                         </StackPanel>
 
                         <Button x:Name="btnAgregar" Click="BtnAgregar_Click"
-                                Grid.Column="4" Content="Agregar" Width="80" Height="28" VerticalAlignment="Bottom"
-                                Background="#3182CE" Foreground="White" Cursor="Hand" BorderThickness="0"/>
+                            Grid.Column="3" Content="Agregar" Width="80" Height="28" VerticalAlignment="Bottom"
+                            Background="#E8792D" Foreground="White" Cursor="Hand" BorderThickness="0"/>
                     </Grid>
                 </Border>
 

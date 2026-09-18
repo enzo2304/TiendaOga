@@ -92,8 +92,7 @@ namespace TiendaOga.Vistas
         private void btnBackup_Click(object sender, RoutedEventArgs e)
         {
             lblTituloModulo.Text = "Backup del Sistema";
-            // TODO: cuando tengas la vista de Backup armada, navegala igual que las demás:
-            // ContenedorPrincipal.Navigate(new Backup());
+            ContenedorPrincipal.Navigate(new Backup());
         }
     }
 }
