@@ -16,6 +16,7 @@ namespace TiendaOga.Vistas
     {
         private int? _idUsuarioSeleccionado;
         private bool _usuarioSeleccionadoActivo = true;
+        private int? _idPerfilOriginalSeleccionado;
         private bool _sincronizandoPassword = false;
         private List<UsuarioRow> _todosLosUsuarios = new List<UsuarioRow>();
         private List<UsuarioRow> _usuariosFiltrados = new List<UsuarioRow>();
@@ -262,6 +263,7 @@ namespace TiendaOga.Vistas
 
             _idUsuarioSeleccionado = fila.IdUsuario;
             _usuarioSeleccionadoActivo = fila.Activo;
+            _idPerfilOriginalSeleccionado = fila.IdPerfil;
 
             txtNombre.Text = fila.Nombre;
             txtApellido.Text = fila.Apellido;
@@ -270,6 +272,19 @@ namespace TiendaOga.Vistas
             cmbPerfil.SelectedValue = fila.IdPerfil;
             txtPassword.Clear();
             txtPasswordVisible.Clear();
+
+            // Prevención de auto-bloqueo: si el usuario que está logueado se
+            // selecciona a sí mismo para modificar, no lo dejamos tocar el
+            // combo de Perfil. Así no hay forma de que se baje el rol por
+            // error y se quede afuera de esta misma pantalla.
+            bool esElUsuarioLogueado = fila.IdUsuario == SesionActual.IdUsuario;
+            if (rbModificar.IsChecked == true)
+            {
+                cmbPerfil.IsEnabled = !esElUsuarioLogueado;
+                txtAyudaModo.Text = esElUsuarioLogueado
+                    ? "Estás editando tu propio usuario: no podés cambiarte el perfil vos mismo, para evitar quedarte sin acceso."
+                    : "Seleccioná un usuario de la lista de abajo. Dejá la contraseña en blanco si no querés cambiarla.";
+            }
 
             if (rbBaja.IsChecked == true)
             {
@@ -406,6 +421,22 @@ namespace TiendaOga.Vistas
             string email = txtEmail.Text.Trim();
             int? idPerfil = cmbPerfil.SelectedValue as int?;
 
+            // Prevención de auto-bloqueo (defensa en profundidad): aunque el
+            // combo ya queda deshabilitado al seleccionarte a vos mismo, acá
+            // volvemos a chequearlo antes de guardar. Así, si por cualquier
+            // motivo el perfil que se va a grabar es distinto del que ya
+            // tenías, se corta la operación en vez de dejarte sin acceso.
+            bool esElUsuarioLogueado = _idUsuarioSeleccionado.Value == SesionActual.IdUsuario;
+            if (esElUsuarioLogueado && idPerfil.HasValue && idPerfil.Value != _idPerfilOriginalSeleccionado)
+            {
+                MessageBox.Show(
+                    "No podés cambiar tu propio perfil. Pedile a otro administrador que lo haga, para evitar quedarte sin acceso a esta pantalla.",
+                    "Operación no permitida",
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+                return;
+            }
+
             if (!UsuarioNegocio.ValidarModificacionUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, email, idPerfil, out string mensajeError))
             {
                 MessageBox.Show(mensajeError, "Datos incompletos o inválidos", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -482,6 +513,7 @@ namespace TiendaOga.Vistas
         {
             _idUsuarioSeleccionado = null;
             _usuarioSeleccionadoActivo = true;
+            _idPerfilOriginalSeleccionado = null;
             dgUsuarios.SelectedItem = null;
             LimpiarFormulario();
         }
@@ -495,6 +527,7 @@ namespace TiendaOga.Vistas
             txtPasswordVisible.Clear();
             txtEmail.Clear();
             cmbPerfil.SelectedIndex = -1;
+            cmbPerfil.IsEnabled = true;
         }
     }
 }
