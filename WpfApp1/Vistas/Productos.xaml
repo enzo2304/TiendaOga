@@ -17,13 +17,10 @@
         <SolidColorBrush x:Key="TextPrimaryBrush" Color="#333333"/>
         <SolidColorBrush x:Key="TextSecondaryBrush" Color="#666666"/>
         <SolidColorBrush x:Key="AccentBrush" Color="#E8792D"/>
-        <!-- Naranja OGA -->
         <SolidColorBrush x:Key="AccentBrushHover" Color="#D96C22"/>
 
-        <!-- ===== Efecto de sombra sutil ===== -->
-        <DropShadowEffect x:Key="CardShadow" Color="#000000" Opacity="0.06" BlurRadius="12" ShadowDepth="2" Direction="270"/>
+        <DropShadowEffect x:Key="CardShadow" Color="#000000" Opacity="0.08" BlurRadius="16" ShadowDepth="3" Direction="270"/>
 
-        <!-- ===== Estilos Base ===== -->
         <Style x:Key="CardStyle" TargetType="Border">
             <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
             <Setter Property="CornerRadius" Value="8"/>
@@ -35,11 +32,11 @@
 
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
             <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}"/>
             <Setter Property="Margin" Value="0,0,0,4"/>
         </Style>
 
-        <!-- TextBox y ComboBox -->
         <Style x:Key="FlatTextBox" TargetType="TextBox">
             <Setter Property="Background" Value="White"/>
             <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
@@ -47,7 +44,7 @@
             <Setter Property="BorderThickness" Value="1"/>
             <Setter Property="Padding" Value="8,5"/>
             <Setter Property="FontSize" Value="13"/>
-            <Setter Property="Height" Value="34"/>
+            <Setter Property="Height" Value="32"/>
             <Setter Property="VerticalContentAlignment" Value="Center"/>
         </Style>
 
@@ -61,7 +58,6 @@
             <Setter Property="FontSize" Value="13"/>
         </Style>
 
-        <!-- Botones -->
         <Style x:Key="PrimaryButton" TargetType="Button">
             <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
             <Setter Property="Foreground" Value="White"/>
@@ -98,94 +94,88 @@
         </Style>
     </Page.Resources>
 
-    <!-- CONTENEDOR PRINCIPAL -->
     <Grid>
-
         <!-- =========================================================
-             CAPA 1: VISTA PRINCIPAL DE DATOS (Fondo)
+             CAPA 1: LISTADO PRINCIPAL DE PRODUCTOS
         ========================================================== -->
-        <Grid Margin="10,10,10,20">
+        <Grid Margin="15,10,15,20">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
-                <!-- Título y Botón Nuevo -->
                 <RowDefinition Height="*"/>
-                <!-- Tarjeta Blanca (Filtros y Tabla) -->
             </Grid.RowDefinitions>
 
-            <!-- Encabezado de la vista -->
-            <Grid Grid.Row="0" Margin="0,0,0,20">
+            <!-- Encabezado -->
+            <Grid Grid.Row="0" Margin="0,0,0,16">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel>
-                    <TextBlock Text="Productos y Rubros" FontSize="24" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
-                    <TextBlock Text="Alta, baja y modificación del catálogo" FontSize="14" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+                    <TextBlock Text="Productos y Rubros" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                    <TextBlock Text="Consulta y administración del catálogo" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0"/>
                 </StackPanel>
 
-                <!-- BOTÓN PARA ABRIR EL MODAL DE ALTA -->
-                <Button Grid.Column="1" Content="+ Nuevo Producto" Style="{StaticResource PrimaryButton}" Click="BtnNuevoProducto_Click"/>
+                <!-- Botón Nuevo (Identificado para control de roles) -->
+                <Button x:Name="btnNuevoProducto" Grid.Column="1" Content="+ Nuevo Producto" 
+                        Style="{StaticResource PrimaryButton}" Click="BtnNuevoProducto_Click"/>
             </Grid>
 
-            <!-- RECUADRO BLANCO (Tarjeta) que envuelve Filtros y Tabla -->
-            <Border Grid.Row="1" Style="{StaticResource CardStyle}">
+            <!-- Tarjeta con Filtros y Grilla -->
+            <Border Grid.Row="1" Style="{StaticResource CardStyle}" Padding="16">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
-                        <!-- Filtros -->
                         <RowDefinition Height="*"/>
-                        <!-- Tabla -->
                     </Grid.RowDefinitions>
 
                     <!-- Filtros -->
-                    <Grid Grid.Row="0" Margin="0,0,0,16">
+                    <Grid Grid.Row="0" Margin="0,0,0,14">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="250"/>
-                            <ColumnDefinition Width="300"/>
+                            <ColumnDefinition Width="220"/>
+                            <ColumnDefinition Width="280"/>
                             <ColumnDefinition Width="Auto"/>
                         </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="0" Margin="0,0,16,0">
+                        <StackPanel Grid.Column="0" Margin="0,0,12,0">
                             <TextBlock Text="Filtrar por rubro:" Style="{StaticResource FieldLabelStyle}"/>
                             <ComboBox x:Name="cmbFiltroCategoria" Style="{StaticResource FlatComboBox}" DisplayMemberPath="Nombre" SelectedValuePath="IdCategoria"/>
                         </StackPanel>
 
-                        <StackPanel Grid.Column="1" Margin="0,0,16,0">
+                        <StackPanel Grid.Column="1" Margin="0,0,12,0">
                             <TextBlock Text="Buscar producto:" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="txtBusqueda" Style="{StaticResource FlatTextBox}" />
+                            <TextBox x:Name="txtBusqueda" Style="{StaticResource FlatTextBox}" Height="34"/>
                         </StackPanel>
 
-                        <Button Grid.Column="2" Content="Buscar" Style="{StaticResource PrimaryButton}" VerticalAlignment="Bottom" Height="34" Padding="16,0" Click="BtnBuscar_Click"/>
+                        <Button Grid.Column="2" Content="Buscar" Style="{StaticResource PrimaryButton}" 
+                                VerticalAlignment="Bottom" Height="34" Padding="16,0" Click="BtnBuscar_Click"/>
                     </Grid>
 
-                    <!-- Tabla de Datos (Estilo Clásico) -->
+                    <!-- DataGrid -->
                     <DataGrid x:Name="dgProductos" Grid.Row="1"
                               AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
                               HeadersVisibility="Column" SelectionMode="Single" SelectionChanged="DgProductos_SelectionChanged"
                               Background="White" FontSize="13" RowHeight="32"
+                              HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                               GridLinesVisibility="All" HorizontalGridLinesBrush="#E0E0E0" VerticalGridLinesBrush="#E0E0E0"
                               BorderBrush="#CCCCCC" BorderThickness="1">
-
                         <DataGrid.Columns>
-                            <!-- Columnas de datos -->
-                            <DataGridTextColumn Header="ID" Binding="{Binding IdProducto}" Width="80"/>
-                            <DataGridTextColumn Header="Nombre" Binding="{Binding NombreProducto}" Width="*"/>
-                            <DataGridTextColumn Header="Rubro" Binding="{Binding NombreCategoria}" Width="150"/>
-                            <DataGridTextColumn Header="Costo" Binding="{Binding PrecioCosto, StringFormat={}{0:C}}" Width="120"/>
-                            <DataGridTextColumn Header="Venta" Binding="{Binding PrecioVentas, StringFormat={}{0:C}}" Width="120"/>
+                            <DataGridTextColumn Header="ID" Binding="{Binding IdProducto}" Width="60"/>
+                            <DataGridTextColumn Header="Nombre" Binding="{Binding NombreProducto}" Width="2*" MinWidth="200"/>
+                            <DataGridTextColumn Header="Rubro" Binding="{Binding NombreCategoria}" Width="1.2*" MinWidth="120"/>
+                            <DataGridTextColumn Header="Costo" Binding="{Binding PrecioCosto, StringFormat={}{0:C}}" Width="110"/>
+                            <DataGridTextColumn Header="Venta" Binding="{Binding PrecioVentas, StringFormat={}{0:C}}" Width="110"/>
                             <DataGridTextColumn Header="Stock" Binding="{Binding Stock}" Width="80"/>
 
-                            <!-- Columna Estado Visual -->
-                            <DataGridTemplateColumn Header="Estado" Width="80">
+                            <DataGridTemplateColumn Header="Estado" Width="85">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
-                                        <TextBlock Text="Activo" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                                        <TextBlock Text="Activo" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="#2E7D32" FontWeight="SemiBold"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <!-- Acciones: Editar y Eliminar -->
-                            <DataGridTemplateColumn Header="Acciones" Width="90">
+                            <!-- Columna Acciones (Identificada para control de roles) -->
+                            <DataGridTemplateColumn x:Name="columnaAcciones" Header="Acciones" Width="90">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
@@ -206,122 +196,151 @@
         </Grid>
 
         <!-- =========================================================
-             CAPA 2: MODAL DE FORMULARIO (Oculto por defecto)
+             CAPA 2: MODAL RESPONSIVE Y ADAPTABLE
         ========================================================== -->
-        <Grid x:Name="ModalFormulario" Background="#66000000" Visibility="Collapsed" Panel.ZIndex="100">
-            <!-- Tarjeta del formulario centrada -->
-            <Border Style="{StaticResource CardStyle}" Width="850" VerticalAlignment="Center" HorizontalAlignment="Center" Padding="32">
-                <StackPanel>
+        <Grid x:Name="ModalFormulario" Background="#77000000" Visibility="Collapsed" Panel.ZIndex="100">
+            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" VerticalAlignment="Center">
+                <Border Style="{StaticResource CardStyle}" 
+                        MaxWidth="720" 
+                        Margin="20"
+                        HorizontalAlignment="Center" 
+                        Padding="24">
+                    <StackPanel>
+                        <TextBlock Text="Datos del Producto" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,16"/>
 
-                    <TextBlock Text="Datos del Producto" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,24"/>
+                        <!-- Fila 1: ID y Nombre -->
+                        <Grid Margin="0,0,0,12">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="80"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
 
-                    <Grid Margin="0,0,0,16">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="0.5*"/>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="1*"/>
-                            <ColumnDefinition Width="0.8*"/>
-                        </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="ID" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox x:Name="txtId" Style="{StaticResource FlatTextBox}" IsReadOnly="True" Background="#F5F5F5"/>
+                            </StackPanel>
 
-                        <StackPanel Grid.Column="0" Margin="0,0,12,0">
-                            <TextBlock Text="ID" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="txtId" Style="{StaticResource FlatTextBox}" IsReadOnly="True" Background="#F7F7F7"/>
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Nombre del Producto" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox x:Name="txtNombre" Style="{StaticResource FlatTextBox}"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Fila 2: Costo, Venta y Stock -->
+                        <Grid Margin="0,0,0,16">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+
+                            <StackPanel Grid.Column="0">
+                                <TextBlock Text="Precio Costo ($)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox x:Name="txtPrecioCosto" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloDecimales"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="2">
+                                <TextBlock Text="Precio Venta ($)" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox x:Name="txtPrecioVenta" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloDecimales"/>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="4">
+                                <TextBlock Text="Stock Disponible" Style="{StaticResource FieldLabelStyle}"/>
+                                <TextBox x:Name="txtStock" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloEnteros"/>
+                            </StackPanel>
+                        </Grid>
+
+                        <!-- Selector de Rubro / Tipo -->
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                            <TextBlock Text="Tipo de Rubro:" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,16,0" VerticalAlignment="Center"/>
+                            <RadioButton x:Name="rbHogar" Content="Hogar" GroupName="TipoProd" IsChecked="True" Checked="TipoProducto_Checked" Margin="0,0,20,0"/>
+                            <RadioButton x:Name="rbTecnologia" Content="Tecnología" GroupName="TipoProd" Checked="TipoProducto_Checked"/>
                         </StackPanel>
 
-                        <StackPanel Grid.Column="1" Margin="0,0,12,0">
-                            <TextBlock Text="Nombre producto" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="txtNombre" Style="{StaticResource FlatTextBox}"/>
-                        </StackPanel>
+                        <!-- Atributos Dinámicos -->
+                        <Grid Margin="0,0,0,20">
+                            <!-- Panel Hogar -->
+                            <Border x:Name="panelHogar" Background="#FBFBFB" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="2" Margin="0,0,12,0">
-                            <TextBlock Text="Precio Costo" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="txtPrecioCosto" Style="{StaticResource FlatTextBox}"/>
-                        </StackPanel>
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Material" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBox x:Name="txtMaterial" Style="{StaticResource FlatTextBox}"/>
+                                    </StackPanel>
 
-                        <StackPanel Grid.Column="3" Margin="0,0,12,0">
-                            <TextBlock Text="Precio Venta" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="txtPrecioVenta" Style="{StaticResource FlatTextBox}"/>
-                        </StackPanel>
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Dimensiones" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBox x:Name="txtDimensiones" Style="{StaticResource FlatTextBox}"/>
+                                    </StackPanel>
 
-                        <StackPanel Grid.Column="4">
-                            <TextBlock Text="Stock" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="txtStock" Style="{StaticResource FlatTextBox}"/>
-                        </StackPanel>
-                    </Grid>
+                                    <StackPanel Grid.Column="4">
+                                        <TextBlock Text="Peso (kg)" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBox x:Name="txtPeso" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloDecimales"/>
+                                    </StackPanel>
 
-                    <!-- Selector de tipo -->
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,16">
-                        <TextBlock Text="Tipo de Producto:" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,16,0" VerticalAlignment="Center"/>
-                        <RadioButton x:Name="rbHogar" Content="Hogar" GroupName="TipoProd" IsChecked="True" Checked="TipoProducto_Checked" Margin="0,0,20,0"/>
-                        <RadioButton x:Name="rbTecnologia" Content="Tecnología" GroupName="TipoProd" Checked="TipoProducto_Checked"/>
+                                    <StackPanel Grid.Column="6">
+                                        <TextBlock Text="Ambiente" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBox x:Name="txtAmbiente" Style="{StaticResource FlatTextBox}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+
+                            <!-- Panel Tecnología -->
+                            <Border x:Name="panelTecnologia" Background="#FBFBFB" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12" Visibility="Collapsed">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="8"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+
+                                    <StackPanel Grid.Column="0">
+                                        <TextBlock Text="Marca" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBox x:Name="txtMarca" Style="{StaticResource FlatTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2">
+                                        <TextBlock Text="Modelo" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBox x:Name="txtModelo" Style="{StaticResource FlatTextBox}"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="4">
+                                        <TextBlock Text="Garantía (meses)" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBox x:Name="txtGarantia" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloEnteros"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="6">
+                                        <TextBlock Text="Voltaje" Style="{StaticResource FieldLabelStyle}"/>
+                                        <TextBox x:Name="txtVoltaje" Style="{StaticResource FlatTextBox}"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </Grid>
+
+                        <!-- Botones de Acción -->
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Cancelar" Style="{StaticResource GhostButton}" Margin="0,0,14,0" Click="BtnCancelar_Click"/>
+                            <Button Content="Guardar Producto" Style="{StaticResource PrimaryButton}" Width="150" Click="BtnGuardar_Click"/>
+                        </StackPanel>
                     </StackPanel>
-
-                    <!-- Paneles condicionales -->
-                    <Grid Height="80" Margin="0,0,0,24">
-                        <Border x:Name="panelHogar" Background="#FAFAFA" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="16">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock Text="Material" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtMaterial" Style="{StaticResource FlatTextBox}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                                    <TextBlock Text="Dimensiones" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtDimensiones" Style="{StaticResource FlatTextBox}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Margin="0,0,10,0">
-                                    <TextBlock Text="Peso (kg)" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtPeso" Style="{StaticResource FlatTextBox}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="3">
-                                    <TextBlock Text="Ambiente" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtAmbiente" Style="{StaticResource FlatTextBox}"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-
-                        <Border x:Name="panelTecnologia" Background="#FAFAFA" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="16" Visibility="Collapsed">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="*"/>
-                                </Grid.ColumnDefinitions>
-                                <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                                    <TextBlock Text="Marca" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtMarca" Style="{StaticResource FlatTextBox}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="1" Margin="0,0,10,0">
-                                    <TextBlock Text="Modelo" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtModelo" Style="{StaticResource FlatTextBox}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="2" Margin="0,0,10,0">
-                                    <TextBlock Text="Garantía (meses)" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtGarantia" Style="{StaticResource FlatTextBox}"/>
-                                </StackPanel>
-                                <StackPanel Grid.Column="3">
-                                    <TextBlock Text="Voltaje" Style="{StaticResource FieldLabelStyle}"/>
-                                    <TextBox x:Name="txtVoltaje" Style="{StaticResource FlatTextBox}"/>
-                                </StackPanel>
-                            </Grid>
-                        </Border>
-                    </Grid>
-
-                    <!-- Botones del Modal -->
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                        <Button Content="Cancelar" Style="{StaticResource GhostButton}" Margin="0,0,16,0" Click="BtnCancelar_Click"/>
-                        <Button Content="Guardar Producto" Style="{StaticResource PrimaryButton}" Width="160" Click="BtnGuardar_Click"/>
-                    </StackPanel>
-
-                </StackPanel>
-            </Border>
+                </Border>
+            </ScrollViewer>
         </Grid>
     </Grid>
 </Page>

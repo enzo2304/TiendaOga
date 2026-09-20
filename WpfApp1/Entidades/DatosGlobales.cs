@@ -20,18 +20,16 @@ namespace TiendaOga.Entidades
         public string Dni { get; set; }
         public string NombreCompleto { get; set; }
         public string Telefono { get; set; }
-        public string TipoCliente { get; set; } = "Consumidor Final";
+        public string TipoCliente { get; set; } = "Cliente Registrado";
         public string TipoDocumento { get; set; } = "DNI";
         public bool Activo { get; set; } = true;
         public int CantidadCompras => HistorialCompras.Count;
         public List<CompraCliente> HistorialCompras { get; set; } = new List<CompraCliente>();
 
-        // Propiedad de lectura formateada para el ComboBox
         public string NombreDisplay => string.IsNullOrWhiteSpace(Dni) || Dni == "S/D"
             ? NombreCompleto
             : $"{NombreCompleto} (DNI: {Dni})";
 
-        // Esto garantiza que si el ComboBox no usa template, dibuje el texto igual
         public override string ToString()
         {
             return NombreDisplay;
@@ -40,17 +38,8 @@ namespace TiendaOga.Entidades
 
     public static class DatosGlobales
     {
-        public static ObservableCollection<ClienteItem> Clientes { get; set; } = new ObservableCollection<ClienteItem>
-        {
-            new ClienteItem
-            {
-                IdCliente = 1,
-                NombreCompleto = "Consumidor Final",
-                Dni = "S/D",
-                Telefono = "00000000",
-                TipoCliente = "Consumidor Final"
-            }
-        };
+        // 1. La lista arranca vacía: NO existe "Consumidor Final" precargado
+        public static ObservableCollection<ClienteItem> Clientes { get; set; } = new ObservableCollection<ClienteItem>();
 
         public static List<ProductoRow> Productos { get; set; } = new List<ProductoRow>
         {
@@ -61,16 +50,11 @@ namespace TiendaOga.Entidades
             new ProductoRow { IdProducto = 5, NombreProducto = "Cámara de Seguridad Interior", NombreCategoria = "Tecnología", PrecioCosto = 11000, PrecioVentas = 18900, Stock = 12, TipoProducto = "Tecnología" }
         };
 
-        public static void RegistrarCompraCliente(string nombre, string dni, string telefono, string detalle, decimal total, string metodoPago, DateTime? fecha = null)
+        // 2. Registra la compra ÚNICAMENTE si el cliente ya existe en el padrón
+        public static void RegistrarCompraCliente(int idCliente, string detalle, decimal total, string metodoPago, DateTime? fecha = null)
         {
-            if (string.IsNullOrWhiteSpace(nombre)) return;
-
-            string dniLimpio = string.IsNullOrWhiteSpace(dni) ? "S/D" : dni.Trim();
-            string nombreLimpio = nombre.Trim();
-
-            var cliente = Clientes.FirstOrDefault(c =>
-                (!string.IsNullOrEmpty(dni) && c.Dni == dniLimpio) ||
-                c.NombreCompleto.Equals(nombreLimpio, StringComparison.OrdinalIgnoreCase));
+            var cliente = Clientes.FirstOrDefault(c => c.IdCliente == idCliente);
+            if (cliente == null) return;
 
             DateTime fechaPago = fecha ?? DateTime.Now;
 
@@ -83,22 +67,7 @@ namespace TiendaOga.Entidades
                 MetodoPago = string.IsNullOrWhiteSpace(metodoPago) ? "Efectivo" : metodoPago
             };
 
-            if (cliente == null)
-            {
-                cliente = new ClienteItem
-                {
-                    IdCliente = Clientes.Count == 0 ? 1 : Clientes.Max(c => c.IdCliente) + 1,
-                    Dni = dniLimpio,
-                    NombreCompleto = nombreLimpio,
-                    Telefono = string.IsNullOrWhiteSpace(telefono) ? "00000000" : telefono.Trim()
-                };
-                cliente.HistorialCompras.Insert(0, nuevaCompra);
-                Clientes.Insert(0, cliente);
-            }
-            else
-            {
-                cliente.HistorialCompras.Insert(0, nuevaCompra);
-            }
+            cliente.HistorialCompras.Insert(0, nuevaCompra);
         }
     }
 }

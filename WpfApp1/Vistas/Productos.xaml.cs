@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -11,13 +13,52 @@ namespace TiendaOga.Vistas
 {
     public partial class Productos : Page
     {
-        // 1. Lista estática que simulará nuestra Base de Datos en memoria
         private List<ProductoRow> _productosEstaticos => DatosGlobales.Productos;
+
         public Productos()
         {
             InitializeComponent();
+            this.Loaded += Productos_Loaded;
             CargarCategorias();
+        }
+
+        private void Productos_Loaded(object sender, RoutedEventArgs e)
+        {
+            AplicarPermisosPorRol();
             CargarProductos();
+        }
+
+        private string ObtenerRolActual()
+        {
+            // Busca la propiedad de rol disponible en la ventana contenedora o en sesión
+            var mainWindow = Window.GetWindow(this);
+            if (mainWindow != null)
+            {
+                var propiedadRol = mainWindow.GetType().GetProperty("RolActual") ??
+                                   mainWindow.GetType().GetProperty("RolUsuario");
+                if (propiedadRol != null)
+                {
+                    return propiedadRol.GetValue(mainWindow)?.ToString() ?? string.Empty;
+                }
+            }
+
+            return "Vendedor";
+        }
+
+        private void AplicarPermisosPorRol()
+        {
+            string rolActual = ObtenerRolActual();
+            bool tienePermiso = ProductoNegocio.PuedeAdministrarCatalogo(rolActual);
+
+            if (btnNuevoProducto != null)
+            {
+                btnNuevoProducto.Visibility = tienePermiso ? Visibility.Visible : Visibility.Collapsed;
+            }
+
+            if (columnaAcciones != null)
+            {
+                columnaAcciones.Visibility = tienePermiso ? Visibility.Visible : Visibility.Collapsed;
+            }
         }
 
         private void CargarCategorias()
@@ -26,8 +67,9 @@ namespace TiendaOga.Vistas
             {
                 new CategoriaItem { IdCategoria = 0, Nombre = "Todas" },
                 new CategoriaItem { IdCategoria = 1, Nombre = "Herramientas" },
-                new CategoriaItem { IdCategoria = 2, Nombre = "Textiles" },
-                new CategoriaItem { IdCategoria = 3, Nombre = "Electrónica" },
+                new CategoriaItem { IdCategoria = 2, Nombre = "Hogar" },
+                new CategoriaItem { IdCategoria = 3, Nombre = "Limpieza" },
+                new CategoriaItem { IdCategoria = 4, Nombre = "Tecnología" }
             };
 
             cmbFiltroCategoria.ItemsSource = categorias;
@@ -38,14 +80,6 @@ namespace TiendaOga.Vistas
         {
             dgProductos.ItemsSource = null;
             dgProductos.ItemsSource = _productosEstaticos;
-            ActualizarResumenInventario();
-        }
-
-        private void ActualizarResumenInventario()
-        {
-            // Estos campos se eliminaron del XAML para tener un diseño más limpio (Soluciona el error CS0103)
-            // txtNumeroProductos.Text = "0";
-            // txtPrecioTotalInventario.Text = "0.00";
         }
 
         private void TipoProducto_Checked(object sender, RoutedEventArgs e)
@@ -59,28 +93,28 @@ namespace TiendaOga.Vistas
 
         private void BtnBuscar_Click(object sender, RoutedEventArgs e)
         {
-            var termino = txtBusqueda.Text?.Trim();
-            var categoriaSeleccionada = cmbFiltroCategoria.SelectedValue as int?;
+            string termino = txtBusqueda.Text?.Trim().ToLower() ?? string.Empty;
+            var catSeleccionada = cmbFiltroCategoria.SelectedItem as CategoriaItem;
+
+            var filtrados = _productosEstaticos.AsEnumerable();
+
+            if (!string.IsNullOrWhiteSpace(termino))
+            {
+                filtrados = filtrados.Where(p => p.NombreProducto.ToLower().Contains(termino) ||
+                                                 p.IdProducto.ToString().Contains(termino));
+            }
+
+            if (catSeleccionada != null && catSeleccionada.IdCategoria > 0)
+            {
+                filtrados = filtrados.Where(p => string.Equals(p.NombreCategoria, catSeleccionada.Nombre, StringComparison.OrdinalIgnoreCase));
+            }
+
+            dgProductos.ItemsSource = null;
+            dgProductos.ItemsSource = filtrados.ToList();
         }
 
         private void DgProductos_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var producto = dgProductos.SelectedItem as ProductoRow;
-            if (producto == null) return;
-
-            txtId.Text = producto.IdProducto.ToString();
-            txtNombre.Text = producto.NombreProducto;
-            txtPrecioVenta.Text = producto.PrecioVentas.ToString("N2");
-            txtStock.Text = producto.Stock.ToString();
-
-            if (string.Equals(producto.TipoProducto, "Hogar", StringComparison.OrdinalIgnoreCase))
-            {
-                rbHogar.IsChecked = true;
-            }
-            else
-            {
-                rbTecnologia.IsChecked = true;
-            }
         }
 
         // ==========================================================
@@ -89,25 +123,35 @@ namespace TiendaOga.Vistas
 
         private void BtnNuevoProducto_Click(object sender, RoutedEventArgs e)
         {
+            if (!ProductoNegocio.ValidarGuardado(ObtenerRolActual(), out string errorRol))
+            {
+                MessageBox.Show(errorRol, "Acceso restringido", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             LimpiarFormulario();
-            // Muestra el panel modal oscuro por encima
             ModalFormulario.Visibility = Visibility.Visible;
+            txtNombre.Focus();
         }
 
         private void BtnEditar_Click(object sender, RoutedEventArgs e)
         {
+            if (!ProductoNegocio.ValidarGuardado(ObtenerRolActual(), out string errorRol))
+            {
+                MessageBox.Show(errorRol, "Acceso restringido", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var boton = sender as Button;
             if (boton == null || !(boton.Tag is int idProducto)) return;
 
-            // 4. Buscar el producto en la lista estática
-            var producto = _productosEstaticos.Find(p => p.IdProducto == idProducto);
+            var producto = _productosEstaticos.FirstOrDefault(p => p.IdProducto == idProducto);
             if (producto == null) return;
 
-            // 5. Cargar los datos en el modal
             txtId.Text = producto.IdProducto.ToString();
             txtNombre.Text = producto.NombreProducto;
-            txtPrecioCosto.Text = producto.PrecioCosto.ToString("0.00");
-            txtPrecioVenta.Text = producto.PrecioVentas.ToString("0.00");
+            txtPrecioCosto.Text = producto.PrecioCosto.ToString("0.00", CultureInfo.InvariantCulture);
+            txtPrecioVenta.Text = producto.PrecioVentas.ToString("0.00", CultureInfo.InvariantCulture);
             txtStock.Text = producto.Stock.ToString();
 
             if (string.Equals(producto.TipoProducto, "Hogar", StringComparison.OrdinalIgnoreCase))
@@ -119,29 +163,34 @@ namespace TiendaOga.Vistas
                 rbTecnologia.IsChecked = true;
             }
 
-            // Muestra el panel modal oscuro por encima
             ModalFormulario.Visibility = Visibility.Visible;
+            txtNombre.Focus();
         }
 
         private void BtnEliminar_Click(object sender, RoutedEventArgs e)
         {
+            if (!ProductoNegocio.ValidarEliminacion(ObtenerRolActual(), out string errorRol))
+            {
+                MessageBox.Show(errorRol, "Acceso restringido", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var boton = sender as Button;
             if (boton == null || !(boton.Tag is int idProducto)) return;
 
             var resultado = MessageBox.Show(
-                "¿Está seguro de eliminar este producto?",
+                "¿Está seguro de eliminar este producto del catálogo?",
                 "Confirmar eliminación",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
             if (resultado == MessageBoxResult.Yes)
             {
-                // 6. Eliminar el producto de la lista estática
-                var productoAEliminar = _productosEstaticos.Find(p => p.IdProducto == idProducto);
+                var productoAEliminar = _productosEstaticos.FirstOrDefault(p => p.IdProducto == idProducto);
                 if (productoAEliminar != null)
                 {
                     _productosEstaticos.Remove(productoAEliminar);
-                    CargarProductos(); // Refresca la tabla
+                    CargarProductos();
                     MessageBox.Show("Producto eliminado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
                 }
             }
@@ -153,45 +202,62 @@ namespace TiendaOga.Vistas
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
-            if (!ValidarFormularioCompleto(out string errorValidacion))
+            if (!ProductoNegocio.ValidarGuardado(ObtenerRolActual(), out string errorRol))
+            {
+                MessageBox.Show(errorRol, "Acceso restringido", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            bool esHogar = rbHogar.IsChecked == true;
+
+            // Delegación de validaciones a la capa de negocio
+            if (!ProductoNegocio.ValidarIngresoStock(
+                txtNombre.Text?.Trim(),
+                txtPrecioCosto.Text?.Trim(),
+                txtPrecioVenta.Text?.Trim(),
+                txtStock.Text?.Trim(),
+                esHogar,
+                txtMaterial.Text?.Trim(),
+                txtAmbiente.Text?.Trim(),
+                txtMarca.Text?.Trim(),
+                txtModelo.Text?.Trim(),
+                txtGarantia.Text?.Trim(),
+                out string errorValidacion))
             {
                 MessageBox.Show(errorValidacion, "Validación de Formulario", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
-            // 7. Simular guardado estático (Alta y Modificación)
-            decimal pCosto = decimal.Parse(txtPrecioCosto.Text.Replace('.', ','));
-            decimal pVenta = decimal.Parse(txtPrecioVenta.Text.Replace('.', ','));
-            int stock = int.Parse(txtStock.Text);
-            string tipoProd = rbHogar.IsChecked == true ? "Hogar" : "Tecnología";
+            decimal pCosto = decimal.Parse(txtPrecioCosto.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
+            decimal pVenta = decimal.Parse(txtPrecioVenta.Text.Replace(',', '.'), CultureInfo.InvariantCulture);
+            int stock = int.Parse(txtStock.Text.Trim());
+            string tipoProd = esHogar ? "Hogar" : "Tecnología";
 
             if (string.IsNullOrEmpty(txtId.Text))
             {
-                // Es un ALTA (crear ID ficticio)
-                int nuevoId = _productosEstaticos.Count > 0 ? _productosEstaticos[_productosEstaticos.Count - 1].IdProducto + 1 : 1;
+                int nuevoId = _productosEstaticos.Count > 0 ? _productosEstaticos.Max(p => p.IdProducto) + 1 : 1;
 
                 _productosEstaticos.Add(new ProductoRow
                 {
                     IdProducto = nuevoId,
-                    NombreProducto = txtNombre.Text,
+                    NombreProducto = txtNombre.Text.Trim(),
                     PrecioCosto = pCosto,
                     PrecioVentas = pVenta,
                     Stock = stock,
                     TipoProducto = tipoProd,
-                    NombreCategoria = "Sin Categoría" // Ficticio por ahora
+                    NombreCategoria = tipoProd
                 });
 
                 MessageBox.Show("¡Producto agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
             }
             else
             {
-                // Es una MODIFICACIÓN
                 int idEditado = int.Parse(txtId.Text);
-                var productoAEditar = _productosEstaticos.Find(p => p.IdProducto == idEditado);
+                var productoAEditar = _productosEstaticos.FirstOrDefault(p => p.IdProducto == idEditado);
 
                 if (productoAEditar != null)
                 {
-                    productoAEditar.NombreProducto = txtNombre.Text;
+                    productoAEditar.NombreProducto = txtNombre.Text.Trim();
                     productoAEditar.PrecioCosto = pCosto;
                     productoAEditar.PrecioVentas = pVenta;
                     productoAEditar.Stock = stock;
@@ -202,102 +268,16 @@ namespace TiendaOga.Vistas
             }
 
             LimpiarFormulario();
-            CargarProductos(); // Refresca la tabla
+            CargarProductos();
             ModalFormulario.Visibility = Visibility.Collapsed;
         }
 
-        private bool ValidarFormularioCompleto(out string error)
-        {
-            // 1. Validaciones Generales
-            if (string.IsNullOrWhiteSpace(txtNombre.Text))
-            {
-                error = "El nombre del producto es obligatorio.";
-                txtNombre.Focus();
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtPrecioCosto.Text) ||
-                !decimal.TryParse(txtPrecioCosto.Text.Replace('.', ','), out decimal pCosto) || pCosto <= 0)
-            {
-                error = "Debe ingresar un precio de costo válido mayor a 0.";
-                txtPrecioCosto.Focus();
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtPrecioVenta.Text) ||
-                !decimal.TryParse(txtPrecioVenta.Text.Replace('.', ','), out decimal pVenta) || pVenta <= 0)
-            {
-                error = "Debe ingresar un precio de venta válido mayor a 0.";
-                txtPrecioVenta.Focus();
-                return false;
-            }
-
-            if (pVenta < pCosto)
-            {
-                error = "El precio de venta no puede ser inferior al precio de costo.";
-                txtPrecioVenta.Focus();
-                return false;
-            }
-
-            if (string.IsNullOrWhiteSpace(txtStock.Text) || !int.TryParse(txtStock.Text, out int stock) || stock < 0)
-            {
-                error = "Debe ingresar una cantidad de stock válida (número entero >= 0).";
-                txtStock.Focus();
-                return false;
-            }
-
-            // 2. Validaciones Condicionales según el tipo de producto
-            if (rbHogar.IsChecked == true)
-            {
-                if (string.IsNullOrWhiteSpace(txtMaterial.Text))
-                {
-                    error = "Para productos de Hogar, el campo Material es obligatorio.";
-                    txtMaterial.Focus();
-                    return false;
-                }
-
-                if (string.IsNullOrWhiteSpace(txtAmbiente.Text))
-                {
-                    error = "Para productos de Hogar, el campo Ambiente es obligatorio.";
-                    txtAmbiente.Focus();
-                    return false;
-                }
-            }
-            else if (rbTecnologia.IsChecked == true)
-            {
-                if (string.IsNullOrWhiteSpace(txtMarca.Text))
-                {
-                    error = "Para productos de Tecnología, la Marca es obligatoria.";
-                    txtMarca.Focus();
-                    return false;
-                }
-
-                if (string.IsNullOrWhiteSpace(txtModelo.Text))
-                {
-                    error = "Para productos de Tecnología, el Modelo es obligatorio.";
-                    txtModelo.Focus();
-                    return false;
-                }
-
-                if (!string.IsNullOrWhiteSpace(txtGarantia.Text) && !int.TryParse(txtGarantia.Text, out int garantiaMeses))
-                {
-                    error = "La garantía debe ser un número entero de meses.";
-                    txtGarantia.Focus();
-                    return false;
-                }
-            }
-
-            error = string.Empty;
-            return true;
-        }
-
         // ==========================================================
-        // FILTROS EN TIEMPO REAL (PREVIEW TEXT INPUT)
+        // FILTROS DE TECLADO
         // ==========================================================
 
         public void ValidarSoloEnteros(object sender, TextCompositionEventArgs e)
         {
-            // Solo dígitos 0 al 9
             Regex regex = new Regex("[^0-9]+");
             e.Handled = regex.IsMatch(e.Text);
         }
@@ -308,8 +288,6 @@ namespace TiendaOga.Vistas
             if (textBox == null) return;
 
             string textoNuevo = textBox.Text.Insert(textBox.SelectionStart, e.Text);
-
-            // Permite dígitos y un único separador (. o ,) con hasta 2 decimales
             Regex regex = new Regex(@"^\d*([.,]\d{0,2})?$");
             e.Handled = !regex.IsMatch(textoNuevo);
         }
@@ -317,7 +295,6 @@ namespace TiendaOga.Vistas
         private void BtnCancelar_Click(object sender, RoutedEventArgs e)
         {
             LimpiarFormulario();
-            // Oculta el modal cuando se presiona Cancelar
             ModalFormulario.Visibility = Visibility.Collapsed;
         }
 

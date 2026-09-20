@@ -1,18 +1,19 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using TiendaOga.Negocio;
 
 namespace TiendaOga.Vistas
 {
     public partial class Window1 : Window
     {
-        private string usuarioActual;
-        private string rolActual;
+        public string UsuarioActual { get; private set; }
+        public string RolActual { get; private set; }
 
         public Window1(string usuario, string rol)
         {
             InitializeComponent();
-            usuarioActual = usuario;
-            rolActual = rol;
+            UsuarioActual = usuario;
+            RolActual = rol;
 
             ConfigurarVistaPorRol();
         }
@@ -21,18 +22,29 @@ namespace TiendaOga.Vistas
 
         private void ConfigurarVistaPorRol()
         {
-            lblUsuarioActivo.Text = $"Usuario: {usuarioActual}";
-            lblRolActivo.Text = $"Rol: {rolActual}";
+            lblUsuarioActivo.Text = $"Usuario: {UsuarioActual}";
+            lblRolActivo.Text = $"Rol: {RolActual}";
 
-            // La decisión de qué puede ver cada rol vive en PermisosNegocio,
-            // acá solo se aplica el resultado a los controles.
-            btnVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerVentas(rolActual));
-            btnClientes.Visibility = ToVisibility(PermisosNegocio.PuedeVerClientes(rolActual));
-            btnProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerProductos(rolActual));
-            btnUsuarios.Visibility = ToVisibility(PermisosNegocio.PuedeVerUsuarios(rolActual));
-            btnReportesVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesVendedor(rolActual));
-            btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteGeneral(rolActual));
-            btnStockBackup.Visibility = ToVisibility(PermisosNegocio.PuedeVerBackup(rolActual));
+            btnVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerVentas(RolActual));
+            btnClientes.Visibility = ToVisibility(PermisosNegocio.PuedeVerClientes(RolActual));
+            btnProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerProductos(RolActual));
+            btnUsuarios.Visibility = ToVisibility(PermisosNegocio.PuedeVerUsuarios(RolActual));
+            btnReportesVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesVendedor(RolActual));
+            btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteGeneral(RolActual));
+            btnStockBackup.Visibility = ToVisibility(PermisosNegocio.PuedeVerBackup(RolActual));
+
+            if (PermisosNegocio.PuedeVerVentas(RolActual))
+            {
+                btnVentas_Click(null, null);
+            }
+            else if (PermisosNegocio.PuedeVerUsuarios(RolActual))
+            {
+                btnUsuarios_Click(null, null);
+            }
+            else if (PermisosNegocio.PuedeVerReporteGeneral(RolActual))
+            {
+                btnReporteGeneral_Click(null, null);
+            }
         }
 
         private static Visibility ToVisibility(bool visible)
@@ -49,52 +61,65 @@ namespace TiendaOga.Vistas
 
         private void btnVentas_Click(object sender, RoutedEventArgs e)
         {
-            if (!PermisosNegocio.PuedeVerVentas(rolActual)) return;
+            if (!PermisosNegocio.PuedeVerVentas(RolActual)) return;
             lblTituloModulo.Text = "Módulo de Ventas y Facturación";
             ContenedorPrincipal.Navigate(new Ventas());
         }
 
         private void btnProductos_Click(object sender, RoutedEventArgs e)
         {
-            if (!PermisosNegocio.PuedeVerProductos(rolActual)) return;
+            if (!PermisosNegocio.PuedeVerProductos(RolActual)) return;
             lblTituloModulo.Text = "Administración de Productos y Rubros";
             ContenedorPrincipal.Navigate(new Productos());
         }
 
         private void btnClientes_Click(object sender, RoutedEventArgs e)
         {
-            if (!PermisosNegocio.PuedeVerClientes(rolActual)) return;
+            if (!PermisosNegocio.PuedeVerClientes(RolActual)) return;
             lblTituloModulo.Text = "Padrón de Clientes";
             ContenedorPrincipal.Navigate(new Clientes());
         }
 
         private void btnUsuarios_Click(object sender, RoutedEventArgs e)
         {
-            if (!PermisosNegocio.PuedeVerUsuarios(rolActual)) return;
+            if (!PermisosNegocio.PuedeVerUsuarios(RolActual)) return;
             lblTituloModulo.Text = "Gestión de Cuentas de Usuario y Roles";
             ContenedorPrincipal.Navigate(new Usuarios());
         }
 
         private void btnReportesVentas_Click(object sender, RoutedEventArgs e)
         {
-            if (!PermisosNegocio.PuedeVerReportesVendedor(rolActual)) return;
-            lblTituloModulo.Text = "Reportes y Rendimiento de Ventas";
-            ContenedorPrincipal.Navigate(new ReportesVendedor());
+            TipoReporteVenta alcance = PermisosNegocio.ObtenerAlcanceReporteVenta(RolActual);
+
+            switch (alcance)
+            {
+                case TipoReporteVenta.Consolidado:
+                    lblTituloModulo.Text = "Reporte de Ventas por Vendedor (Consolidado)";
+                    ContenedorPrincipal.Navigate(new ReportesVendedor());
+                    break;
+
+                case TipoReporteVenta.Individual:
+                    lblTituloModulo.Text = "Cierre de Caja y Reportes del Vendedor";
+                    ContenedorPrincipal.Navigate(new ReporteVendedorIndividual());
+                    break;
+
+                default:
+                    MessageBox.Show("No cuenta con permisos para consultar reportes de venta.",
+                                    "Acceso Denegado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    break;
+            }
         }
 
-        // ==========================================
-        // CONEXIÓN CON EL PANEL GERENCIAL
-        // ==========================================
         private void btnReporteGeneral_Click(object sender, RoutedEventArgs e)
         {
-            if (!PermisosNegocio.PuedeVerReporteGeneral(rolActual)) return;
+            if (!PermisosNegocio.PuedeVerReporteGeneral(RolActual)) return;
             lblTituloModulo.Text = "Panel Gerencial";
             ContenedorPrincipal.Navigate(new ReporteGeneral());
         }
 
         private void btnBackup_Click(object sender, RoutedEventArgs e)
         {
-            if (!PermisosNegocio.PuedeVerBackup(rolActual)) return;
+            if (!PermisosNegocio.PuedeVerBackup(RolActual)) return;
             lblTituloModulo.Text = "Backup del Sistema";
             ContenedorPrincipal.Navigate(new Backup());
         }

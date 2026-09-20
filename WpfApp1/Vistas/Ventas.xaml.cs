@@ -24,7 +24,6 @@ namespace TiendaOga.Vistas
             dgDetalleVenta.ItemsSource = _detalleVenta;
             dpFechaPago.SelectedDate = DateTime.Today;
 
-            // Recarga automática al ingresar o regresar a la pantalla de Ventas
             this.Loaded += Ventas_Loaded;
 
             ActualizarEstadoPago();
@@ -40,12 +39,19 @@ namespace TiendaOga.Vistas
         {
             if (cmbCliente == null) return;
 
+            var seleccionadoPrevio = cmbCliente.SelectedItem as ClienteItem;
+
             cmbCliente.ItemsSource = null;
             cmbCliente.ItemsSource = DatosGlobales.Clientes;
 
-            if (DatosGlobales.Clientes != null && DatosGlobales.Clientes.Count > 0)
+            // Mantiene el cliente si ya había uno elegido; de lo contrario queda en blanco (-1)
+            if (seleccionadoPrevio != null && DatosGlobales.Clientes.Any(c => c.IdCliente == seleccionadoPrevio.IdCliente))
             {
-                cmbCliente.SelectedIndex = 0;
+                cmbCliente.SelectedItem = DatosGlobales.Clientes.First(c => c.IdCliente == seleccionadoPrevio.IdCliente);
+            }
+            else
+            {
+                cmbCliente.SelectedIndex = -1;
             }
         }
 
@@ -134,7 +140,6 @@ namespace TiendaOga.Vistas
         {
             var productoSeleccionado = cmbProductoBusqueda.SelectedItem as ProductoRow;
 
-            // Si tipeó el código pero no seleccionó en el combo
             if (productoSeleccionado == null && !string.IsNullOrWhiteSpace(txtCodigoProducto.Text))
             {
                 if (int.TryParse(txtCodigoProducto.Text.Trim(), out int id))
@@ -158,7 +163,6 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            // Validar stock disponible considerando lo que ya esté cargado en la grilla
             int cantidadYaAgregada = _detalleVenta
                 .Where(i => i.IdProducto == productoSeleccionado.IdProducto)
                 .Sum(i => i.Cantidad);
@@ -169,7 +173,6 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            // Si el ítem ya existe en la lista sumamos la cantidad, sino agregamos una fila nueva
             var itemExistente = _detalleVenta.FirstOrDefault(i => i.IdProducto == productoSeleccionado.IdProducto);
             if (itemExistente != null)
             {
@@ -187,7 +190,6 @@ namespace TiendaOga.Vistas
                 });
             }
 
-            // Limpiar campos de selección rápida
             _sincronizandoProducto = true;
             txtCodigoProducto.Clear();
             cmbProductoBusqueda.SelectedIndex = -1;
@@ -264,6 +266,17 @@ namespace TiendaOga.Vistas
 
         private void BtnGuardarVenta_Click(object sender, RoutedEventArgs e)
         {
+            // 1. Validación de cliente: OBLIGATORIO tener un cliente seleccionado del padrón
+            var clienteSeleccionado = cmbCliente.SelectedItem as ClienteItem;
+            if (clienteSeleccionado == null)
+            {
+                MessageBox.Show("Debes seleccionar un cliente registrado para efectuar la venta.\nSi es un cliente nuevo, registralo primero en el módulo de Clientes.",
+                                "Cliente no seleccionado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                cmbCliente.Focus();
+                return;
+            }
+
+            // 2. Validación de venta y pagos
             decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
             decimal.TryParse(txtMontoRecibido.Text.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal recibido);
 
@@ -273,16 +286,7 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            // Validar selección de cliente
-            var clienteSeleccionado = cmbCliente.SelectedItem as ClienteItem;
-            if (clienteSeleccionado == null)
-            {
-                MessageBox.Show("Por favor seleccioná un cliente registrado para la venta.", "Cliente requerido", MessageBoxButton.OK, MessageBoxImage.Warning);
-                cmbCliente.Focus();
-                return;
-            }
-
-            // 1. Descontar stock de los productos vendidos en memoria
+            // 3. Descontar stock de los productos vendidos
             foreach (var item in _detalleVenta)
             {
                 var prod = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == item.IdProducto);
@@ -292,7 +296,7 @@ namespace TiendaOga.Vistas
                 }
             }
 
-            // 2. Registrar compra en el padrón de clientes
+            // 4. Registrar compra vinculada únicamente al cliente elegido
             var listaNombres = _detalleVenta.Select(item => $"{item.Nombre} x{item.Cantidad}").ToList();
             string detalleProductos = string.Join(", ", listaNombres);
 
@@ -303,18 +307,16 @@ namespace TiendaOga.Vistas
             DateTime fechaPago = dpFechaPago.SelectedDate ?? DateTime.Today;
 
             DatosGlobales.RegistrarCompraCliente(
-                nombre: clienteSeleccionado.NombreCompleto,
-                dni: clienteSeleccionado.Dni,
-                telefono: clienteSeleccionado.Telefono,
+                idCliente: clienteSeleccionado.IdCliente,
                 detalle: detalleProductos,
                 total: total,
                 metodoPago: metodoPago,
                 fecha: fechaPago
             );
 
-            MessageBox.Show("¡Venta registrada con éxito! El stock y el historial del cliente fueron actualizados.", "Venta Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show($"¡Venta registrada con éxito a nombre de {clienteSeleccionado.NombreCompleto}!\nEl stock y su historial fueron actualizados.",
+                            "Venta Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            // Refrescar catálogo para mostrar el stock restante actualizado en el ComboBox
             CargarListaProductos();
             BtnCancelarVenta_Click(sender, e);
         }
@@ -323,10 +325,8 @@ namespace TiendaOga.Vistas
         {
             _detalleVenta.Clear();
 
-            if (DatosGlobales.Clientes != null && DatosGlobales.Clientes.Count > 0)
-            {
-                cmbCliente.SelectedIndex = 0;
-            }
+            // Limpia la selección obligando a elegir un cliente en la próxima venta
+            cmbCliente.SelectedIndex = -1;
 
             _sincronizandoProducto = true;
             txtCodigoProducto.Clear();

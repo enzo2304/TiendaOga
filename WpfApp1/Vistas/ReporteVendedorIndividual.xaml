@@ -1,0 +1,156 @@
+﻿<Page x:Class="TiendaOga.Vistas.ReporteVendedorIndividual"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      mc:Ignorable="d" 
+      Title="Cierre de Caja - Reportes del Vendedor"
+      Background="#F4F5F7"
+      FontFamily="Segoe UI"
+      d:DesignHeight="800" d:DesignWidth="1100">
+
+    <Page.Resources>
+        <SolidColorBrush x:Key="AccentBrush" Color="#E8792D"/>
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#2D3748"/>
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#718096"/>
+        <SolidColorBrush x:Key="BorderBrush" Color="#E2E8F0"/>
+        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#FFFFFF"/>
+
+        <DropShadowEffect x:Key="CardShadow" Color="#000000" Opacity="0.05" BlurRadius="10" ShadowDepth="2" Direction="270"/>
+
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}"/>
+            <Setter Property="CornerRadius" Value="8"/>
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="16"/>
+            <Setter Property="Effect" Value="{StaticResource CardShadow}"/>
+        </Style>
+
+        <Style x:Key="PrimaryButton" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="16,8"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Page.Resources>
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid Grid.Row="0" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <TextBlock Text="Cierre de Caja y Reporte Diario" FontSize="22" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                <TextBlock Text="Resumen de facturación y movimientos del turno actual" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0"/>
+            </StackPanel>
+
+            <Border Grid.Column="1" Background="#EDF2F7" CornerRadius="6" Padding="12,6" VerticalAlignment="Center">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="Vendedor: " FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="lblNombreVendedor" Text="Enzo Vendedor" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
+                    <TextBlock Text="Fecha: " FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="lblFechaTurno" Text="19/09/2026" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Grid Grid.Row="1" Margin="0,0,0,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="12"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Total Facturado" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="lblTotalFacturado" Text="$ 0.00" FontSize="20" FontWeight="Bold" Foreground="#38A169" Margin="0,6,0,0"/>
+                    <TextBlock x:Name="lblCantidadVentas" Text="0 ventas registradas" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Efectivo en Caja" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="lblTotalEfectivo" Text="$ 0.00" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                    <TextBlock Text="Plata física a rendir" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="4" Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Cobros con Tarjeta" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="lblTotalTarjeta" Text="$ 0.00" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                    <TextBlock Text="Comprobantes posnet" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+
+            <Border Grid.Column="6" Style="{StaticResource CardStyle}">
+                <StackPanel>
+                    <TextBlock Text="Transferencias" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
+                    <TextBlock x:Name="lblTotalTransferencia" Text="$ 0.00" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,6,0,0"/>
+                    <TextBlock Text="Depósitos en cuenta" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <Border Grid.Row="2" Style="{StaticResource CardStyle}" Padding="16">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <TextBlock Grid.Row="0" Text="Comprobantes Emitidos en el Turno" FontSize="14" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,0,12"/>
+
+                <DataGrid x:Name="dgVentasDia" Grid.Row="1"
+                          AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" IsReadOnly="True"
+                          HeadersVisibility="Column" SelectionMode="Single"
+                          Background="White" FontSize="13" RowHeight="32"
+                          GridLinesVisibility="All" HorizontalGridLinesBrush="#E0E0E0" VerticalGridLinesBrush="#E0E0E0"
+                          BorderBrush="#CCCCCC" BorderThickness="1">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Comprobante" Binding="{Binding NroComprobante}" Width="120"/>
+                        <DataGridTextColumn Header="Hora" Binding="{Binding Hora}" Width="80"/>
+                        <DataGridTextColumn Header="Cliente" Binding="{Binding NombreCliente}" Width="1.5*" MinWidth="160"/>
+                        <DataGridTextColumn Header="Artículos" Binding="{Binding Detalle}" Width="2*" MinWidth="220"/>
+                        <DataGridTextColumn Header="Método Pago" Binding="{Binding MetodoPago}" Width="120"/>
+                        <DataGridTextColumn Header="Monto ($)" Binding="{Binding Total, StringFormat={}{0:C}}" Width="120"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
+        </Border>
+
+        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
+            <Button x:Name="btnImprimirCierre" Content="Imprimir Resumen" Background="#4A5568" Foreground="White" 
+                    BorderThickness="0" FontWeight="SemiBold" FontSize="13" Padding="16,8" Margin="0,0,10,0" Cursor="Hand" Click="BtnImprimirCierre_Click"/>
+            <Button x:Name="btnCerrarCaja" Content="Confirmar Cierre de Caja" Style="{StaticResource PrimaryButton}" Click="BtnCerrarCaja_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>
