@@ -220,7 +220,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding IdCliente}" Width="50"/>
                         <DataGridTextColumn Header="Nombre/Razon social" Binding="{Binding NombreCompleto}" Width="*"/>
-                        <DataGridTextColumn Header="DNI" Binding="{Binding Dni}" Width="120"/>
+                        <DataGridTextColumn Header="Documento" Binding="{Binding Dni}" Width="120"/>
                         <DataGridTextColumn Header="Teléfono" Binding="{Binding Telefono}" Width="130"/>
                         <DataGridTextColumn Header="Compras Realizadas" Binding="{Binding CantidadCompras}" Width="140"/>
 

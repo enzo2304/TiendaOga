@@ -85,7 +85,63 @@ namespace TiendaOga.Entidades
 
     public static class DatosGlobales
     {
-        public static ObservableCollection<ClienteItem> Clientes { get; set; } = new ObservableCollection<ClienteItem>();
+        public static ObservableCollection<ClienteItem> Clientes { get; set; } = new ObservableCollection<ClienteItem>
+        {
+            new ClienteItem
+            {
+                IdCliente = 1,
+                NombreCompleto = "Enzo Sánchez",
+                Dni = "30111222",
+                Telefono = "3794123456",
+                TipoCliente = "Consumidor Final",
+                TipoDocumento = "DNI",
+                Activo = true,
+                HistorialCompras = new List<CompraCliente>
+                {
+                    new CompraCliente { NroComprobante = "VTA-000123", Fecha = "12/09/2026 10:15", DetalleProductos = "Taladro Percutor 650W x1", Total = 25000, MetodoPago = "Efectivo" },
+                    new CompraCliente { NroComprobante = "VTA-000098", Fecha = "02/08/2026 17:40", DetalleProductos = "Foco Inteligente LED Wi-Fi x2", Total = 6400, MetodoPago = "Tarjeta" }
+                }
+            },
+            new ClienteItem
+            {
+                IdCliente = 2,
+                NombreCompleto = "María Gómez",
+                Dni = "28555444",
+                Telefono = "3794998877",
+                TipoCliente = "Consumidor Final",
+                TipoDocumento = "DNI",
+                Activo = true,
+                HistorialCompras = new List<CompraCliente>
+                {
+                    new CompraCliente { NroComprobante = "VTA-000110", Fecha = "05/09/2026 09:00", DetalleProductos = "Juego de Ollas 5 piezas x1", Total = 14500, MetodoPago = "Transferencia" }
+                }
+            },
+            new ClienteItem
+            {
+                IdCliente = 3,
+                NombreCompleto = "Carlos Ferretería del Norte SRL",
+                Dni = "30887766993",
+                Telefono = "3794555222",
+                TipoCliente = "Responsable Inscripto",
+                TipoDocumento = "CUIT",
+                Activo = true,
+                HistorialCompras = new List<CompraCliente>
+                {
+                    new CompraCliente { NroComprobante = "VTA-000075", Fecha = "20/07/2026 14:20", DetalleProductos = "Escoba de cerdas duras x10, Cámara de Seguridad Interior x1", Total = 38900, MetodoPago = "Efectivo" }
+                }
+            },
+            new ClienteItem
+            {
+                IdCliente = 4,
+                NombreCompleto = "Lucía Pérez",
+                Dni = "35222111",
+                Telefono = "3794333444",
+                TipoCliente = "Consumidor Final",
+                TipoDocumento = "DNI",
+                Activo = false, // Cliente dado de baja, para ver la fila en rojo
+                HistorialCompras = new List<CompraCliente>()
+            }
+        };
 
         public static List<ProductoRow> Productos { get; set; } = new List<ProductoRow>
         {
