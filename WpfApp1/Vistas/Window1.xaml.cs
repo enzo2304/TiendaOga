@@ -39,7 +39,7 @@ namespace TiendaOga.Vistas
                 TipoReporteVenta alcanceBoton = PermisosNegocio.ObtenerAlcanceReporteVenta(RolActual);
                 btnReportesVentas.Content = alcanceBoton == TipoReporteVenta.Individual
                     ? "Ventas del Día"
-                    : "Ventas por Vendedor";
+                    : "Reporte de ventas";
             }
 
             if (PermisosNegocio.PuedeVerVentas(RolActual))
