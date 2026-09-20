@@ -33,12 +33,14 @@ namespace TiendaOga.Vistas
             btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteGeneral(RolActual));
             btnStockBackup.Visibility = ToVisibility(PermisosNegocio.PuedeVerBackup(RolActual));
 
-            // El texto del botón cambia según el alcance que le corresponde al rol,
-            // pero ambos casos navegan igual (btnReportesVentas_Click no cambia)
-            TipoReporteVenta alcanceBoton = PermisosNegocio.ObtenerAlcanceReporteVenta(RolActual);
-            btnReportesVentas.Content = alcanceBoton == TipoReporteVenta.Individual
-                ? "Cierre de Caja"
-                : "Reporte Vendedor";
+            // CORRECCIÓN: Asignamos los nombres correctos al botón lateral según el rol
+            if (PermisosNegocio.PuedeVerReportesVendedor(RolActual))
+            {
+                TipoReporteVenta alcanceBoton = PermisosNegocio.ObtenerAlcanceReporteVenta(RolActual);
+                btnReportesVentas.Content = alcanceBoton == TipoReporteVenta.Individual
+                    ? "Ventas del Día"
+                    : "Ventas por Vendedor";
+            }
 
             if (PermisosNegocio.PuedeVerVentas(RolActual))
             {
@@ -106,7 +108,8 @@ namespace TiendaOga.Vistas
                     break;
 
                 case TipoReporteVenta.Individual:
-                    lblTituloModulo.Text = "Cierre de Caja y Reportes del Vendedor";
+                    // CORRECCIÓN: Título actualizado para eliminar la palabra "Cierre de Caja"
+                    lblTituloModulo.Text = "Resumen de Ventas Diarias";
                     ContenedorPrincipal.Navigate(new ReporteVendedorIndividual());
                     break;
 
