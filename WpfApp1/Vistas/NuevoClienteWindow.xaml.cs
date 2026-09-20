@@ -1,8 +1,8 @@
 ﻿using System;
+using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Text.RegularExpressions;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
 
@@ -12,18 +12,14 @@ namespace TiendaOga.Vistas
     {
         public ClienteItem ClienteCreado { get; private set; }
 
-        // Si es null, la ventana está en modo ALTA. Si tiene un valor, está en modo EDICIÓN.
         private readonly ClienteItem _clienteEnEdicion;
-
         private static readonly Regex RegexSoloNumeros = new Regex(@"^[0-9]+$");
 
-        // Constructor original: alta de cliente nuevo
         public NuevoClienteWindow()
         {
             InitializeComponent();
         }
 
-        // Nuevo constructor: edición de un cliente existente
         public NuevoClienteWindow(ClienteItem clienteExistente)
         {
             InitializeComponent();
@@ -77,15 +73,16 @@ namespace TiendaOga.Vistas
 
         private void BtnAceptar_Click(object sender, RoutedEventArgs e)
         {
-            string nombre = txtNombre.Text.Trim();
-            string nroDocumento = txtNroDocumento.Text.Trim();
-            string telefono = txtTelefono.Text.Trim();
+            string nombre = txtNombre.Text?.Trim() ?? string.Empty;
+            string nroDocumento = txtNroDocumento.Text?.Trim() ?? string.Empty;
+            string telefono = txtTelefono.Text?.Trim() ?? string.Empty;
             string tipoCliente = (cmbTipoCliente.SelectedItem as ComboBoxItem)?.Content?.ToString();
             string tipoDocumento = (cmbTipoDocumento.SelectedItem as ComboBoxItem)?.Content?.ToString();
+            bool activo = chkActivo.IsChecked == true;
 
             if (_clienteEnEdicion == null)
             {
-                // ---------- MODO ALTA ----------
+                // Modo Alta
                 if (!ClienteNegocio.ValidarAltaCliente(nombre, nroDocumento, telefono, out string mensajeError))
                 {
                     MessageBox.Show(mensajeError, "Dato inválido", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -101,11 +98,11 @@ namespace TiendaOga.Vistas
                 if (confirmacion != MessageBoxResult.Yes)
                     return;
 
-                ClienteCreado = ClienteNegocio.CrearCliente(nombre, nroDocumento, telefono, tipoCliente, tipoDocumento, chkActivo.IsChecked == true);
+                ClienteCreado = ClienteNegocio.CrearCliente(nombre, nroDocumento, telefono, tipoCliente, tipoDocumento, activo);
             }
             else
             {
-                // ---------- MODO EDICIÓN ----------
+                // Modo Edición
                 if (!ClienteNegocio.ValidarEdicionCliente(_clienteEnEdicion.IdCliente, nombre, nroDocumento, telefono, out string mensajeError))
                 {
                     MessageBox.Show(mensajeError, "Dato inválido", MessageBoxButton.OK, MessageBoxImage.Warning);
@@ -121,13 +118,8 @@ namespace TiendaOga.Vistas
                 if (confirmacion != MessageBoxResult.Yes)
                     return;
 
-                _clienteEnEdicion.NombreCompleto = nombre;
-                _clienteEnEdicion.Dni = nroDocumento;
-                _clienteEnEdicion.Telefono = telefono;
-                _clienteEnEdicion.TipoCliente = string.IsNullOrWhiteSpace(tipoCliente) ? _clienteEnEdicion.TipoCliente : tipoCliente;
-                _clienteEnEdicion.TipoDocumento = string.IsNullOrWhiteSpace(tipoDocumento) ? _clienteEnEdicion.TipoDocumento : tipoDocumento;
-                _clienteEnEdicion.Activo = chkActivo.IsChecked == true;
-
+                // Delegación de la mutación a la capa de negocio
+                ClienteNegocio.ModificarCliente(_clienteEnEdicion, nombre, nroDocumento, telefono, tipoCliente, tipoDocumento, activo);
                 ClienteCreado = _clienteEnEdicion;
             }
 

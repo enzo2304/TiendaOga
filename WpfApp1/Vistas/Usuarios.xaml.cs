@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using Microsoft.Data.SqlClient;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
 
@@ -46,33 +45,14 @@ namespace TiendaOga.Vistas
 
         private void TxtBuscarUsuario_TextChanged(object sender, TextChangedEventArgs e)
         {
-            _paginaActual = 1; // Al buscar, siempre volvemos a la primera página
+            _paginaActual = 1;
             AplicarFiltro();
         }
 
         private void AplicarFiltro()
         {
-            string filtro = txtBuscarUsuario?.Text?.Trim().ToLower() ?? string.Empty;
-
-            if (string.IsNullOrEmpty(filtro))
-            {
-                _usuariosFiltrados = _todosLosUsuarios;
-            }
-            else
-            {
-                string[] palabras = filtro.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                _usuariosFiltrados = _todosLosUsuarios.Where(u =>
-                {
-                    string textoCompleto = string.Join(" ", new[]
-                    {
-                        u.Nombre, u.Apellido, u.UsuarioLogin, u.Email, u.NombrePerfil
-                    }).ToLower();
-
-                    return palabras.All(p => textoCompleto.Contains(p));
-                }).ToList();
-            }
-
+            string filtro = txtBuscarUsuario?.Text ?? string.Empty;
+            _usuariosFiltrados = UsuarioNegocio.FiltrarUsuarios(_todosLosUsuarios, filtro);
             RenderizarPagina();
         }
 
@@ -95,7 +75,6 @@ namespace TiendaOga.Vistas
         {
             pnlPaginacion.Children.Clear();
 
-            // Si hay 10 o menos usuarios en total, no mostramos nada de paginación
             if (_usuariosFiltrados.Count <= TAMANIO_PAGINA)
                 return;
 
@@ -105,7 +84,6 @@ namespace TiendaOga.Vistas
                 RenderizarPagina();
             }));
 
-            // Números de página, con "..." si hay muchas
             var numerosAMostrar = ObtenerNumerosDePagina(_paginaActual, totalPaginas);
 
             foreach (var numero in numerosAMostrar)
@@ -175,12 +153,9 @@ namespace TiendaOga.Vistas
             };
 
             boton.Click += (s, e) => alHacerClick();
-
             return boton;
         }
 
-        // Arma la lista de números a mostrar, con null representando "..."
-        // Ejemplo con 7 páginas y página actual 1: [1, 2, 3, null, 7]
         private List<int?> ObtenerNumerosDePagina(int paginaActual, int totalPaginas)
         {
             var resultado = new List<int?>();
@@ -273,16 +248,12 @@ namespace TiendaOga.Vistas
             txtPassword.Clear();
             txtPasswordVisible.Clear();
 
-            // Prevención de auto-bloqueo: si el usuario que está logueado se
-            // selecciona a sí mismo para modificar, no lo dejamos tocar el
-            // combo de Perfil. Así no hay forma de que se baje el rol por
-            // error y se quede afuera de esta misma pantalla.
             bool esElUsuarioLogueado = fila.IdUsuario == SesionActual.IdUsuario;
             if (rbModificar.IsChecked == true)
             {
                 cmbPerfil.IsEnabled = !esElUsuarioLogueado;
                 txtAyudaModo.Text = esElUsuarioLogueado
-                    ? "Estás editando tu propio usuario: no podés cambiarte el perfil vos mismo, para evitar quedarte sin acceso."
+                    ? "Estás editando tu propio usuario: no podés cambiarte el perfil vos mismo para preservar tu acceso."
                     : "Seleccioná un usuario de la lista de abajo. Dejá la contraseña en blanco si no querés cambiarla.";
             }
 
@@ -390,16 +361,7 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            try
-            {
-                UsuarioNegocio.AltaUsuario(nombre, apellido, usuario, password, email, idPerfil.Value);
-            }
-            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
-            {
-                MessageBox.Show("Ya existe un usuario con ese nombre de usuario o correo electrónico.", "Dato duplicado", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
+            UsuarioNegocio.AltaUsuario(nombre, apellido, usuario, password, email, idPerfil.Value);
             MessageBox.Show("Usuario registrado correctamente.", "Alta exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
             LimpiarFormulario();
@@ -421,25 +383,18 @@ namespace TiendaOga.Vistas
             string email = txtEmail.Text.Trim();
             int? idPerfil = cmbPerfil.SelectedValue as int?;
 
-            // Prevención de auto-bloqueo (defensa en profundidad): aunque el
-            // combo ya queda deshabilitado al seleccionarte a vos mismo, acá
-            // volvemos a chequearlo antes de guardar. Así, si por cualquier
-            // motivo el perfil que se va a grabar es distinto del que ya
-            // tenías, se corta la operación en vez de dejarte sin acceso.
-            bool esElUsuarioLogueado = _idUsuarioSeleccionado.Value == SesionActual.IdUsuario;
-            if (esElUsuarioLogueado && idPerfil.HasValue && idPerfil.Value != _idPerfilOriginalSeleccionado)
+            if (!UsuarioNegocio.ValidarModificacionUsuario(
+                _idUsuarioSeleccionado.Value,
+                SesionActual.IdUsuario,
+                _idPerfilOriginalSeleccionado,
+                nombre,
+                apellido,
+                usuario,
+                email,
+                idPerfil,
+                out string mensajeError))
             {
-                MessageBox.Show(
-                    "No podés cambiar tu propio perfil. Pedile a otro administrador que lo haga, para evitar quedarte sin acceso a esta pantalla.",
-                    "Operación no permitida",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Warning);
-                return;
-            }
-
-            if (!UsuarioNegocio.ValidarModificacionUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, email, idPerfil, out string mensajeError))
-            {
-                MessageBox.Show(mensajeError, "Datos incompletos o inválidos", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(mensajeError, "Operación no permitida", MessageBoxButton.OK, MessageBoxImage.Warning);
                 return;
             }
 
@@ -451,16 +406,7 @@ namespace TiendaOga.Vistas
 
             if (confirmacion != MessageBoxResult.Yes) return;
 
-            try
-            {
-                UsuarioNegocio.ModificarUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, password, email, idPerfil.Value);
-            }
-            catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
-            {
-                MessageBox.Show("Ya existe otro usuario con ese nombre de usuario o correo electrónico.", "Dato duplicado", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
-
+            UsuarioNegocio.ModificarUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, password, email, idPerfil.Value);
             MessageBox.Show("Usuario modificado correctamente.", "Modificación exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
             _idUsuarioSeleccionado = null;

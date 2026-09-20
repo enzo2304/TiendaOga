@@ -32,8 +32,22 @@ namespace TiendaOga.Vistas
 
         private void Ventas_Loaded(object sender, RoutedEventArgs e)
         {
+            CargarUsuarioVendedor();
             CargarClientes();
             CargarListaProductos();
+        }
+
+        private void CargarUsuarioVendedor()
+        {
+            var ventanaPadre = Window.GetWindow(this) as Window1;
+            if (ventanaPadre != null && !string.IsNullOrWhiteSpace(ventanaPadre.UsuarioActual))
+            {
+                txtVendedor.Text = ventanaPadre.UsuarioActual;
+            }
+            else
+            {
+                txtVendedor.Text = "Desconocido";
+            }
         }
 
         private void CargarClientes()
@@ -42,13 +56,17 @@ namespace TiendaOga.Vistas
 
             var seleccionadoPrevio = cmbCliente.SelectedItem as ClienteItem;
 
-            cmbCliente.ItemsSource = null;
-            cmbCliente.ItemsSource = DatosGlobales.Clientes;
+            // Se obtienen únicamente clientes activos para la facturación
+            var clientesHabilitados = ClienteNegocio.ObtenerTodos() != null
+                ? ClienteNegocio.ObtenerTodos().Where(c => c.Activo).ToList()
+                : new List<ClienteItem>();
 
-            // Mantiene el cliente si ya había uno elegido; de lo contrario queda en blanco (-1)
-            if (seleccionadoPrevio != null && DatosGlobales.Clientes.Any(c => c.IdCliente == seleccionadoPrevio.IdCliente))
+            cmbCliente.ItemsSource = null;
+            cmbCliente.ItemsSource = clientesHabilitados;
+
+            if (seleccionadoPrevio != null && clientesHabilitados.Any(c => c.IdCliente == seleccionadoPrevio.IdCliente))
             {
-                cmbCliente.SelectedItem = DatosGlobales.Clientes.First(c => c.IdCliente == seleccionadoPrevio.IdCliente);
+                cmbCliente.SelectedItem = clientesHabilitados.First(c => c.IdCliente == seleccionadoPrevio.IdCliente);
             }
             else
             {
@@ -59,11 +77,11 @@ namespace TiendaOga.Vistas
         private void CargarListaProductos()
         {
             cmbProductoBusqueda.ItemsSource = null;
-            cmbProductoBusqueda.ItemsSource = DatosGlobales.Productos;
+            cmbProductoBusqueda.ItemsSource = ProductoNegocio.ObtenerProductos();
         }
 
         // ==========================================================
-        // FILTRADO DE TECLADO
+        // FILTRADO DE TECLADO (Presentación)
         // ==========================================================
 
         private void TxtCodigoProducto_PreviewTextInput(object sender, TextCompositionEventArgs e)
@@ -79,15 +97,14 @@ namespace TiendaOga.Vistas
         private void TxtMontoRecibido_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             var textBox = sender as TextBox;
+            if (textBox == null) return;
 
-            // Bloquea cualquier caracter que no sea dígito o separador decimal
             if (!RegexSoloDecimales.IsMatch(e.Text))
             {
                 e.Handled = true;
                 return;
             }
 
-            // Evita un segundo punto o coma decimal
             if ((e.Text == "." && textBox.Text.Contains(".")) ||
                 (e.Text == "," && textBox.Text.Contains(",")))
             {
@@ -111,19 +128,8 @@ namespace TiendaOga.Vistas
             }
         }
 
-        private void DpFechaPago_PreviewTextInput(object sender, TextCompositionEventArgs e)
-        {
-            // Bloquea cualquier tecleo directo; la fecha solo se elige desde el calendario
-            e.Handled = true;
-        }
-
-        private void DpFechaPago_Pasting(object sender, DataObjectPastingEventArgs e)
-        {
-            e.CancelCommand();
-        }
-
         // ==========================================================
-        // SINCRONIZACIÓN: BÚSQUEDA POR CÓDIGO (ID) Y POR COMBOBOX
+        // BÚSQUEDA Y SINCRONIZACIÓN DE PRODUCTOS
         // ==========================================================
 
         private void TxtCodigoProducto_KeyDown(object sender, KeyEventArgs e)
@@ -141,7 +147,7 @@ namespace TiendaOga.Vistas
 
             if (int.TryParse(txtCodigoProducto.Text.Trim(), out int idBuscado))
             {
-                var prod = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == idBuscado);
+                var prod = ProductoNegocio.ObtenerPorId(idBuscado);
                 if (prod != null)
                 {
                     _sincronizandoProducto = true;
@@ -180,7 +186,7 @@ namespace TiendaOga.Vistas
         }
 
         // ==========================================================
-        // DETALLE DE VENTA: AGREGAR / ELIMINAR
+        // DETALLE DE VENTA
         // ==========================================================
 
         private void BtnAgregar_Click(object sender, RoutedEventArgs e)
@@ -191,7 +197,7 @@ namespace TiendaOga.Vistas
             {
                 if (int.TryParse(txtCodigoProducto.Text.Trim(), out int id))
                 {
-                    productoSeleccionado = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == id);
+                    productoSeleccionado = ProductoNegocio.ObtenerPorId(id);
                 }
             }
 
@@ -313,17 +319,25 @@ namespace TiendaOga.Vistas
 
         private void BtnGuardarVenta_Click(object sender, RoutedEventArgs e)
         {
-            // 1. Validación de cliente: OBLIGATORIO tener un cliente seleccionado del padrón
             var clienteSeleccionado = cmbCliente.SelectedItem as ClienteItem;
-            if (clienteSeleccionado == null)
+
+            // 1. Regla de Negocio: Validar estado del cliente
+            if (!VentaNegocio.ValidarClienteHabilitado(clienteSeleccionado, out string errorCliente))
             {
-                MessageBox.Show("Debes seleccionar un cliente registrado para efectuar la venta.\nSi es un cliente nuevo, registralo primero en el módulo de Clientes.",
-                                "Cliente no seleccionado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(errorCliente, "Cliente no habilitado", MessageBoxButton.OK, MessageBoxImage.Warning);
                 cmbCliente.Focus();
                 return;
             }
 
-            // 2. Validación de venta y pagos
+            // 2. Regla de Negocio: Validar fecha del día en curso
+            DateTime fechaPago = dpFechaPago.SelectedDate ?? DateTime.Today;
+            if (!VentaNegocio.ValidarFechaVenta(fechaPago, out string errorFecha))
+            {
+                MessageBox.Show(errorFecha, "Fecha no válida", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            // 3. Regla de Negocio: Validar ítems y montos
             decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
             decimal.TryParse(txtMontoRecibido.Text.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal recibido);
 
@@ -333,29 +347,14 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            // 3. Descontar stock de los productos vendidos
-            foreach (var item in _detalleVenta)
-            {
-                var prod = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == item.IdProducto);
-                if (prod != null)
-                {
-                    prod.Stock -= item.Cantidad;
-                }
-            }
-
-            // 4. Registrar compra vinculada únicamente al cliente elegido
-            var listaNombres = _detalleVenta.Select(item => $"{item.Nombre} x{item.Cantidad}").ToList();
-            string detalleProductos = string.Join(", ", listaNombres);
-
             string metodoPago = cmbTipoPago.SelectedItem is ComboBoxItem itemCombo
                 ? itemCombo.Content.ToString()
                 : cmbTipoPago.Text;
 
-            DateTime fechaPago = dpFechaPago.SelectedDate ?? DateTime.Today;
-
-            DatosGlobales.RegistrarCompraCliente(
+            // 4. Delegación transaccional completa a la Capa de Negocio
+            VentaNegocio.RegistrarVenta(
                 idCliente: clienteSeleccionado.IdCliente,
-                detalle: detalleProductos,
+                detalle: _detalleVenta,
                 total: total,
                 metodoPago: metodoPago,
                 fecha: fechaPago
@@ -371,8 +370,6 @@ namespace TiendaOga.Vistas
         private void BtnCancelarVenta_Click(object sender, RoutedEventArgs e)
         {
             _detalleVenta.Clear();
-
-            // Limpia la selección obligando a elegir un cliente en la próxima venta
             cmbCliente.SelectedIndex = -1;
 
             _sincronizandoProducto = true;

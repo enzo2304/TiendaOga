@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
@@ -13,8 +12,6 @@ namespace TiendaOga.Vistas
 {
     public partial class Productos : Page
     {
-        private List<ProductoRow> _productosEstaticos => DatosGlobales.Productos;
-
         public Productos()
         {
             InitializeComponent();
@@ -30,18 +27,13 @@ namespace TiendaOga.Vistas
 
         private string ObtenerRolActual()
         {
-            var mainWindow = Window.GetWindow(this);
+            var mainWindow = Window.GetWindow(this) as Window1;
             if (mainWindow != null)
             {
-                var propiedadRol = mainWindow.GetType().GetProperty("RolActual") ??
-                                   mainWindow.GetType().GetProperty("RolUsuario");
-                if (propiedadRol != null)
-                {
-                    return propiedadRol.GetValue(mainWindow)?.ToString() ?? string.Empty;
-                }
+                return mainWindow.RolActual;
             }
 
-            return "Vendedor";
+            return string.Empty;
         }
 
         private void AplicarPermisosPorRol()
@@ -78,7 +70,7 @@ namespace TiendaOga.Vistas
         private void CargarProductos()
         {
             dgProductos.ItemsSource = null;
-            dgProductos.ItemsSource = _productosEstaticos;
+            dgProductos.ItemsSource = ProductoNegocio.ObtenerProductos();
         }
 
         private void TipoProducto_Checked(object sender, RoutedEventArgs e)
@@ -92,33 +84,19 @@ namespace TiendaOga.Vistas
 
         private void BtnBuscar_Click(object sender, RoutedEventArgs e)
         {
-            string termino = txtBusqueda.Text?.Trim().ToLower() ?? string.Empty;
+            string termino = txtBusqueda.Text?.Trim() ?? string.Empty;
             var catSeleccionada = cmbFiltroCategoria.SelectedItem as CategoriaItem;
 
-            var filtrados = _productosEstaticos.AsEnumerable();
-
-            if (!string.IsNullOrWhiteSpace(termino))
-            {
-                filtrados = filtrados.Where(p => p.NombreProducto.ToLower().Contains(termino) ||
-                                                 p.IdProducto.ToString().Contains(termino));
-            }
-
-            if (catSeleccionada != null && catSeleccionada.IdCategoria > 0)
-            {
-                filtrados = filtrados.Where(p => string.Equals(p.NombreCategoria, catSeleccionada.Nombre, StringComparison.OrdinalIgnoreCase));
-            }
+            string catNombre = catSeleccionada != null ? catSeleccionada.Nombre : string.Empty;
+            int catId = catSeleccionada != null ? catSeleccionada.IdCategoria : 0;
 
             dgProductos.ItemsSource = null;
-            dgProductos.ItemsSource = filtrados.ToList();
+            dgProductos.ItemsSource = ProductoNegocio.FiltrarProductos(termino, catNombre, catId);
         }
 
         private void DgProductos_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
         }
-
-        // ==========================================================
-        // MANEJO DE LA VENTANA MODAL (ALTA Y EDICIÓN)
-        // ==========================================================
 
         private void BtnNuevoProducto_Click(object sender, RoutedEventArgs e)
         {
@@ -144,7 +122,7 @@ namespace TiendaOga.Vistas
             var boton = sender as Button;
             if (boton == null || !(boton.Tag is int idProducto)) return;
 
-            var producto = _productosEstaticos.FirstOrDefault(p => p.IdProducto == idProducto);
+            var producto = ProductoNegocio.ObtenerPorId(idProducto);
             if (producto == null) return;
 
             txtId.Text = producto.IdProducto.ToString();
@@ -166,7 +144,6 @@ namespace TiendaOga.Vistas
             txtNombre.Focus();
         }
 
-        // Reemplaza al antiguo BtnEliminar_Click: ahora hace baja/reactivación lógica en vez de borrar
         private void BtnToggleActivo_Click(object sender, RoutedEventArgs e)
         {
             if (!ProductoNegocio.ValidarEliminacion(ObtenerRolActual(), out string errorRol))
@@ -188,13 +165,10 @@ namespace TiendaOga.Vistas
 
             if (resultado == MessageBoxResult.Yes)
             {
-                producto.Activo = vaAActivar;
+                ProductoNegocio.CambiarEstadoActivo(producto.IdProducto, vaAActivar);
+                dgProductos.Items.Refresh();
             }
         }
-
-        // ==========================================================
-        // VALIDACIÓN Y GUARDADO DE FORMULARIO
-        // ==========================================================
 
         private void BtnGuardar_Click(object sender, RoutedEventArgs e)
         {
@@ -228,48 +202,26 @@ namespace TiendaOga.Vistas
             int stock = int.Parse(txtStock.Text.Trim());
             string tipoProd = esHogar ? "Hogar" : "Tecnología";
 
-            if (string.IsNullOrEmpty(txtId.Text))
-            {
-                int nuevoId = _productosEstaticos.Count > 0 ? _productosEstaticos.Max(p => p.IdProducto) + 1 : 1;
+            int? idProducto = string.IsNullOrEmpty(txtId.Text) ? (int?)null : int.Parse(txtId.Text);
 
-                _productosEstaticos.Add(new ProductoRow
-                {
-                    IdProducto = nuevoId,
-                    NombreProducto = txtNombre.Text.Trim(),
-                    PrecioCosto = pCosto,
-                    PrecioVentas = pVenta,
-                    Stock = stock,
-                    TipoProducto = tipoProd,
-                    NombreCategoria = tipoProd
-                });
+            ProductoNegocio.GuardarOModificarProducto(
+                idProducto,
+                txtNombre.Text.Trim(),
+                pCosto,
+                pVenta,
+                stock,
+                tipoProd);
 
-                MessageBox.Show("¡Producto agregado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                int idEditado = int.Parse(txtId.Text);
-                var productoAEditar = _productosEstaticos.FirstOrDefault(p => p.IdProducto == idEditado);
+            string mensajeExito = idProducto.HasValue
+                ? "¡Producto modificado correctamente!"
+                : "¡Producto agregado correctamente!";
 
-                if (productoAEditar != null)
-                {
-                    productoAEditar.NombreProducto = txtNombre.Text.Trim();
-                    productoAEditar.PrecioCosto = pCosto;
-                    productoAEditar.PrecioVentas = pVenta;
-                    productoAEditar.Stock = stock;
-                    productoAEditar.TipoProducto = tipoProd;
-
-                    MessageBox.Show("¡Producto modificado correctamente!", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
-            }
+            MessageBox.Show(mensajeExito, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
 
             LimpiarFormulario();
             CargarProductos();
             ModalFormulario.Visibility = Visibility.Collapsed;
         }
-
-        // ==========================================================
-        // FILTROS DE TECLADO
-        // ==========================================================
 
         public void ValidarSoloEnteros(object sender, TextCompositionEventArgs e)
         {

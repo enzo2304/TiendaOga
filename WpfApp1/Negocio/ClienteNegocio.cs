@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TiendaOga.Entidades;
@@ -8,6 +10,23 @@ namespace TiendaOga.Negocio
     public static class ClienteNegocio
     {
         private static readonly Regex RegexNumeros = new Regex(@"^[0-9]+$");
+
+        public static ObservableCollection<ClienteItem> ObtenerTodos()
+        {
+            return DatosGlobales.Clientes;
+        }
+
+        public static IEnumerable<ClienteItem> BuscarClientes(string busqueda)
+        {
+            if (string.IsNullOrWhiteSpace(busqueda))
+                return DatosGlobales.Clientes;
+
+            string termino = busqueda.Trim().ToLower();
+
+            return DatosGlobales.Clientes
+                .Where(c => c.NombreCompleto.ToLower().Contains(termino) || c.Dni.Contains(termino))
+                .ToList();
+        }
 
         public static bool ValidarAltaCliente(string nombre, string nroDocumento, string telefono, out string mensajeError)
         {
@@ -51,7 +70,6 @@ namespace TiendaOga.Negocio
             return true;
         }
 
-        // Misma validación que el alta, pero excluye al propio cliente del chequeo de DNI duplicado
         public static bool ValidarEdicionCliente(int idClienteActual, string nombre, string nroDocumento, string telefono, out string mensajeError)
         {
             if (string.IsNullOrWhiteSpace(nombre))
@@ -108,6 +126,35 @@ namespace TiendaOga.Negocio
                 Telefono = telefono.Trim(),
                 Activo = activo
             };
+        }
+
+        public static void AgregarCliente(ClienteItem nuevoCliente)
+        {
+            if (nuevoCliente != null)
+            {
+                DatosGlobales.Clientes.Insert(0, nuevoCliente);
+            }
+        }
+
+        public static bool CambiarEstadoActivo(int idCliente, bool nuevoEstado)
+        {
+            var cliente = DatosGlobales.Clientes.FirstOrDefault(c => c.IdCliente == idCliente);
+            if (cliente == null) return false;
+
+            cliente.Activo = nuevoEstado;
+            return true;
+        }
+
+        public static void ModificarCliente(ClienteItem cliente, string nombre, string nroDocumento, string telefono, string tipoCliente, string tipoDocumento, bool activo)
+        {
+            if (cliente == null) return;
+
+            cliente.NombreCompleto = nombre.Trim();
+            cliente.Dni = nroDocumento.Trim();
+            cliente.Telefono = telefono.Trim();
+            cliente.TipoCliente = string.IsNullOrWhiteSpace(tipoCliente) ? cliente.TipoCliente : tipoCliente;
+            cliente.TipoDocumento = string.IsNullOrWhiteSpace(tipoDocumento) ? cliente.TipoDocumento : tipoDocumento;
+            cliente.Activo = activo;
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using System;
-using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using TiendaOga.Entidades;
+using TiendaOga.Negocio;
 
 namespace TiendaOga.Vistas
 {
@@ -22,7 +22,7 @@ namespace TiendaOga.Vistas
         private void CargarListaClientes()
         {
             dgClientes.ItemsSource = null;
-            dgClientes.ItemsSource = DatosGlobales.Clientes;
+            dgClientes.ItemsSource = ClienteNegocio.ObtenerTodos();
         }
 
         private void DgClientes_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -42,24 +42,13 @@ namespace TiendaOga.Vistas
 
         private void TxtBuscar_TextChanged(object sender, TextChangedEventArgs e)
         {
-            string busqueda = txtBuscar.Text?.Trim().ToLower();
-
-            if (string.IsNullOrWhiteSpace(busqueda))
-            {
-                dgClientes.ItemsSource = DatosGlobales.Clientes;
-            }
-            else
-            {
-                dgClientes.ItemsSource = DatosGlobales.Clientes
-                    .Where(c => c.NombreCompleto.ToLower().Contains(busqueda) || c.Dni.Contains(busqueda))
-                    .ToList();
-            }
+            dgClientes.ItemsSource = ClienteNegocio.BuscarClientes(txtBuscar.Text);
         }
 
         private void BtnLimpiar_Click(object sender, RoutedEventArgs e)
         {
             txtBuscar.Clear();
-            dgClientes.ItemsSource = DatosGlobales.Clientes;
+            CargarListaClientes();
         }
 
         private void BtnNuevoCliente_Click(object sender, RoutedEventArgs e)
@@ -73,7 +62,7 @@ namespace TiendaOga.Vistas
 
             if (resultado == true && ventana.ClienteCreado != null)
             {
-                DatosGlobales.Clientes.Insert(0, ventana.ClienteCreado);
+                ClienteNegocio.AgregarCliente(ventana.ClienteCreado);
                 CargarListaClientes();
             }
         }
@@ -87,10 +76,11 @@ namespace TiendaOga.Vistas
                     Owner = Window.GetWindow(this)
                 };
 
-                // No hace falta reasignar nada al aceptar: la ventana edita
-                // el mismo objeto "cliente" que ya está dentro de la colección,
-                // así que los cambios se ven solos gracias a INotifyPropertyChanged.
-                ventana.ShowDialog();
+                bool? resultado = ventana.ShowDialog();
+                if (resultado == true)
+                {
+                    CargarListaClientes();
+                }
             }
         }
 
@@ -110,7 +100,8 @@ namespace TiendaOga.Vistas
                 if (confirmacion != MessageBoxResult.Yes)
                     return;
 
-                cliente.Activo = vaAActivar;
+                ClienteNegocio.CambiarEstadoActivo(cliente.IdCliente, vaAActivar);
+                dgClientes.Items.Refresh();
             }
         }
     }

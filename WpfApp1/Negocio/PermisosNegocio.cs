@@ -32,7 +32,7 @@ namespace TiendaOga.Negocio
             {
                 [ROL_GERENTE] = new HashSet<Modulo>
                 {
-                    //Modulo.Ventas,
+                    Modulo.Ventas,
                     Modulo.Clientes,
                     Modulo.Productos,
                     Modulo.ReportesVendedor,
@@ -43,7 +43,8 @@ namespace TiendaOga.Negocio
                 {
                     Modulo.Backup,
                     Modulo.Clientes,
-                    Modulo.Usuarios
+                    Modulo.Usuarios,
+                    Modulo.Ventas
                 },
 
                 [ROL_VENDEDOR] = new HashSet<Modulo>
