@@ -30,7 +30,6 @@ namespace TiendaOga.Vistas
 
         private string ObtenerRolActual()
         {
-            // Busca la propiedad de rol disponible en la ventana contenedora o en sesión
             var mainWindow = Window.GetWindow(this);
             if (mainWindow != null)
             {
@@ -167,7 +166,8 @@ namespace TiendaOga.Vistas
             txtNombre.Focus();
         }
 
-        private void BtnEliminar_Click(object sender, RoutedEventArgs e)
+        // Reemplaza al antiguo BtnEliminar_Click: ahora hace baja/reactivación lógica en vez de borrar
+        private void BtnToggleActivo_Click(object sender, RoutedEventArgs e)
         {
             if (!ProductoNegocio.ValidarEliminacion(ObtenerRolActual(), out string errorRol))
             {
@@ -175,24 +175,20 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            var boton = sender as Button;
-            if (boton == null || !(boton.Tag is int idProducto)) return;
+            if (!(sender is Button boton) || !(boton.Tag is ProductoRow producto)) return;
+
+            bool vaAActivar = !producto.Activo;
+            string accion = vaAActivar ? "reactivar" : "dar de baja a";
 
             var resultado = MessageBox.Show(
-                "¿Está seguro de eliminar este producto del catálogo?",
-                "Confirmar eliminación",
+                $"¿Está seguro que desea {accion} el producto \"{producto.NombreProducto}\"?",
+                vaAActivar ? "Confirmar reactivación" : "Confirmar baja de producto",
                 MessageBoxButton.YesNo,
                 MessageBoxImage.Warning);
 
             if (resultado == MessageBoxResult.Yes)
             {
-                var productoAEliminar = _productosEstaticos.FirstOrDefault(p => p.IdProducto == idProducto);
-                if (productoAEliminar != null)
-                {
-                    _productosEstaticos.Remove(productoAEliminar);
-                    CargarProductos();
-                    MessageBox.Show("Producto eliminado correctamente.", "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
-                }
+                producto.Activo = vaAActivar;
             }
         }
 
@@ -210,7 +206,6 @@ namespace TiendaOga.Vistas
 
             bool esHogar = rbHogar.IsChecked == true;
 
-            // Delegación de validaciones a la capa de negocio
             if (!ProductoNegocio.ValidarIngresoStock(
                 txtNombre.Text?.Trim(),
                 txtPrecioCosto.Text?.Trim(),
