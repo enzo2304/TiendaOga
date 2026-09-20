@@ -77,7 +77,7 @@
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
 
-        <TextBlock Grid.Row="0" Text="Datos del Nuevo Cliente" FontSize="16" FontWeight="SemiBold" Foreground="#333333" Margin="0,0,0,18"/>
+        <TextBlock x:Name="txtTitulo" Grid.Row="0" Text="Datos del Nuevo Cliente" FontSize="16" FontWeight="SemiBold" Foreground="#333333" Margin="0,0,0,18"/>
 
         <StackPanel Grid.Row="1">
             <TextBlock Text="Tipo de Cliente:" Style="{StaticResource FieldLabelStyle}"/>
@@ -119,7 +119,7 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button Grid.Column="0" Content="Cancelar" Style="{StaticResource SecondaryButton}" Click="BtnCancelar_Click"/>
-            <Button Grid.Column="2" Content="Aceptar" Style="{StaticResource PrimaryButton}" Click="BtnAceptar_Click"/>
+            <Button x:Name="btnAceptar" Grid.Column="2" Content="Aceptar" Style="{StaticResource PrimaryButton}" Click="BtnAceptar_Click"/>
         </Grid>
     </Grid>
 </Window>

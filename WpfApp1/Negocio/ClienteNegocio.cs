@@ -11,14 +11,12 @@ namespace TiendaOga.Negocio
 
         public static bool ValidarAltaCliente(string nombre, string nroDocumento, string telefono, out string mensajeError)
         {
-            // 1. Validar Nombre
             if (string.IsNullOrWhiteSpace(nombre))
             {
                 mensajeError = "Por favor ingresá el Nombre y Apellido del cliente.";
                 return false;
             }
 
-            // 2. Validar DNI (Obligatorio, numérico y entre 7 u 8 dígitos)
             if (string.IsNullOrWhiteSpace(nroDocumento))
             {
                 mensajeError = "El número de documento es obligatorio.";
@@ -31,7 +29,6 @@ namespace TiendaOga.Negocio
                 return false;
             }
 
-            // 3. Validar Teléfono (Obligatorio)
             if (string.IsNullOrWhiteSpace(telefono))
             {
                 mensajeError = "El teléfono de contacto es obligatorio.";
@@ -44,10 +41,52 @@ namespace TiendaOga.Negocio
                 return false;
             }
 
-            // 4. Evitar duplicados por DNI
             if (DatosGlobales.Clientes.Any(c => c.Dni == nroDocumento))
             {
                 mensajeError = "Ya existe un cliente registrado con ese número de documento.";
+                return false;
+            }
+
+            mensajeError = string.Empty;
+            return true;
+        }
+
+        // Misma validación que el alta, pero excluye al propio cliente del chequeo de DNI duplicado
+        public static bool ValidarEdicionCliente(int idClienteActual, string nombre, string nroDocumento, string telefono, out string mensajeError)
+        {
+            if (string.IsNullOrWhiteSpace(nombre))
+            {
+                mensajeError = "Por favor ingresá el Nombre y Apellido del cliente.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(nroDocumento))
+            {
+                mensajeError = "El número de documento es obligatorio.";
+                return false;
+            }
+
+            if (!RegexNumeros.IsMatch(nroDocumento) || nroDocumento.Length < 7 || nroDocumento.Length > 8)
+            {
+                mensajeError = "El DNI debe ser numérico y contener entre 7 y 8 dígitos.";
+                return false;
+            }
+
+            if (string.IsNullOrWhiteSpace(telefono))
+            {
+                mensajeError = "El teléfono de contacto es obligatorio.";
+                return false;
+            }
+
+            if (!RegexNumeros.IsMatch(telefono) || telefono.Length < 8)
+            {
+                mensajeError = "El teléfono debe contener solo números (mínimo 8 dígitos).";
+                return false;
+            }
+
+            if (DatosGlobales.Clientes.Any(c => c.Dni == nroDocumento && c.IdCliente != idClienteActual))
+            {
+                mensajeError = "Ya existe otro cliente registrado con ese número de documento.";
                 return false;
             }
 

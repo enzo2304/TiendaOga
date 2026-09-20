@@ -157,14 +157,18 @@
                         <!-- Fecha de Pago -->
                         <StackPanel Grid.Column="1" Margin="0,0,10,0">
                             <TextBlock Text="Fecha de Pago" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
-                            <DatePicker x:Name="dpFechaPago" Height="30" Margin="0,3,0,0"/>
+                            <DatePicker x:Name="dpFechaPago" Height="30" Margin="0,3,0,0"
+                                        PreviewTextInput="DpFechaPago_PreviewTextInput"
+                                        DataObject.Pasting="DpFechaPago_Pasting"/>
                         </StackPanel>
 
                         <!-- Monto Recibido -->
                         <StackPanel Grid.Column="2" Margin="0,0,10,0">
                             <TextBlock Text="Monto Recibido" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
                             <TextBox x:Name="txtMontoRecibido" Height="30" Padding="5" Margin="0,3,0,0"
-                                     TextChanged="TxtMontoRecibido_TextChanged"/>
+                                     TextChanged="TxtMontoRecibido_TextChanged"
+                                     PreviewTextInput="TxtMontoRecibido_PreviewTextInput"
+                                     DataObject.Pasting="TxtMontoRecibido_Pasting"/>
                         </StackPanel>
 
                         <!-- Vuelto -->

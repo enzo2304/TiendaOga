@@ -87,10 +87,25 @@
         </Style>
 
         <Style x:Key="IconButtonStyle" TargetType="Button">
+            <Setter Property="Width" Value="30"/>
+            <Setter Property="Height" Value="30"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Cursor" Value="Hand"/>
-            <Setter Property="Padding" Value="2"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="fondo" Background="Transparent" CornerRadius="15">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="fondo" Property="Background" Value="#F0F0F0"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
         </Style>
     </Page.Resources>
 
@@ -175,15 +190,16 @@
                             </DataGridTemplateColumn>
 
                             <!-- Columna Acciones (Identificada para control de roles) -->
+                            <!-- Columna Acciones (Identificada para control de roles) -->
                             <DataGridTemplateColumn x:Name="columnaAcciones" Header="Acciones" Width="90">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                            <Button Style="{StaticResource IconButtonStyle}" Click="BtnEditar_Click" Tag="{Binding IdProducto}" Margin="0,0,8,0" ToolTip="Editar">
-                                                <TextBlock Text="✏️" FontSize="14"/>
+                                            <Button Style="{StaticResource IconButtonStyle}" Click="BtnEditar_Click" Tag="{Binding IdProducto}" ToolTip="Editar">
+                                                <TextBlock Text="&#xE70F;" FontFamily="Segoe MDL2 Assets" FontSize="15" Foreground="#3182CE"/>
                                             </Button>
-                                            <Button Style="{StaticResource IconButtonStyle}" Click="BtnEliminar_Click" Tag="{Binding IdProducto}" ToolTip="Eliminar">
-                                                <TextBlock Text="🗑️" FontSize="14"/>
+                                            <Button Style="{StaticResource IconButtonStyle}" Click="BtnEliminar_Click" Tag="{Binding IdProducto}" Margin="4,0,0,0" ToolTip="Eliminar">
+                                                <TextBlock Text="&#xE74D;" FontFamily="Segoe MDL2 Assets" FontSize="15" Foreground="#E53E3E"/>
                                             </Button>
                                         </StackPanel>
                                     </DataTemplate>

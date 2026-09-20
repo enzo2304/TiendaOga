@@ -33,6 +33,13 @@ namespace TiendaOga.Vistas
             btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteGeneral(RolActual));
             btnStockBackup.Visibility = ToVisibility(PermisosNegocio.PuedeVerBackup(RolActual));
 
+            // El texto del botón cambia según el alcance que le corresponde al rol,
+            // pero ambos casos navegan igual (btnReportesVentas_Click no cambia)
+            TipoReporteVenta alcanceBoton = PermisosNegocio.ObtenerAlcanceReporteVenta(RolActual);
+            btnReportesVentas.Content = alcanceBoton == TipoReporteVenta.Individual
+                ? "Cierre de Caja"
+                : "Reporte Vendedor";
+
             if (PermisosNegocio.PuedeVerVentas(RolActual))
             {
                 btnVentas_Click(null, null);

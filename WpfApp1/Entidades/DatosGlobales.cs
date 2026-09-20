@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace TiendaOga.Entidades
 {
@@ -14,15 +16,54 @@ namespace TiendaOga.Entidades
         public string MetodoPago { get; set; }
     }
 
-    public class ClienteItem
+    public class ClienteItem : INotifyPropertyChanged
     {
+        private string _dni;
+        private string _nombreCompleto;
+        private string _telefono;
+        private string _tipoCliente = "Cliente Registrado";
+        private string _tipoDocumento = "DNI";
+        private bool _activo = true;
+
         public int IdCliente { get; set; }
-        public string Dni { get; set; }
-        public string NombreCompleto { get; set; }
-        public string Telefono { get; set; }
-        public string TipoCliente { get; set; } = "Cliente Registrado";
-        public string TipoDocumento { get; set; } = "DNI";
-        public bool Activo { get; set; } = true;
+
+        public string Dni
+        {
+            get => _dni;
+            set { _dni = value; OnPropertyChanged(); OnPropertyChanged(nameof(NombreDisplay)); }
+        }
+
+        public string NombreCompleto
+        {
+            get => _nombreCompleto;
+            set { _nombreCompleto = value; OnPropertyChanged(); OnPropertyChanged(nameof(NombreDisplay)); }
+        }
+
+        public string Telefono
+        {
+            get => _telefono;
+            set { _telefono = value; OnPropertyChanged(); }
+        }
+
+        public string TipoCliente
+        {
+            get => _tipoCliente;
+            set { _tipoCliente = value; OnPropertyChanged(); }
+        }
+
+        public string TipoDocumento
+        {
+            get => _tipoDocumento;
+            set { _tipoDocumento = value; OnPropertyChanged(); }
+        }
+
+        // Baja lógica: al cambiar esto, la grilla se actualiza sola (fila roja / botón Reactivar)
+        public bool Activo
+        {
+            get => _activo;
+            set { _activo = value; OnPropertyChanged(); }
+        }
+
         public int CantidadCompras => HistorialCompras.Count;
         public List<CompraCliente> HistorialCompras { get; set; } = new List<CompraCliente>();
 
@@ -34,11 +75,16 @@ namespace TiendaOga.Entidades
         {
             return NombreDisplay;
         }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged([CallerMemberName] string propertyName = null)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
     }
 
     public static class DatosGlobales
     {
-        // 1. La lista arranca vacía: NO existe "Consumidor Final" precargado
         public static ObservableCollection<ClienteItem> Clientes { get; set; } = new ObservableCollection<ClienteItem>();
 
         public static List<ProductoRow> Productos { get; set; } = new List<ProductoRow>
@@ -50,7 +96,6 @@ namespace TiendaOga.Entidades
             new ProductoRow { IdProducto = 5, NombreProducto = "Cámara de Seguridad Interior", NombreCategoria = "Tecnología", PrecioCosto = 11000, PrecioVentas = 18900, Stock = 12, TipoProducto = "Tecnología" }
         };
 
-        // 2. Registra la compra ÚNICAMENTE si el cliente ya existe en el padrón
         public static void RegistrarCompraCliente(int idCliente, string detalle, decimal total, string metodoPago, DateTime? fecha = null)
         {
             var cliente = Clientes.FirstOrDefault(c => c.IdCliente == idCliente);

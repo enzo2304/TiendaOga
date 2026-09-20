@@ -16,6 +16,7 @@ namespace TiendaOga.Vistas
     {
         private readonly ObservableCollection<ItemVenta> _detalleVenta = new ObservableCollection<ItemVenta>();
         private static readonly Regex RegexSoloNumeros = new Regex(@"^[0-9]+$");
+        private static readonly Regex RegexSoloDecimales = new Regex(@"^[0-9.,]+$");
         private bool _sincronizandoProducto = false;
 
         public Ventas()
@@ -73,6 +74,52 @@ namespace TiendaOga.Vistas
         private void TxtCantidad_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             e.Handled = !RegexSoloNumeros.IsMatch(e.Text);
+        }
+
+        private void TxtMontoRecibido_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            var textBox = sender as TextBox;
+
+            // Bloquea cualquier caracter que no sea dígito o separador decimal
+            if (!RegexSoloDecimales.IsMatch(e.Text))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            // Evita un segundo punto o coma decimal
+            if ((e.Text == "." && textBox.Text.Contains(".")) ||
+                (e.Text == "," && textBox.Text.Contains(",")))
+            {
+                e.Handled = true;
+            }
+        }
+
+        private void TxtMontoRecibido_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            if (e.DataObject.GetDataPresent(typeof(string)))
+            {
+                string texto = (string)e.DataObject.GetData(typeof(string));
+                if (!RegexSoloDecimales.IsMatch(texto))
+                {
+                    e.CancelCommand();
+                }
+            }
+            else
+            {
+                e.CancelCommand();
+            }
+        }
+
+        private void DpFechaPago_PreviewTextInput(object sender, TextCompositionEventArgs e)
+        {
+            // Bloquea cualquier tecleo directo; la fecha solo se elige desde el calendario
+            e.Handled = true;
+        }
+
+        private void DpFechaPago_Pasting(object sender, DataObjectPastingEventArgs e)
+        {
+            e.CancelCommand();
         }
 
         // ==========================================================

@@ -77,5 +77,41 @@ namespace TiendaOga.Vistas
                 CargarListaClientes();
             }
         }
+
+        private void BtnModificarCliente_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button boton && boton.Tag is ClienteItem cliente)
+            {
+                var ventana = new NuevoClienteWindow(cliente)
+                {
+                    Owner = Window.GetWindow(this)
+                };
+
+                // No hace falta reasignar nada al aceptar: la ventana edita
+                // el mismo objeto "cliente" que ya está dentro de la colección,
+                // así que los cambios se ven solos gracias a INotifyPropertyChanged.
+                ventana.ShowDialog();
+            }
+        }
+
+        private void BtnToggleActivo_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button boton && boton.Tag is ClienteItem cliente)
+            {
+                bool vaAActivar = !cliente.Activo;
+                string accion = vaAActivar ? "reactivar" : "dar de baja a";
+
+                var confirmacion = MessageBox.Show(
+                    $"¿Está seguro que desea {accion} al cliente \"{cliente.NombreCompleto}\"?",
+                    vaAActivar ? "Confirmar reactivación" : "Confirmar baja de cliente",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Question);
+
+                if (confirmacion != MessageBoxResult.Yes)
+                    return;
+
+                cliente.Activo = vaAActivar;
+            }
+        }
     }
 }
