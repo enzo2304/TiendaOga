@@ -42,9 +42,9 @@ namespace TiendaOga.Negocio
                 return false;
             }
 
-            if (!RegexNumeros.IsMatch(nroDocumento) || nroDocumento.Length < 7 || nroDocumento.Length > 8)
+            if (!RegexNumeros.IsMatch(nroDocumento) || nroDocumento.Length != 8)
             {
-                mensajeError = "El DNI debe ser numérico y contener entre 7 y 8 dígitos.";
+                mensajeError = "El DNI debe contener exactamente 8 dígitos numéricos.";
                 return false;
             }
 
@@ -84,9 +84,9 @@ namespace TiendaOga.Negocio
                 return false;
             }
 
-            if (!RegexNumeros.IsMatch(nroDocumento) || nroDocumento.Length < 7 || nroDocumento.Length > 8)
+            if (!RegexNumeros.IsMatch(nroDocumento) || nroDocumento.Length != 8)
             {
-                mensajeError = "El DNI debe ser numérico y contener entre 7 y 8 dígitos.";
+                mensajeError = "El DNI debe contener exactamente 8 dígitos numéricos.";
                 return false;
             }
 
