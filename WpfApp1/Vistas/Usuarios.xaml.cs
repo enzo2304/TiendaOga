@@ -361,11 +361,22 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            UsuarioNegocio.AltaUsuario(nombre, apellido, usuario, password, email, idPerfil.Value);
-            MessageBox.Show("Usuario registrado correctamente.", "Alta exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+            try
+            {
+                UsuarioNegocio.AltaUsuario(nombre, apellido, usuario, password, email, idPerfil.Value);
+                MessageBox.Show("Usuario registrado correctamente.", "Alta exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            LimpiarFormulario();
-            CargarUsuarios();
+                LimpiarFormulario();
+                CargarUsuarios();
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Operación no permitida", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error inesperado al registrar el usuario: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void GuardarModificacion()
@@ -406,12 +417,23 @@ namespace TiendaOga.Vistas
 
             if (confirmacion != MessageBoxResult.Yes) return;
 
-            UsuarioNegocio.ModificarUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, password, email, idPerfil.Value);
-            MessageBox.Show("Usuario modificado correctamente.", "Modificación exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+            try
+            {
+                UsuarioNegocio.ModificarUsuario(_idUsuarioSeleccionado.Value, nombre, apellido, usuario, password, email, idPerfil.Value);
+                MessageBox.Show("Usuario modificado correctamente.", "Modificación exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            _idUsuarioSeleccionado = null;
-            LimpiarFormulario();
-            CargarUsuarios();
+                _idUsuarioSeleccionado = null;
+                LimpiarFormulario();
+                CargarUsuarios();
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Operación no permitida", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error inesperado al modificar el usuario: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void ConfirmarYDarBaja()
@@ -438,21 +460,32 @@ namespace TiendaOga.Vistas
 
             if (resultado != MessageBoxResult.Yes) return;
 
-            if (vaAReactivar)
+            try
             {
-                UsuarioNegocio.ReactivarUsuario(_idUsuarioSeleccionado.Value);
-                MessageBox.Show("Usuario reactivado correctamente.", "Reactivación exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
-            else
-            {
-                UsuarioNegocio.DarBajaUsuario(_idUsuarioSeleccionado.Value);
-                MessageBox.Show("Usuario dado de baja correctamente.", "Baja exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
-            }
+                if (vaAReactivar)
+                {
+                    UsuarioNegocio.ReactivarUsuario(_idUsuarioSeleccionado.Value);
+                    MessageBox.Show("Usuario reactivado correctamente.", "Reactivación exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+                else
+                {
+                    UsuarioNegocio.DarBajaUsuario(_idUsuarioSeleccionado.Value);
+                    MessageBox.Show("Usuario dado de baja correctamente.", "Baja exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
 
-            _idUsuarioSeleccionado = null;
-            _usuarioSeleccionadoActivo = true;
-            LimpiarFormulario();
-            CargarUsuarios();
+                _idUsuarioSeleccionado = null;
+                _usuarioSeleccionadoActivo = true;
+                LimpiarFormulario();
+                CargarUsuarios();
+            }
+            catch (InvalidOperationException ex)
+            {
+                MessageBox.Show(ex.Message, "Operación no permitida", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ocurrió un error inesperado al procesar la baja/reactivación: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void BtnLimpiar_Click(object sender, RoutedEventArgs e)

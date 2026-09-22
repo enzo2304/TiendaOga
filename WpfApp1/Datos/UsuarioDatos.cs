@@ -8,9 +8,7 @@ namespace TiendaOga.Datos
 {
     /// <summary>
     /// Acceso a datos de Usuario. Todo pasa por procedimientos
-    /// almacenados (sp_ABM_Usuario, sp_Listar_Usuarios, etc.),
-    /// nunca se arma SQL como texto acá.
-    /// </summary>
+
     public class UsuarioDatos
     {
         private readonly ConexionBD conexionBD = new ConexionBD();
@@ -56,21 +54,86 @@ namespace TiendaOga.Datos
                     cmd.Parameters.Add(pEmail);
 
                     conn.Open();
-                    int filasAfectadas = cmd.ExecuteNonQuery();
-                    return filasAfectadas > 0;
+
+                    try
+                    {
+                        int filasAfectadas = cmd.ExecuteNonQuery();
+                        return filasAfectadas > 0;
+                    }
+                    catch (SqlException ex) when (ex.Number == 2627 || ex.Number == 2601)
+                    {
+                        // Violación de UNIQUE KEY (email o usuario duplicado)
+
+                        throw new InvalidOperationException(
+                            "Ese email o nombre de usuario ya está en uso por otro usuario.", ex);
+                    }
                 }
             }
         }
 
-        public void GuardarUsuario(Usuario usuario)
+        /// <summary>
+        /// Da de alta un usuario nuevo.
+        /// Devuelve null si se guardó correctamente, o un mensaje de error para mostrar al usuario.
+        /// </summary>
+        public string GuardarUsuario(Usuario usuario)
         {
-            EjecutarABMUsuario('A',
-                idPerfil: usuario.id_perfil,
-                nombre: usuario.nombre,
-                apellido: usuario.apellido,
-                usuario: usuario.usuario,
-                password: usuario.password,
-                email: usuario.email);
+            if (ExisteEmail(usuario.email))
+            {
+                return "Ese email ya está en uso por otro usuario.";
+            }
+
+            if (ExisteUsuario(usuario.usuario))
+            {
+                return "Ese nombre de usuario ya está en uso.";
+            }
+
+            try
+            {
+                EjecutarABMUsuario('A',
+                    idPerfil: usuario.id_perfil,
+                    nombre: usuario.nombre,
+                    apellido: usuario.apellido,
+                    usuario: usuario.usuario,
+                    password: usuario.password,
+                    email: usuario.email);
+
+                return null; // null = todo OK
+            }
+            catch (InvalidOperationException ex)
+            {
+                return ex.Message;
+            }
+        }
+
+        /// <summary>
+        /// Modifica un usuario existente.
+        /// Devuelve null si se guardó correctamente, o un mensaje de error para mostrar al usuario.
+        /// </summary>
+        public string ModificarUsuario(Usuario usuario)
+        {
+
+            if (ExisteEmail(usuario.email, usuario.id_usuario))
+            {
+                return "Ese email ya está en uso por otro usuario.";
+            }
+
+            try
+            {
+                EjecutarABMUsuario('M',
+                    idUsuario: usuario.id_usuario,
+                    idPerfil: usuario.id_perfil,
+                    nombre: usuario.nombre,
+                    apellido: usuario.apellido,
+                    usuario: usuario.usuario,
+                    password: usuario.password,
+                    email: usuario.email);
+
+                return null; // null = todo OK
+            }
+            catch (InvalidOperationException ex)
+            {
+                return ex.Message;
+            }
         }
 
         public List<PerfilItem> ObtenerPerfiles()
