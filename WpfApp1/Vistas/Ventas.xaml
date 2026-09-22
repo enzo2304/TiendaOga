@@ -41,20 +41,39 @@
 
                     <StackPanel Grid.Column="1" Margin="10,0,0,0">
                         <TextBlock Text="Cliente Registrado:" FontWeight="SemiBold" Foreground="#4A5568" Margin="0,0,0,5"/>
-                        <ComboBox x:Name="cmbCliente" 
-                        Height="30" 
-                        Foreground="#2D3748"
-                        FontSize="13"
-                        IsEditable="False">
-                            <ComboBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding NombreDisplay}" 
-                        Foreground="#2D3748" 
-                        VerticalAlignment="Center" 
-                        Margin="2"/>
-                                </DataTemplate>
-                            </ComboBox.ItemTemplate>
-                        </ComboBox>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="6"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <ComboBox x:Name="cmbCliente"
+                  Grid.Column="0"
+                  Height="30"
+                  Foreground="#2D3748"
+                  FontSize="13"
+                  IsEditable="False">
+                                <ComboBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding NombreDisplay}"
+                               Foreground="#2D3748"
+                               VerticalAlignment="Center"
+                               Margin="2"/>
+                                    </DataTemplate>
+                                </ComboBox.ItemTemplate>
+                            </ComboBox>
+
+                            <Button x:Name="btnNuevoClienteRapido"
+                Grid.Column="2"
+                Content="+"
+                Width="30" Height="30"
+                FontSize="16" FontWeight="Bold"
+                Background="#E8792D" Foreground="White"
+                Cursor="Hand" BorderThickness="0"
+                Click="BtnNuevoClienteRapido_Click"
+                ToolTip="Nuevo cliente"/>
+                        </Grid>
                     </StackPanel>
                 </Grid>
 

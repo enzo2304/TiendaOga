@@ -50,11 +50,12 @@ namespace TiendaOga.Vistas
             }
         }
 
-        private void CargarClientes()
+        private void CargarClientes(int? idClienteASeleccionar = null)
         {
             if (cmbCliente == null) return;
 
             var seleccionadoPrevio = cmbCliente.SelectedItem as ClienteItem;
+            int? idParaSeleccionar = idClienteASeleccionar ?? seleccionadoPrevio?.IdCliente;
 
             // Se obtienen únicamente clientes activos para la facturación
             var clientesHabilitados = ClienteNegocio.ObtenerTodos() != null
@@ -64,9 +65,9 @@ namespace TiendaOga.Vistas
             cmbCliente.ItemsSource = null;
             cmbCliente.ItemsSource = clientesHabilitados;
 
-            if (seleccionadoPrevio != null && clientesHabilitados.Any(c => c.IdCliente == seleccionadoPrevio.IdCliente))
+            if (idParaSeleccionar != null && clientesHabilitados.Any(c => c.IdCliente == idParaSeleccionar.Value))
             {
-                cmbCliente.SelectedItem = clientesHabilitados.First(c => c.IdCliente == seleccionadoPrevio.IdCliente);
+                cmbCliente.SelectedItem = clientesHabilitados.First(c => c.IdCliente == idParaSeleccionar.Value);
             }
             else
             {
@@ -382,6 +383,25 @@ namespace TiendaOga.Vistas
             cmbTipoPago.SelectedIndex = 0;
             dpFechaPago.SelectedDate = DateTime.Today;
             ActualizarTotal();
+        }
+
+        private void BtnNuevoClienteRapido_Click(object sender, RoutedEventArgs e)
+        {
+            var ventana = new NuevoClienteWindow
+            {
+                Owner = Window.GetWindow(this)
+            };
+
+            bool? resultado = ventana.ShowDialog();
+
+            if (resultado == true && ventana.ClienteCreado != null)
+            {
+                ClienteNegocio.AgregarCliente(ventana.ClienteCreado);
+
+                // Refresca el combo y deja seleccionado automáticamente al cliente recién creado,
+                // sin tocar ni perder los ítems ya cargados en _detalleVenta
+                CargarClientes(ventana.ClienteCreado.IdCliente);
+            }
         }
     }
 }
