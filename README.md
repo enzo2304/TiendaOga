@@ -1,6 +1,6 @@
 # 🛒 TiendaOga - Sistema de Gestión y Ventas
 
-Un sistema integral desarrollado en C# y .NET para la administración eficiente de productos, ventas y control de usuarios de una tienda. Proyecto desarrollado para la cátedra [Nombre de tu materia/cátedra].
+Un sistema integral desarrollado en C# y .NET para la administración eficiente de productos, ventas y control de usuarios de una tienda. 
 ---
 
 ## 🚀 Características Principales
