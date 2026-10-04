@@ -8,6 +8,8 @@ namespace TiendaOga.Vistas
 {
     public partial class Clientes : Page
     {
+        private const string TITULO_HISTORIAL_VACIO = "Historial de Compras (Seleccione un cliente para ver qué compró)";
+
         public Clientes()
         {
             InitializeComponent();
@@ -21,22 +23,40 @@ namespace TiendaOga.Vistas
 
         private void CargarListaClientes()
         {
-            dgClientes.ItemsSource = null;
-            dgClientes.ItemsSource = ClienteNegocio.ObtenerTodos();
+            try
+            {
+                dgClientes.ItemsSource = null;
+                dgClientes.ItemsSource = ClienteNegocio.ObtenerTodos();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("No se pudo cargar la lista de clientes: " + ex.Message,
+                    "Error de base de datos", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         private void DgClientes_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             var cliente = dgClientes.SelectedItem as ClienteItem;
-            if (cliente != null)
+
+            if (cliente == null)
             {
-                lblHistorialTitulo.Text = $"Historial de Compras: {cliente.NombreCompleto} (DNI: {cliente.Dni})";
-                dgCompras.ItemsSource = cliente.HistorialCompras;
-            }
-            else
-            {
-                lblHistorialTitulo.Text = "Historial de Compras (Seleccione un cliente para ver qué compró)";
+                lblHistorialTitulo.Text = TITULO_HISTORIAL_VACIO;
                 dgCompras.ItemsSource = null;
+                return;
+            }
+
+            lblHistorialTitulo.Text = $"Historial de Compras: {cliente.NombreCompleto} ({cliente.TipoDocumento}: {cliente.Dni})";
+
+            try
+            {
+                dgCompras.ItemsSource = ClienteNegocio.ObtenerHistorial(cliente.IdCliente);
+            }
+            catch (Exception ex)
+            {
+                dgCompras.ItemsSource = null;
+                MessageBox.Show("No se pudo cargar el historial de compras: " + ex.Message,
+                    "Error de base de datos", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 
@@ -62,8 +82,20 @@ namespace TiendaOga.Vistas
 
             if (resultado == true && ventana.ClienteCreado != null)
             {
-                ClienteNegocio.AgregarCliente(ventana.ClienteCreado);
-                CargarListaClientes();
+                try
+                {
+                    ClienteNegocio.AgregarCliente(ventana.ClienteCreado);
+                    CargarListaClientes();
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Operación no permitida", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ocurrió un error inesperado al registrar el cliente: " + ex.Message,
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -100,8 +132,16 @@ namespace TiendaOga.Vistas
                 if (confirmacion != MessageBoxResult.Yes)
                     return;
 
-                ClienteNegocio.CambiarEstadoActivo(cliente.IdCliente, vaAActivar);
-                dgClientes.Items.Refresh();
+                try
+                {
+                    ClienteNegocio.CambiarEstadoActivo(cliente.IdCliente, vaAActivar);
+                    dgClientes.Items.Refresh();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("No se pudo cambiar el estado del cliente: " + ex.Message,
+                        "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

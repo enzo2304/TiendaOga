@@ -83,7 +83,7 @@ namespace TiendaOga.Vistas
             if (_clienteEnEdicion == null)
             {
                 // Modo Alta
-                if (!ClienteNegocio.ValidarAltaCliente(nombre, nroDocumento, telefono, out string mensajeError))
+                if (!ClienteNegocio.ValidarAltaCliente(nombre, tipoDocumento, nroDocumento, telefono, out string mensajeError))
                 {
                     MessageBox.Show(mensajeError, "Dato inválido", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
@@ -103,7 +103,7 @@ namespace TiendaOga.Vistas
             else
             {
                 // Modo Edición
-                if (!ClienteNegocio.ValidarEdicionCliente(_clienteEnEdicion.IdCliente, nombre, nroDocumento, telefono, out string mensajeError))
+                if (!ClienteNegocio.ValidarEdicionCliente(_clienteEnEdicion.IdCliente, nombre, tipoDocumento, nroDocumento, telefono, out string mensajeError))
                 {
                     MessageBox.Show(mensajeError, "Dato inválido", MessageBoxButton.OK, MessageBoxImage.Warning);
                     return;
@@ -118,9 +118,22 @@ namespace TiendaOga.Vistas
                 if (confirmacion != MessageBoxResult.Yes)
                     return;
 
-                // Delegación de la mutación a la capa de negocio
-                ClienteNegocio.ModificarCliente(_clienteEnEdicion, nombre, nroDocumento, telefono, tipoCliente, tipoDocumento, activo);
-                ClienteCreado = _clienteEnEdicion;
+                try
+                {
+                    // Delegación de la mutación a la capa de negocio
+                    ClienteNegocio.ModificarCliente(_clienteEnEdicion, nombre, nroDocumento, telefono, tipoCliente, tipoDocumento, activo);
+                    ClienteCreado = _clienteEnEdicion;
+                }
+                catch (InvalidOperationException ex)
+                {
+                    MessageBox.Show(ex.Message, "Operación no permitida", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;   // la ventana queda abierta para que corrija el dato
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ocurrió un error inesperado al modificar el cliente: " + ex.Message, "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
             }
 
             DialogResult = true;
