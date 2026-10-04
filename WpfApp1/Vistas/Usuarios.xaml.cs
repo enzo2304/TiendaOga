@@ -14,6 +14,7 @@ namespace TiendaOga.Vistas
     public partial class Usuarios : Page
     {
         private int? _idUsuarioSeleccionado;
+        private UsuarioRow _filaSeleccionada;   //  recuerda el usuario elegido aunque cambie el modo o la pagina
         private bool _usuarioSeleccionadoActivo = true;
         private int? _idPerfilOriginalSeleccionado;
         private bool _sincronizandoPassword = false;
@@ -189,19 +190,28 @@ namespace TiendaOga.Vistas
         {
             if (dgUsuarios == null) return;
 
-            _idUsuarioSeleccionado = null;
-            _usuarioSeleccionadoActivo = true;
-            dgUsuarios.SelectedItem = null;
-            LimpiarFormulario();
-
+           
             if (rbAlta.IsChecked == true)
             {
+                _idUsuarioSeleccionado = null;
+                _filaSeleccionada = null;
+                _usuarioSeleccionadoActivo = true;
+                _idPerfilOriginalSeleccionado = null;
+                dgUsuarios.SelectedItem = null;
+                LimpiarFormulario();
+
                 lblTituloFormulario.Text = "Alta de Usuario";
                 txtAyudaModo.Text = "Completá los datos para registrar un nuevo usuario.";
                 btnGuardar.Content = "Registrar Usuario";
                 SetFormularioHabilitado(true);
+                return;
             }
-            else if (rbModificar.IsChecked == true)
+
+            
+            if (_filaSeleccionada == null)
+                LimpiarFormulario();
+
+            if (rbModificar.IsChecked == true)
             {
                 lblTituloFormulario.Text = "Modificar Usuario";
                 txtAyudaModo.Text = "Seleccioná un usuario de la lista de abajo. Dejá la contraseña en blanco si no querés cambiarla.";
@@ -215,6 +225,10 @@ namespace TiendaOga.Vistas
                 btnGuardar.Content = "Confirmar";
                 SetFormularioHabilitado(false);
             }
+
+            
+            if (_filaSeleccionada != null)
+                CargarFilaEnFormulario(_filaSeleccionada);
         }
 
         private void SetFormularioHabilitado(bool habilitado)
@@ -236,6 +250,12 @@ namespace TiendaOga.Vistas
             var fila = dgUsuarios.SelectedItem as UsuarioRow;
             if (fila == null) return;
 
+            _filaSeleccionada = fila;
+            CargarFilaEnFormulario(fila);
+        }
+
+        private void CargarFilaEnFormulario(UsuarioRow fila)
+        {
             _idUsuarioSeleccionado = fila.IdUsuario;
             _usuarioSeleccionadoActivo = fila.Activo;
             _idPerfilOriginalSeleccionado = fila.IdPerfil;
@@ -423,6 +443,7 @@ namespace TiendaOga.Vistas
                 MessageBox.Show("Usuario modificado correctamente.", "Modificación exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
                 _idUsuarioSeleccionado = null;
+                _filaSeleccionada = null;   
                 LimpiarFormulario();
                 CargarUsuarios();
             }
@@ -474,6 +495,7 @@ namespace TiendaOga.Vistas
                 }
 
                 _idUsuarioSeleccionado = null;
+                _filaSeleccionada = null;   
                 _usuarioSeleccionadoActivo = true;
                 LimpiarFormulario();
                 CargarUsuarios();
@@ -491,6 +513,7 @@ namespace TiendaOga.Vistas
         private void BtnLimpiar_Click(object sender, RoutedEventArgs e)
         {
             _idUsuarioSeleccionado = null;
+            _filaSeleccionada = null;   
             _usuarioSeleccionadoActivo = true;
             _idPerfilOriginalSeleccionado = null;
             dgUsuarios.SelectedItem = null;
