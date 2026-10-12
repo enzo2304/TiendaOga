@@ -1,12 +1,16 @@
 ﻿<Window x:Class="TiendaOga.Vistas.ComprobanteVentaWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Comprobante de venta" Width="380" SizeToContent="Height" MaxHeight="800"
+        Title="Comprobante de venta" Width="500" SizeToContent="Height" MaxHeight="950"
         WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Background="#F2F3F5">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="16" HorizontalAlignment="Center">
 
             <Border Background="White" CornerRadius="10" Padding="14">
+                <Border.LayoutTransform>
+                    <ScaleTransform ScaleX="1.35" ScaleY="1.35"/>
+                </Border.LayoutTransform>
+
                 <StackPanel x:Name="Ticket" Width="302" Background="White"
                             TextElement.FontFamily="Courier New" TextElement.FontSize="11">
 
