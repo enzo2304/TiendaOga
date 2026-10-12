@@ -9,6 +9,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
+using TiendaOga.Datos;
 
 namespace TiendaOga.Vistas
 {
@@ -35,6 +36,7 @@ namespace TiendaOga.Vistas
             CargarUsuarioVendedor();
             CargarClientes();
             CargarListaProductos();
+            CargarTiposPago();
         }
 
         private void CargarUsuarioVendedor()
@@ -81,6 +83,11 @@ namespace TiendaOga.Vistas
             cmbProductoBusqueda.ItemsSource = ProductoNegocio.ObtenerProductos();
         }
 
+        private void CargarTiposPago()
+        {
+            cmbTipoPago.ItemsSource = new TipoPagoDatos().Listar();
+            cmbTipoPago.SelectedIndex = 0;
+        }
         // ==========================================================
         // FILTRADO DE TECLADO (Presentación)
         // ==========================================================
@@ -320,6 +327,14 @@ namespace TiendaOga.Vistas
 
         private void BtnGuardarVenta_Click(object sender, RoutedEventArgs e)
         {
+            var ventanaPadre = Window.GetWindow(this) as Window1;
+            if (ventanaPadre == null || ventanaPadre.IdUsuarioActual <= 0)
+            {
+                MessageBox.Show("No se pudo identificar al vendedor de la sesión. Cerrá sesión e ingresá nuevamente.",
+                                "Sesión inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
             var clienteSeleccionado = cmbCliente.SelectedItem as ClienteItem;
 
             // 1. Regla de Negocio: Validar estado del cliente
@@ -348,24 +363,34 @@ namespace TiendaOga.Vistas
                 return;
             }
 
-            string metodoPago = cmbTipoPago.SelectedItem is ComboBoxItem itemCombo
-                ? itemCombo.Content.ToString()
-                : cmbTipoPago.Text;
+            // 4. Validación del tipo de pago (Nuevo código)
+            if (cmbTipoPago.SelectedValue == null)
+            {
+                MessageBox.Show("Seleccioná un tipo de pago.", "Datos incompletos",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            // 4. Delegación transaccional completa a la Capa de Negocio
-            VentaNegocio.RegistrarVenta(
-                idCliente: clienteSeleccionado.IdCliente,
-                detalle: _detalleVenta,
-                total: total,
-                metodoPago: metodoPago,
-                fecha: fechaPago
-            );
+            // 5. Delegación a la Capa de Negocio (Nuevo código)
+            try
+            {
+                VentaRegistrada venta = VentaNegocio.RegistrarVenta(
+                    idUsuario: ventanaPadre.IdUsuarioActual,
+                    idCliente: clienteSeleccionado.IdCliente,
+                    idTipoPago: (int)cmbTipoPago.SelectedValue,
+                    detalle: _detalleVenta);
 
-            MessageBox.Show($"¡Venta registrada con éxito a nombre de {clienteSeleccionado.NombreCompleto}!\nEl stock y su historial fueron actualizados.",
-                            "Venta Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show($"Venta {venta.NumeroVenta} registrada con éxito a nombre de {clienteSeleccionado.NombreCompleto}.",
+                                "Venta Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
 
-            CargarListaProductos();
-            BtnCancelarVenta_Click(sender, e);
+                CargarListaProductos();
+                BtnCancelarVenta_Click(sender, e);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex)
+            {
+                MessageBox.Show(ex.Message, "No se pudo registrar la venta",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
         }
 
         private void BtnCancelarVenta_Click(object sender, RoutedEventArgs e)

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TiendaOga.Entidades;
+using TiendaOga.Datos;
 
 namespace TiendaOga.Negocio
 {
@@ -108,33 +109,10 @@ namespace TiendaOga.Negocio
         /// <summary>
         /// Transacción completa de negocio: descuenta inventario y asienta la compra en el historial.
         /// </summary>
-        public static void RegistrarVenta(int idCliente, IEnumerable<ItemVenta> detalle, decimal total, string metodoPago, DateTime fecha)
+        public static VentaRegistrada RegistrarVenta(int idUsuario, int idCliente, int idTipoPago,
+                                              IEnumerable<ItemVenta> detalle)
         {
-            if (detalle == null) return;
-
-            var items = detalle.ToList();
-
-            // 1. Regla de Inventario: descontar stock
-            foreach (var item in items)
-            {
-                var prod = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == item.IdProducto);
-                if (prod != null)
-                {
-                    prod.Stock -= item.Cantidad;
-                }
-            }
-
-            // 2. Registro histórico
-            var listaNombres = items.Select(item => $"{item.Nombre} x{item.Cantidad}").ToList();
-            string resumenArticulos = string.Join(", ", listaNombres);
-
-            DatosGlobales.RegistrarCompraCliente(
-                idCliente: idCliente,
-                detalle: resumenArticulos,
-                total: total,
-                metodoPago: metodoPago,
-                fecha: fecha
-            );
+            return new VentaDatos().Registrar(idUsuario, idCliente, idTipoPago, detalle);
         }
     }
 }

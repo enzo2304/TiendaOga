@@ -168,7 +168,10 @@
     <Compile Include="Datos\ClienteDatos.cs" />
     <Compile Include="Datos\ConexionBD.cs" />
     <Compile Include="Datos\PerfilRepository.cs" />
+    <Compile Include="Datos\ProductoVentaDatos.cs" />
+    <Compile Include="Datos\TipoPagoDatos.cs" />
     <Compile Include="Datos\UsuarioDatos.cs" />
+    <Compile Include="Datos\VentaDatos.cs" />
     <Compile Include="Entidades\CategoriaItem.cs" />
     <Compile Include="Entidades\ClienteRow.cs" />
     <Compile Include="Entidades\CompraRow.cs" />
@@ -177,6 +180,7 @@
     <Compile Include="Entidades\PerfilItem.cs" />
     <Compile Include="Entidades\ProductoRow.cs" />
     <Compile Include="Entidades\UsuarioRow.cs" />
+    <Compile Include="Entidades\VentaRegistrada.cs" />
     <Compile Include="Negocio\ClienteNegocio.cs" />
     <Compile Include="Negocio\PermisosNegocio.cs" />
     <Compile Include="Negocio\ProductoNegocio.cs" />

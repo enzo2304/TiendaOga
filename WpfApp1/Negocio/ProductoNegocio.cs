@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using TiendaOga.Datos;
 using TiendaOga.Entidades;
+
 
 namespace TiendaOga.Negocio
 {
@@ -121,10 +123,7 @@ namespace TiendaOga.Negocio
             return true;
         }
 
-        public static List<ProductoRow> ObtenerProductos()
-        {
-            return DatosGlobales.Productos;
-        }
+        public static List<ProductoRow> ObtenerProductos() => new ProductoVentaDatos().ListarActivos();
 
         public static List<ProductoRow> FiltrarProductos(string termino, string categoriaNombre, int idCategoria)
         {
@@ -145,10 +144,7 @@ namespace TiendaOga.Negocio
             return consulta.ToList();
         }
 
-        public static ProductoRow ObtenerPorId(int idProducto)
-        {
-            return DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == idProducto);
-        }
+        public static ProductoRow ObtenerPorId(int id) => new ProductoVentaDatos().ObtenerPorId(id);
 
         public static void GuardarOModificarProducto(
             int? idProducto,

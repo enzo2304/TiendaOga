@@ -278,5 +278,10 @@ namespace TiendaOga.Negocio
         {
             usuarioDatos.ReactivarUsuario(idUsuario);
         }
+
+        public static int ObtenerIdPorLogin(string login)
+        {
+            return usuarioDatos.ObtenerIdPorLogin(login);
+        }
     }
 }

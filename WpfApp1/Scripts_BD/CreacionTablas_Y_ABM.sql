@@ -35,7 +35,11 @@ CREATE TABLE Usuario (
     CONSTRAINT FK_Usuario_Perfil FOREIGN KEY (id_perfil) REFERENCES Perfiles(id_perfil)
 );
 GO
-
+IF NOT EXISTS (SELECT 1 FROM sys.key_constraints WHERE name = 'uq_usuario_login')
+BEGIN
+    ALTER TABLE Usuario ADD CONSTRAINT uq_usuario_login UNIQUE (usuario);
+END;
+GO
 -- =============================================
 -- 3. PROCEDIMIENTOS ALMACENADOS
 -- =============================================

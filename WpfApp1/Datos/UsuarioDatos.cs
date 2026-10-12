@@ -230,5 +230,17 @@ namespace TiendaOga.Datos
         {
             EjecutarABMUsuario('R', idUsuario: idUsuario);
         }
+        public int ObtenerIdPorLogin(string login)
+        {
+            using (var cn = new ConexionBD().ObtenerConexion())
+            using (var cmd = new SqlCommand("dbo.sp_usuario_obtener_id_por_login", cn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@usuario", (object)login ?? DBNull.Value);
+                cn.Open();
+                object r = cmd.ExecuteScalar();
+                return (r == null || r == DBNull.Value) ? 0 : Convert.ToInt32(r);
+            }
+        }
     }
 }

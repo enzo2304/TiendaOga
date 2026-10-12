@@ -8,13 +8,14 @@ namespace TiendaOga.Vistas
     {
         public string UsuarioActual { get; private set; }
         public string RolActual { get; private set; }
+        public int IdUsuarioActual { get; private set; }
 
         public Window1(string usuario, string rol)
         {
             InitializeComponent();
             UsuarioActual = usuario;
             RolActual = rol;
-
+            IdUsuarioActual = UsuarioNegocio.ObtenerIdPorLogin(usuario);
             ConfigurarVistaPorRol();
         }
 

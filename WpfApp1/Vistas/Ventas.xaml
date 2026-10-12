@@ -166,11 +166,9 @@
                         <StackPanel Grid.Column="0" Margin="0,0,10,0">
                             <TextBlock Text="Tipo de Pago" FontSize="11" FontWeight="SemiBold" Foreground="#718096"/>
                             <ComboBox x:Name="cmbTipoPago" Height="30" Margin="0,3,0,0"
-                                      SelectionChanged="CmbTipoPago_SelectionChanged">
-                                <ComboBoxItem Content="Efectivo" IsSelected="True"/>
-                                <ComboBoxItem Content="Tarjeta"/>
-                                <ComboBoxItem Content="Transferencia"/>
-                            </ComboBox>
+                              DisplayMemberPath="Nombre"
+                              SelectedValuePath="IdTipoPago"
+                              SelectionChanged="CmbTipoPago_SelectionChanged" />
                         </StackPanel>
 
                         <!-- Fecha de Pago -->
