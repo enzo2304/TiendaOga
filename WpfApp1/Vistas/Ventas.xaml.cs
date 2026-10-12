@@ -21,7 +21,8 @@ namespace TiendaOga.Vistas
         private static readonly Regex RegexSoloNumeros = new Regex(@"^[0-9]+$");
         private static readonly Regex RegexSoloDecimales = new Regex(@"^[0-9.,]+$");
         private bool _sincronizandoProducto = false;
-
+        private bool _actualizandoMonto = false;       // true mientras el código escribe el monto
+        private bool _montoEditadoManual = false;  // true si el usuario lo escribió a mano
         public Ventas()
         {
             InitializeComponent();
@@ -291,6 +292,12 @@ namespace TiendaOga.Vistas
 
         private void TxtMontoRecibido_TextChanged(object sender, TextChangedEventArgs e)
         {
+            if (!_actualizandoMonto)
+            {
+                // Si el usuario deja el campo vacío, vuelve al modo automático
+                _montoEditadoManual = !string.IsNullOrWhiteSpace(txtMontoRecibido.Text);
+            }
+
             CalcularVuelto();
         }
 
@@ -300,27 +307,55 @@ namespace TiendaOga.Vistas
 
             decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
 
-            if (string.IsNullOrWhiteSpace(txtMontoRecibido.Text) || txtMontoRecibido.Text == "0.00")
+            if (!_montoEditadoManual || string.IsNullOrWhiteSpace(txtMontoRecibido.Text))
             {
-                txtMontoRecibido.Text = total.ToString("N2", CultureInfo.InvariantCulture);
+                _actualizandoMonto = true;
+                txtMontoRecibido.Text = total.ToString("F2", CultureInfo.InvariantCulture);
+                _actualizandoMonto = false;
+                _montoEditadoManual = false;
             }
 
             CalcularVuelto();
         }
-
         private void CalcularVuelto()
         {
             if (txtMontoRecibido == null || txtVuelto == null) return;
 
             decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
-            decimal.TryParse(txtMontoRecibido.Text.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal recibido);
+            decimal recibido = ParsearMonto(txtMontoRecibido.Text);
 
             decimal vuelto = VentaNegocio.CalcularVuelto(total, recibido);
+
+  
 
             txtVuelto.Text = vuelto.ToString("C2", CultureInfo.GetCultureInfo("es-AR"));
             txtVuelto.Foreground = vuelto < 0
                 ? System.Windows.Media.Brushes.Red
                 : System.Windows.Media.Brushes.Black;
+        }
+
+        private static decimal ParsearMonto(string texto)
+        {
+            if (string.IsNullOrWhiteSpace(texto)) return 0m;
+
+            string t = texto.Trim().Replace("$", "").Replace(" ", "");
+            int ultimaComa = t.LastIndexOf(',');
+            int ultimoPunto = t.LastIndexOf('.');
+
+            if (ultimaComa >= 0 && ultimoPunto >= 0)
+            {
+                if (ultimaComa > ultimoPunto)
+                    t = t.Replace(".", "").Replace(',', '.');   // 52.000,50
+                else
+                    t = t.Replace(",", "");                      // 52,000.50
+            }
+            else if (ultimaComa >= 0)
+            {
+                t = t.Replace(',', '.');                         // 52000,50
+            }
+
+            return decimal.TryParse(t, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal valor)
+                ? valor : 0m;
         }
 
         // ==========================================================
@@ -357,7 +392,7 @@ namespace TiendaOga.Vistas
 
             // 3. Regla de Negocio: Validar ítems y montos
             decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
-            decimal.TryParse(txtMontoRecibido.Text.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal recibido);
+            decimal recibido = ParsearMonto(txtMontoRecibido.Text);
 
             if (!VentaNegocio.ValidarVenta(_detalleVenta.Count, total, recibido, out string mensajeError))
             {
@@ -417,6 +452,7 @@ namespace TiendaOga.Vistas
 
             cmbTipoPago.SelectedIndex = 0;
             dpFechaPago.SelectedDate = DateTime.Today;
+            _montoEditadoManual = false;
             ActualizarTotal();
         }
 
