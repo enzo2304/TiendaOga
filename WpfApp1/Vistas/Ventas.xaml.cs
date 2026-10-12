@@ -7,9 +7,11 @@ using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Diagnostics;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
 using TiendaOga.Datos;
+
 
 namespace TiendaOga.Vistas
 {
@@ -372,6 +374,7 @@ namespace TiendaOga.Vistas
             }
 
             // 5. Delegación a la Capa de Negocio (Nuevo código)
+            //ahora tambien pregunta si se quiere generar la factura
             try
             {
                 VentaRegistrada venta = VentaNegocio.RegistrarVenta(
@@ -380,8 +383,23 @@ namespace TiendaOga.Vistas
                     idTipoPago: (int)cmbTipoPago.SelectedValue,
                     detalle: _detalleVenta);
 
-                MessageBox.Show($"Venta {venta.NumeroVenta} registrada con éxito a nombre de {clienteSeleccionado.NombreCompleto}.",
-                                "Venta Exitosa", MessageBoxButton.OK, MessageBoxImage.Information);
+                var respuesta = MessageBox.Show(
+                    $"Venta {venta.NumeroVenta} registrada con éxito a nombre de {clienteSeleccionado.NombreCompleto}.\n\n¿Desea generar la factura en PDF?",
+                    "Venta Exitosa", MessageBoxButton.YesNo, MessageBoxImage.Question);
+
+                if (respuesta == MessageBoxResult.Yes)
+                {
+                    try
+                    {
+                        string ruta = FacturaNegocio.GenerarPdf(venta.IdVenta);
+                        Process.Start(new ProcessStartInfo(ruta) { UseShellExecute = true });
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show("La venta se guardó, pero no se pudo generar la factura:\n" + ex.Message,
+                                        "Error de factura", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    }
+                }
 
                 CargarListaProductos();
                 BtnCancelarVenta_Click(sender, e);
