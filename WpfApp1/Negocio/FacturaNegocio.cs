@@ -1,25 +1,22 @@
 ﻿using System;
-using System.IO;
 using TiendaOga.Datos;
+using TiendaOga.Entidades;
 
 namespace TiendaOga.Negocio
 {
     public static class FacturaNegocio
     {
-        public static string GenerarPdf(int idVenta)
+        public static Factura Obtener(int idVenta)
         {
-            var factura = new FacturaDatos().Obtener(idVenta);
-            if (factura == null)
-                throw new InvalidOperationException("No se encontró la venta para generar la factura.");
+            var f = new FacturaDatos().Obtener(idVenta);
+            if (f == null)
+                throw new InvalidOperationException("No se encontró la venta para generar el comprobante.");
+            return f;
+        }
 
-            string carpeta = Path.Combine(
-                Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
-                "TiendaOga", "Facturas");
-            Directory.CreateDirectory(carpeta);
-
-            string ruta = Path.Combine(carpeta, "Factura_" + factura.NumeroVenta + ".pdf");
-            FacturaPdf.Generar(factura, ruta);
-            return ruta;
+        public static void GuardarPdf(Factura f, string ruta)
+        {
+            FacturaPdf.Generar(f, ruta);
         }
     }
 }

@@ -15,6 +15,7 @@ namespace TiendaOga.Entidades
         public string NroDocumento { get; set; }
         public List<FacturaItem> Items { get; set; } = new List<FacturaItem>();
         public List<FacturaPago> Pagos { get; set; } = new List<FacturaPago>();
+        public string Estado { get; set; }
     }
 
     public class FacturaItem

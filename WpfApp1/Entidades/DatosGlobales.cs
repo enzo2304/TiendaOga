@@ -14,6 +14,8 @@ namespace TiendaOga.Entidades
         public string DetalleProductos { get; set; }
         public decimal Total { get; set; }
         public string MetodoPago { get; set; }
+
+        public int IdVenta { get; set; }
     }
 
     public class ClienteItem : INotifyPropertyChanged

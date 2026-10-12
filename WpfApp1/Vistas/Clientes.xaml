@@ -141,6 +141,11 @@
             <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
             <Setter Property="BorderThickness" Value="0,0,0,1"/>
             <Setter Property="HorizontalContentAlignment" Value="Left"/>
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="Factura">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </DataTrigger>
+            </Style.Triggers>
         </Style>
 
         <Style x:Key="FlatRowStyle" TargetType="DataGridRow">
@@ -311,6 +316,48 @@
                         <DataGridTextColumn Header="Artículos Comprados" Binding="{Binding DetalleProductos}" Width="*"/>
                         <DataGridTextColumn Header="Método de Pago" Binding="{Binding MetodoPago}" Width="120"/>
                         <DataGridTextColumn Header="Total Abonado ($)" Binding="{Binding Total, StringFormat={}{0:N2}}" Width="130"/>
+                        <DataGridTemplateColumn Header="Factura" Width="90">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Tag="{Binding IdVenta}"
+                    Click="BtnVerFactura_Click"
+                    ToolTip="Ver / descargar factura"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Width="32" Height="26" Cursor="Hand"
+                    Background="Transparent" BorderThickness="0">
+
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Border x:Name="fondo" Background="Transparent" CornerRadius="4">
+                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="fondo" Property="Background" Value="#1AE67E22"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+
+                                        <Path Data="M12,3 L12,15 M7,10.5 L12,15.5 L17,10.5 M4,16 L4,20 L20,20 L20,16"
+                      StrokeThickness="2.2"
+                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                      Width="16" Height="16" Stretch="Uniform">
+                                            <Path.Style>
+                                                <Style TargetType="Path">
+                                                    <Setter Property="Stroke" Value="#E67E22"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True">
+                                                            <Setter Property="Stroke" Value="White"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Path.Style>
+                                        </Path>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
                     </DataGrid.Columns>
                 </DataGrid>
             </Grid>

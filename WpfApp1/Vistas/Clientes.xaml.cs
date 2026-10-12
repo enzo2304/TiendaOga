@@ -144,5 +144,22 @@ namespace TiendaOga.Vistas
                 }
             }
         }
+        private void BtnVerFactura_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button boton && boton.Tag is int idVenta)
+            {
+                try
+                {
+                    new ComprobanteVentaWindow(idVenta) { Owner = Window.GetWindow(this) }.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("No se pudo abrir el comprobante:\n" + ex.Message, "Error",
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
     }
+
+
 }

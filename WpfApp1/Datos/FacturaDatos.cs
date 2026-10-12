@@ -27,6 +27,7 @@ namespace TiendaOga.Datos
                     f.NombreCliente = rd.GetString(rd.GetOrdinal("nombre_razon_social"));
                     f.TipoDocumento = rd.GetString(rd.GetOrdinal("tipo_documento"));
                     f.NroDocumento = rd.GetString(rd.GetOrdinal("nro_documento"));
+                    f.Estado = rd.GetString(rd.GetOrdinal("estado"));
                 }
 
                 using (var cmd = Comando(cn, "dbo.sp_factura_detalle", idVenta))

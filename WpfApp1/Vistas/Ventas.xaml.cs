@@ -383,26 +383,18 @@ namespace TiendaOga.Vistas
                     idTipoPago: (int)cmbTipoPago.SelectedValue,
                     detalle: _detalleVenta);
 
-                var respuesta = MessageBox.Show(
-                    $"Venta {venta.NumeroVenta} registrada con éxito a nombre de {clienteSeleccionado.NombreCompleto}.\n\n¿Desea generar la factura en PDF?",
-                    "Venta Exitosa", MessageBoxButton.YesNo, MessageBoxImage.Question);
-
-                if (respuesta == MessageBoxResult.Yes)
-                {
-                    try
-                    {
-                        string ruta = FacturaNegocio.GenerarPdf(venta.IdVenta);
-                        Process.Start(new ProcessStartInfo(ruta) { UseShellExecute = true });
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show("La venta se guardó, pero no se pudo generar la factura:\n" + ex.Message,
-                                        "Error de factura", MessageBoxButton.OK, MessageBoxImage.Warning);
-                    }
-                }
-
                 CargarListaProductos();
                 BtnCancelarVenta_Click(sender, e);
+
+                try
+                {
+                    new ComprobanteVentaWindow(venta.IdVenta) { Owner = Window.GetWindow(this) }.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"La venta {venta.NumeroVenta} se guardó, pero no se pudo mostrar el comprobante:\n" + ex.Message,
+                                    "Error de comprobante", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
             catch (Microsoft.Data.SqlClient.SqlException ex)
             {

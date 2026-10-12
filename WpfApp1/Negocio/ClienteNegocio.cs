@@ -54,7 +54,8 @@ namespace TiendaOga.Negocio
                     Fecha = c.FechaVenta.ToString("dd/MM/yyyy HH:mm"),
                     DetalleProductos = c.Articulos,
                     MetodoPago = c.MetodoPago,
-                    Total = c.TotalVenta
+                    Total = c.TotalVenta,
+                    IdVenta = c.IdVenta
                 })
                 .ToList();
         }

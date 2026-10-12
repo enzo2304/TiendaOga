@@ -239,25 +239,31 @@ END;
 GO
 
 -- Historial de compras de un cliente (STRING_AGG requiere SQL Server 2017+)
-CREATE OR ALTER PROCEDURE sp_cliente_historial @id_cliente INT
+USE TiendaOgaDB;
+GO
+
+CREATE OR ALTER PROCEDURE dbo.sp_cliente_historial @id_cliente INT
 AS
 BEGIN
     SET NOCOUNT ON;
     SELECT v.numero_venta, v.fecha_venta,
            (SELECT STRING_AGG(CONCAT(d.cantidad, ' x ', p.nombre), ', ')
-            FROM venta_detalle d
-            JOIN producto p ON p.id_producto = d.id_producto
+            FROM dbo.venta_detalle d
+            JOIN dbo.producto p ON p.id_producto = d.id_producto
             WHERE d.id_venta = v.id_venta AND d.activo = 1) AS articulos,
            (SELECT STRING_AGG(tp.nombre_tipo_pago, ', ')
-            FROM pago pg
-            JOIN tipo_pago tp ON tp.id_tipo_pago = pg.id_tipo_pago
+            FROM dbo.pago pg
+            JOIN dbo.tipo_pago tp ON tp.id_tipo_pago = pg.id_tipo_pago
             WHERE pg.id_venta = v.id_venta AND pg.activo = 1) AS metodo_pago,
-           v.total_venta
-    FROM venta_cabecera v
+           v.total_venta,
+           v.id_venta
+    FROM dbo.venta_cabecera v
     WHERE v.id_cliente = @id_cliente AND v.activo = 1
     ORDER BY v.fecha_venta DESC;
 END;
 GO
+
+EXEC dbo.sp_cliente_historial 1;   -- poné un id_cliente que tenga compras
 
 -- Consultas y operaciones de venta -------------------------------------
 CREATE OR ALTER PROCEDURE sp_ventas_por_fecha @desde DATE, @hasta DATE

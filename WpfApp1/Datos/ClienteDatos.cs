@@ -153,7 +153,8 @@ namespace TiendaOga.Datos
                             FechaVenta = rd.GetDateTime(rd.GetOrdinal("fecha_venta")),
                             Articulos = rd.IsDBNull(rd.GetOrdinal("articulos")) ? "" : rd.GetString(rd.GetOrdinal("articulos")),
                             MetodoPago = rd.IsDBNull(rd.GetOrdinal("metodo_pago")) ? "Sin pagos" : rd.GetString(rd.GetOrdinal("metodo_pago")),
-                            TotalVenta = rd.GetDecimal(rd.GetOrdinal("total_venta"))
+                            TotalVenta = rd.GetDecimal(rd.GetOrdinal("total_venta")),
+                            IdVenta = rd.GetInt32(rd.GetOrdinal("id_venta"))
                         });
                     }
                 }
