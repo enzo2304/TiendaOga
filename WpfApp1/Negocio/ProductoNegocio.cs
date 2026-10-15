@@ -5,11 +5,12 @@ using System.Linq;
 using TiendaOga.Datos;
 using TiendaOga.Entidades;
 
-
 namespace TiendaOga.Negocio
 {
     public static class ProductoNegocio
     {
+        private static readonly ProductoVentaDatos _datos = new ProductoVentaDatos();
+
         public static bool PuedeAdministrarCatalogo(string rol)
         {
             if (string.IsNullOrWhiteSpace(rol)) return false;
@@ -123,77 +124,76 @@ namespace TiendaOga.Negocio
             return true;
         }
 
-        public static List<ProductoRow> ObtenerProductos() => new ProductoVentaDatos().ListarActivos();
+        // Obtiene todos los productos desde SQL Server
+        public static List<ProductoRow> ObtenerProductos()
+        {
+            return _datos.ListarCatalogoCompleto();
+        }
 
+        // Filtrado dinámico consultando la BD
         public static List<ProductoRow> FiltrarProductos(string termino, string categoriaNombre, int idCategoria)
         {
-            var consulta = DatosGlobales.Productos.AsEnumerable();
+            var consulta = _datos.ListarCatalogoCompleto().AsEnumerable();
 
             if (!string.IsNullOrWhiteSpace(termino))
             {
                 string term = termino.Trim().ToLower();
-                consulta = consulta.Where(p => p.NombreProducto.ToLower().Contains(term) ||
+                consulta = consulta.Where(p => (p.NombreProducto != null && p.NombreProducto.ToLower().Contains(term)) ||
                                                p.IdProducto.ToString().Contains(term));
             }
 
-            if (idCategoria > 0 && !string.IsNullOrWhiteSpace(categoriaNombre))
+            if (idCategoria > 0 && !string.IsNullOrWhiteSpace(categoriaNombre) && !categoriaNombre.Equals("Todas", StringComparison.OrdinalIgnoreCase))
             {
-                consulta = consulta.Where(p => string.Equals(p.NombreCategoria, categoriaNombre, StringComparison.OrdinalIgnoreCase));
+                consulta = consulta.Where(p => string.Equals(p.NombreCategoria, categoriaNombre, StringComparison.OrdinalIgnoreCase) ||
+                                               string.Equals(p.TipoProducto, categoriaNombre, StringComparison.OrdinalIgnoreCase));
             }
 
             return consulta.ToList();
         }
 
-        public static ProductoRow ObtenerPorId(int id) => new ProductoVentaDatos().ObtenerPorId(id);
+        public static ProductoRow ObtenerPorId(int id)
+        {
+            return _datos.ObtenerPorId(id);
+        }
 
+        // Persiste el alta o modificación directamente en SQL Server
         public static void GuardarOModificarProducto(
             int? idProducto,
             string nombre,
             decimal costo,
             decimal venta,
             int stock,
-            string tipoProducto)
+            string tipoProducto,
+            string material = null,
+            string dimensiones = null,
+            decimal? peso = null,
+            string ambiente = null,
+            string marca = null,
+            string modelo = null,
+            int? garantia = null,
+            string voltaje = null)
         {
-            if (!idProducto.HasValue || idProducto.Value == 0)
-            {
-                int nuevoId = DatosGlobales.Productos.Count > 0
-                    ? DatosGlobales.Productos.Max(p => p.IdProducto) + 1
-                    : 1;
-
-                DatosGlobales.Productos.Add(new ProductoRow
-                {
-                    IdProducto = nuevoId,
-                    NombreProducto = nombre,
-                    PrecioCosto = costo,
-                    PrecioVentas = venta,
-                    Stock = stock,
-                    TipoProducto = tipoProducto,
-                    NombreCategoria = tipoProducto,
-                    Activo = true
-                });
-            }
-            else
-            {
-                var prod = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == idProducto.Value);
-                if (prod != null)
-                {
-                    prod.NombreProducto = nombre;
-                    prod.PrecioCosto = costo;
-                    prod.PrecioVentas = venta;
-                    prod.Stock = stock;
-                    prod.TipoProducto = tipoProducto;
-                    prod.NombreCategoria = tipoProducto;
-                }
-            }
+            _datos.GuardarOModificar(
+                idProducto,
+                nombre,
+                costo,
+                venta,
+                stock,
+                tipoProducto,
+                material,
+                dimensiones,
+                peso,
+                ambiente,
+                marca,
+                modelo,
+                garantia,
+                voltaje);
         }
 
+        // Cambia el estado activo en SQL Server
         public static bool CambiarEstadoActivo(int idProducto, bool nuevoEstado)
         {
-            var prod = DatosGlobales.Productos.FirstOrDefault(p => p.IdProducto == idProducto);
-            if (prod == null) return false;
-
-            prod.Activo = nuevoEstado;
-            return true;
+            return _datos.CambiarEstadoActivo(idProducto, nuevoEstado);
         }
     }
 }

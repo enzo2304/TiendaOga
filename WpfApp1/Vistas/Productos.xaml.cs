@@ -166,7 +166,7 @@ namespace TiendaOga.Vistas
             if (resultado == MessageBoxResult.Yes)
             {
                 ProductoNegocio.CambiarEstadoActivo(producto.IdProducto, vaAActivar);
-                dgProductos.Items.Refresh();
+                CargarProductos(); // Refresca desde SQL
             }
         }
 
@@ -204,23 +204,53 @@ namespace TiendaOga.Vistas
 
             int? idProducto = string.IsNullOrEmpty(txtId.Text) ? (int?)null : int.Parse(txtId.Text);
 
-            ProductoNegocio.GuardarOModificarProducto(
-                idProducto,
-                txtNombre.Text.Trim(),
-                pCosto,
-                pVenta,
-                stock,
-                tipoProd);
+            decimal? peso = decimal.TryParse(txtPeso.Text.Replace(',', '.'), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal p) ? p : (decimal?)null;
+            int? garantia = int.TryParse(txtGarantia.Text.Trim(), out int g) ? g : (int?)null;
 
-            string mensajeExito = idProducto.HasValue
-                ? "¡Producto modificado correctamente!"
-                : "¡Producto agregado correctamente!";
+            try
+            {
+                ProductoNegocio.GuardarOModificarProducto(
+                    idProducto,
+                    txtNombre.Text.Trim(),
+                    pCosto,
+                    pVenta,
+                    stock,
+                    tipoProd,
+                    txtMaterial.Text.Trim(),
+                    txtDimensiones.Text.Trim(),
+                    peso,
+                    txtAmbiente.Text.Trim(),
+                    txtMarca.Text.Trim(),
+                    txtModelo.Text.Trim(),
+                    garantia,
+                    txtVoltaje.Text.Trim());
 
-            MessageBox.Show(mensajeExito, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+                string mensajeExito = idProducto.HasValue
+                    ? "¡Producto modificado correctamente en la base de datos!"
+                    : "¡Producto agregado correctamente en la base de datos!";
 
-            LimpiarFormulario();
-            CargarProductos();
-            ModalFormulario.Visibility = Visibility.Collapsed;
+                MessageBox.Show(mensajeExito, "Éxito", MessageBoxButton.OK, MessageBoxImage.Information);
+
+                LimpiarFormulario();
+                CargarProductos();
+                ModalFormulario.Visibility = Visibility.Collapsed;
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex)
+            {
+                if (ex.Number == 2627 || ex.Message.Contains("uq_producto_nombre"))
+                {
+                    MessageBox.Show("Ya existe un producto registrado con ese nombre. Por favor, ingrese un nombre distinto.",
+                                    "Nombre Duplicado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else
+                {
+                    MessageBox.Show($"Error de base de datos: {ex.Message}", "Error BD", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error inesperado al guardar: {ex.Message}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
         }
 
         public void ValidarSoloEnteros(object sender, TextCompositionEventArgs e)

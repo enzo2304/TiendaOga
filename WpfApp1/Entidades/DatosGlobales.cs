@@ -99,14 +99,7 @@ namespace TiendaOga.Entidades
         // Arranca vacia: ClienteNegocio.ObtenerTodos() la llena desde la base de datos
         public static ObservableCollection<ClienteItem> Clientes { get; set; } = new ObservableCollection<ClienteItem>();
 
-        public static List<ProductoRow> Productos { get; set; } = new List<ProductoRow>
-        {
-            new ProductoRow { IdProducto = 1, NombreProducto = "Taladro Percutor 650W", NombreCategoria = "Herramientas", PrecioCosto = 15000, PrecioVentas = 25000, Stock = 10, TipoProducto = "Tecnología" },
-            new ProductoRow { IdProducto = 2, NombreProducto = "Juego de Ollas 5 piezas", NombreCategoria = "Hogar", PrecioCosto = 8000, PrecioVentas = 14500, Stock = 5, TipoProducto = "Hogar" },
-            new ProductoRow { IdProducto = 3, NombreProducto = "Escoba de cerdas duras", NombreCategoria = "Limpieza", PrecioCosto = 1200, PrecioVentas = 2000, Stock = 30, TipoProducto = "Hogar" },
-            new ProductoRow { IdProducto = 4, NombreProducto = "Foco Inteligente LED Wi-Fi", NombreCategoria = "Tecnología", PrecioCosto = 1800, PrecioVentas = 3200, Stock = 40, TipoProducto = "Tecnología" },
-            new ProductoRow { IdProducto = 5, NombreProducto = "Cámara de Seguridad Interior", NombreCategoria = "Tecnología", PrecioCosto = 11000, PrecioVentas = 18900, Stock = 12, TipoProducto = "Tecnología" }
-        };
+        public static List<ProductoRow> Productos { get; set; } = new List<ProductoRow>();
 
         // Mientras las ventas no se guarden en la base, esto sigue registrando la compra en memoria.
         // Cuando VentaNegocio grabe en venta_cabecera / venta_detalle / pago, este metodo deja de hacer falta.

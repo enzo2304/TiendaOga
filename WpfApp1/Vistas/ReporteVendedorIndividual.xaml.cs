@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using TiendaOga.Datos;
 
 namespace TiendaOga.Vistas
 {
@@ -20,6 +21,7 @@ namespace TiendaOga.Vistas
     public partial class ReporteVendedorIndividual : Page
     {
         private List<VentaTurnoItem> _ventasDelDia;
+        private readonly VentaDatos _ventaDatos = new VentaDatos();
 
         public ReporteVendedorIndividual()
         {
@@ -31,71 +33,51 @@ namespace TiendaOga.Vistas
         {
             lblFechaTurno.Text = DateTime.Today.ToString("dd/MM/yyyy");
 
+            string vendedorActual = string.Empty;
             var ventanaPadre = Window.GetWindow(this) as Window1;
             if (ventanaPadre != null && !string.IsNullOrWhiteSpace(ventanaPadre.UsuarioActual))
             {
                 lblNombreVendedor.Text = ventanaPadre.UsuarioActual;
+                vendedorActual = ventanaPadre.UsuarioActual;
             }
 
-            CargarVentasEstaticas();
+            CargarVentasDesdeBD(vendedorActual);
             CalcularMetricas();
         }
 
-        private void CargarVentasEstaticas()
+        private void CargarVentasDesdeBD(string vendedorActual)
         {
-            _ventasDelDia = new List<VentaTurnoItem>
+            try
             {
-                new VentaTurnoItem
-                {
-                    NroComprobante = "VTA-142011",
-                    Hora = "09:15",
-                    NombreCliente = "Carlos Benítez (DNI: 35123456)",
-                    Detalle = "Taladro Percutor 650W x1",
-                    MetodoPago = "Efectivo",
-                    Total = 25000m
-                },
-                new VentaTurnoItem
-                {
-                    NroComprobante = "VTA-142012",
-                    Hora = "10:30",
-                    NombreCliente = "Mariana Romero (DNI: 28987654)",
-                    Detalle = "Foco Inteligente LED Wi-Fi x2",
-                    MetodoPago = "Tarjeta",
-                    Total = 6400m
-                },
-                new VentaTurnoItem
-                {
-                    NroComprobante = "VTA-142013",
-                    Hora = "11:45",
-                    NombreCliente = "Lucía Gomez (DNI: 40112233)",
-                    Detalle = "Juego de Ollas 5 piezas x1",
-                    MetodoPago = "Transferencia",
-                    Total = 14500m
-                },
-                new VentaTurnoItem
-                {
-                    NroComprobante = "VTA-142014",
-                    Hora = "12:10",
-                    NombreCliente = "Pedro Almirón (DNI: 33445566)",
-                    Detalle = "Escoba de cerdas duras x2, Foco Inteligente LED x1",
-                    MetodoPago = "Efectivo",
-                    Total = 7200m
-                }
-            };
-
-            dgVentasDia.ItemsSource = _ventasDelDia;
+                _ventasDelDia = _ventaDatos.ObtenerVentasDelDiaPorVendedor(vendedorActual);
+                dgVentasDia.ItemsSource = _ventasDelDia;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Error al cargar ventas del día: {ex.Message}", "Base de Datos", MessageBoxButton.OK, MessageBoxImage.Error);
+                _ventasDelDia = new List<VentaTurnoItem>();
+                dgVentasDia.ItemsSource = _ventasDelDia;
+            }
         }
 
         private void CalcularMetricas()
         {
-            if (_ventasDelDia == null || _ventasDelDia.Count == 0) return;
-
             var cultura = CultureInfo.GetCultureInfo("es-AR");
 
+            if (_ventasDelDia == null || _ventasDelDia.Count == 0)
+            {
+                lblTotalFacturado.Text = (0m).ToString("C2", cultura);
+                lblCantidadVentas.Text = "0 ventas registradas";
+                lblTotalEfectivo.Text = (0m).ToString("C2", cultura);
+                lblTotalTarjeta.Text = (0m).ToString("C2", cultura);
+                lblTotalTransferencia.Text = (0m).ToString("C2", cultura);
+                return;
+            }
+
             decimal totalGeneral = _ventasDelDia.Sum(v => v.Total);
-            decimal totalEfectivo = _ventasDelDia.Where(v => v.MetodoPago == "Efectivo").Sum(v => v.Total);
-            decimal totalTarjeta = _ventasDelDia.Where(v => v.MetodoPago == "Tarjeta").Sum(v => v.Total);
-            decimal totalTransferencia = _ventasDelDia.Where(v => v.MetodoPago == "Transferencia").Sum(v => v.Total);
+            decimal totalEfectivo = _ventasDelDia.Where(v => v.MetodoPago != null && v.MetodoPago.IndexOf("Efectivo", StringComparison.OrdinalIgnoreCase) >= 0).Sum(v => v.Total);
+            decimal totalTarjeta = _ventasDelDia.Where(v => v.MetodoPago != null && v.MetodoPago.IndexOf("Tarjeta", StringComparison.OrdinalIgnoreCase) >= 0).Sum(v => v.Total);
+            decimal totalTransferencia = _ventasDelDia.Where(v => v.MetodoPago != null && v.MetodoPago.IndexOf("Transferencia", StringComparison.OrdinalIgnoreCase) >= 0).Sum(v => v.Total);
 
             lblTotalFacturado.Text = totalGeneral.ToString("C2", cultura);
             lblCantidadVentas.Text = $"{_ventasDelDia.Count} ventas registradas";
