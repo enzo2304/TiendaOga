@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using Microsoft.Data.SqlClient;
 using TiendaOga.Entidades;
-using TiendaOga.Vistas;
+
 
 namespace TiendaOga.Datos
 {
@@ -46,7 +46,7 @@ namespace TiendaOga.Datos
             }
         }
 
-        public List<VentaTurnoItem> ObtenerVentasDelDiaPorVendedor(string usuarioVendedor)
+        public List<VentaTurnoItem> ObtenerVentasDelDiaPorVendedor(int idUsuario)
         {
             var lista = new List<VentaTurnoItem>();
 
@@ -54,11 +54,7 @@ namespace TiendaOga.Datos
             using (var cmd = new SqlCommand("dbo.sp_ventas_del_dia_por_vendedor", cn))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-
-                if (string.IsNullOrWhiteSpace(usuarioVendedor))
-                    cmd.Parameters.AddWithValue("@usuario", DBNull.Value);
-                else
-                    cmd.Parameters.AddWithValue("@usuario", usuarioVendedor.Trim());
+                cmd.Parameters.AddWithValue("@id_usuario", idUsuario);
 
                 cn.Open();
                 using (var rd = cmd.ExecuteReader())
@@ -71,7 +67,7 @@ namespace TiendaOga.Datos
                             Hora = rd["Hora"] != DBNull.Value ? rd["Hora"].ToString() : string.Empty,
                             NombreCliente = rd["NombreCliente"] != DBNull.Value ? rd["NombreCliente"].ToString() : string.Empty,
                             Detalle = rd["Detalle"] != DBNull.Value ? rd["Detalle"].ToString() : string.Empty,
-                            MetodoPago = rd["MetodoPago"] != DBNull.Value ? rd["MetodoPago"].ToString() : "Efectivo",
+                            MetodoPago = rd["MetodoPago"] != DBNull.Value ? rd["MetodoPago"].ToString() : "Sin pago",
                             Total = rd["Total"] != DBNull.Value ? Convert.ToDecimal(rd["Total"]) : 0m
                         });
                     }

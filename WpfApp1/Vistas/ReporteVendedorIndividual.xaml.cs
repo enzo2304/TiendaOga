@@ -5,18 +5,10 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using TiendaOga.Datos;
+using TiendaOga.Entidades;
 
 namespace TiendaOga.Vistas
 {
-    public class VentaTurnoItem
-    {
-        public string NroComprobante { get; set; }
-        public string Hora { get; set; }
-        public string NombreCliente { get; set; }
-        public string Detalle { get; set; }
-        public string MetodoPago { get; set; }
-        public decimal Total { get; set; }
-    }
 
     public partial class ReporteVendedorIndividual : Page
     {
@@ -33,23 +25,28 @@ namespace TiendaOga.Vistas
         {
             lblFechaTurno.Text = DateTime.Today.ToString("dd/MM/yyyy");
 
-            string vendedorActual = string.Empty;
             var ventanaPadre = Window.GetWindow(this) as Window1;
-            if (ventanaPadre != null && !string.IsNullOrWhiteSpace(ventanaPadre.UsuarioActual))
+            if (ventanaPadre == null || ventanaPadre.IdUsuarioActual <= 0)
             {
-                lblNombreVendedor.Text = ventanaPadre.UsuarioActual;
-                vendedorActual = ventanaPadre.UsuarioActual;
+                MessageBox.Show("No se pudo identificar al vendedor de la sesión. Cerrá sesión e ingresá nuevamente.",
+                                "Sesión inválida", MessageBoxButton.OK, MessageBoxImage.Warning);
+                _ventasDelDia = new List<VentaTurnoItem>();
+                dgVentasDia.ItemsSource = _ventasDelDia;
+                CalcularMetricas();
+                return;
             }
 
-            CargarVentasDesdeBD(vendedorActual);
+            lblNombreVendedor.Text = ventanaPadre.UsuarioActual;
+
+            CargarVentasDesdeBD(ventanaPadre.IdUsuarioActual);
             CalcularMetricas();
         }
 
-        private void CargarVentasDesdeBD(string vendedorActual)
+        private void CargarVentasDesdeBD(int idUsuario)
         {
             try
             {
-                _ventasDelDia = _ventaDatos.ObtenerVentasDelDiaPorVendedor(vendedorActual);
+                _ventasDelDia = _ventaDatos.ObtenerVentasDelDiaPorVendedor(idUsuario);
                 dgVentasDia.ItemsSource = _ventasDelDia;
             }
             catch (Exception ex)

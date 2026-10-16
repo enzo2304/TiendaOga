@@ -60,7 +60,7 @@ BEGIN
         -- Datos de Hogar
         th.material,
         th.dimensiones,
-        th.peso,
+        th.peso_kg AS peso,
         th.ambiente,
         -- Datos de Tecnología
         tt.marca,
@@ -80,7 +80,7 @@ GO
    ========================================================================= */
 CREATE OR ALTER PROCEDURE dbo.sp_producto_guardar_o_modificar
     @id_producto        INT = NULL, -- NULL si es Nuevo, número si es Modificar
-    @nombre             VARCHAR(100),
+    @nombre   VARCHAR(30),
     @precio_costo       DECIMAL(12,2),
     @precio_ventas      DECIMAL(12,2),
     @stock              INT,
@@ -94,7 +94,7 @@ CREATE OR ALTER PROCEDURE dbo.sp_producto_guardar_o_modificar
     @marca              VARCHAR(50) = NULL,
     @modelo             VARCHAR(50) = NULL,
     @garantia_meses     INT = NULL,
-    @voltaje            VARCHAR(50) = NULL
+    @voltaje  VARCHAR(20) = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -151,15 +151,15 @@ BEGIN
             IF EXISTS (SELECT 1 FROM dbo.producto_hogar WHERE id_producto = @id_producto)
             BEGIN
                 UPDATE dbo.producto_hogar
-                SET material    = @material,
-                    dimensiones = @dimensiones,
-                    peso        = @peso,
-                    ambiente    = @ambiente
-                WHERE id_producto = @id_producto;
+                    SET material    = @material,
+                        dimensiones = @dimensiones,
+                        peso_kg     = @peso,
+                        ambiente    = @ambiente
+                    WHERE id_producto = @id_producto;
             END
             ELSE
             BEGIN
-                INSERT INTO dbo.producto_hogar (id_producto, material, dimensiones, peso, ambiente)
+                INSERT INTO dbo.producto_hogar (id_producto, material, dimensiones, peso_kg, ambiente)
                 VALUES (@id_producto, @material, @dimensiones, @peso, @ambiente);
             END
         END
@@ -173,14 +173,14 @@ BEGIN
                 UPDATE dbo.producto_tecnologia
                 SET marca          = @marca,
                     modelo         = @modelo,
-                    garantia_meses = @garantia_meses,
+                    garantia_meses = ISNULL(@garantia_meses, 0),
                     voltaje        = @voltaje
                 WHERE id_producto  = @id_producto;
             END
             ELSE
             BEGIN
                 INSERT INTO dbo.producto_tecnologia (id_producto, marca, modelo, garantia_meses, voltaje)
-                VALUES (@id_producto, @marca, @modelo, @garantia_meses, @voltaje);
+                VALUES (@id_producto, @marca, @modelo, ISNULL(@garantia_meses, 0), @voltaje);
             END
         END
 

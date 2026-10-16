@@ -291,7 +291,7 @@
 
                             <StackPanel Grid.Column="2">
                                 <TextBlock Text="Nombre del Producto" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="txtNombre" Style="{StaticResource FlatTextBox}"/>
+                                <TextBox x:Name="txtNombre" Style="{StaticResource FlatTextBox}" MaxLength="30"/>
                             </StackPanel>
                         </Grid>
 
@@ -395,7 +395,7 @@
 
                                     <StackPanel Grid.Column="6">
                                         <TextBlock Text="Voltaje" Style="{StaticResource FieldLabelStyle}"/>
-                                        <TextBox x:Name="txtVoltaje" Style="{StaticResource FlatTextBox}"/>
+                                        <TextBox x:Name="txtVoltaje" Style="{StaticResource FlatTextBox}" MaxLength="20"/>
                                     </StackPanel>
                                 </Grid>
                             </Border>

@@ -159,7 +159,7 @@ namespace TiendaOga.Vistas
             if (int.TryParse(txtCodigoProducto.Text.Trim(), out int idBuscado))
             {
                 var prod = ProductoNegocio.ObtenerPorId(idBuscado);
-                if (prod != null)
+                if (prod != null && prod.Activo)
                 {
                     _sincronizandoProducto = true;
                     cmbProductoBusqueda.SelectedItem = prod;
@@ -263,6 +263,13 @@ namespace TiendaOga.Vistas
 
             ActualizarTotal();
             txtCodigoProducto.Focus();
+
+            if (productoSeleccionado != null && !productoSeleccionado.Activo)
+            {
+                MessageBox.Show("Ese producto está dado de baja y no se puede vender.", "Producto inactivo",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
         }
 
         private void BtnEliminarItem_Click(object sender, RoutedEventArgs e)

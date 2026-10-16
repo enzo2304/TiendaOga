@@ -189,6 +189,7 @@
     <Compile Include="Entidades\ProductoRow.cs" />
     <Compile Include="Entidades\UsuarioRow.cs" />
     <Compile Include="Entidades\VentaRegistrada.cs" />
+    <Compile Include="Entidades\VentaTurnoItem.cs" />
     <Compile Include="Negocio\ClienteNegocio.cs" />
     <Compile Include="Negocio\FacturaNegocio.cs" />
     <Compile Include="Negocio\FacturaPdf.cs" />
