@@ -26,6 +26,7 @@ namespace TiendaOga.Vistas
             lblUsuarioActivo.Text = $"Usuario: {UsuarioActual}";
             lblRolActivo.Text = $"Rol: {RolActual}";
 
+            // Gestión centralizada de visibilidad de los botones del menú
             btnVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerVentas(RolActual));
             btnClientes.Visibility = ToVisibility(PermisosNegocio.PuedeVerClientes(RolActual));
             btnProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerProductos(RolActual));
@@ -34,7 +35,7 @@ namespace TiendaOga.Vistas
             btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteGeneral(RolActual));
             btnStockBackup.Visibility = ToVisibility(PermisosNegocio.PuedeVerBackup(RolActual));
 
-            // CORRECCIÓN: Asignamos los nombres correctos al botón lateral según el rol
+            // Configuración dinámica del botón de ventas según el alcance
             if (PermisosNegocio.PuedeVerReportesVendedor(RolActual))
             {
                 TipoReporteVenta alcanceBoton = PermisosNegocio.ObtenerAlcanceReporteVenta(RolActual);
@@ -43,6 +44,7 @@ namespace TiendaOga.Vistas
                     : "Reporte de ventas";
             }
 
+            // Redirección automática inicial según permisos
             if (PermisosNegocio.PuedeVerVentas(RolActual))
             {
                 btnVentas_Click(null, null);
@@ -109,7 +111,6 @@ namespace TiendaOga.Vistas
                     break;
 
                 case TipoReporteVenta.Individual:
-                    // CORRECCIÓN: Título actualizado para eliminar la palabra "Cierre de Caja"
                     lblTituloModulo.Text = "Resumen de Ventas Diarias";
                     ContenedorPrincipal.Navigate(new ReporteVendedorIndividual());
                     break;
@@ -124,8 +125,9 @@ namespace TiendaOga.Vistas
         private void btnReporteGeneral_Click(object sender, RoutedEventArgs e)
         {
             if (!PermisosNegocio.PuedeVerReporteGeneral(RolActual)) return;
-            lblTituloModulo.Text = "Panel Gerencial";
-            ContenedorPrincipal.Navigate(new ReporteGeneral());
+
+            lblTituloModulo.Text = "Reporte General: Productos Más Vendidos";
+            ContenedorPrincipal.Navigate(new ReporteProductos());
         }
 
         private void btnBackup_Click(object sender, RoutedEventArgs e)

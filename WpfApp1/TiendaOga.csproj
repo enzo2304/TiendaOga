@@ -41,6 +41,12 @@
     <Reference Include="BCrypt-Net-Next, Version=4.2.0.0, Culture=neutral, PublicKeyToken=1e11be04b6288443, processorArchitecture=MSIL">
       <HintPath>..\packages\BCrypt.Net-Next.4.2.0\lib\net472\BCrypt-Net-Next.dll</HintPath>
     </Reference>
+    <Reference Include="LiveCharts, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.0.9.7\lib\net45\LiveCharts.dll</HintPath>
+    </Reference>
+    <Reference Include="LiveCharts.Wpf, Version=0.9.7.0, Culture=neutral, PublicKeyToken=0bc1f845d1ebb8df, processorArchitecture=MSIL">
+      <HintPath>..\packages\LiveCharts.Wpf.0.9.7\lib\net45\LiveCharts.Wpf.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=10.0.0.3, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.10.0.3\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
@@ -176,6 +182,9 @@
     <Compile Include="Datos\FacturaDatos.cs" />
     <Compile Include="Datos\PerfilRepository.cs" />
     <Compile Include="Datos\ProductoVentaDatos.cs" />
+    <Compile Include="Datos\RendimientoDatos.cs" />
+    <Compile Include="Entidades\RendimientoVendedorDTO.cs" />
+    <Compile Include="Datos\ReporteDatos.cs" />
     <Compile Include="Datos\TipoPagoDatos.cs" />
     <Compile Include="Datos\UsuarioDatos.cs" />
     <Compile Include="Datos\VentaDatos.cs" />
@@ -187,6 +196,7 @@
     <Compile Include="Entidades\ItemVenta.cs" />
     <Compile Include="Entidades\PerfilItem.cs" />
     <Compile Include="Entidades\ProductoRow.cs" />
+    <Compile Include="Entidades\ReporteProductoRow.cs" />
     <Compile Include="Entidades\UsuarioRow.cs" />
     <Compile Include="Entidades\VentaRegistrada.cs" />
     <Compile Include="Entidades\VentaTurnoItem.cs" />
@@ -195,6 +205,8 @@
     <Compile Include="Negocio\FacturaPdf.cs" />
     <Compile Include="Negocio\PermisosNegocio.cs" />
     <Compile Include="Negocio\ProductoNegocio.cs" />
+    <Compile Include="Negocio\RendimientoNegocio.cs" />
+    <Compile Include="Negocio\ReporteNegocio.cs" />
     <Compile Include="Negocio\SeguridadNegocio.cs" />
     <Compile Include="Negocio\SesionActual.cs" />
     <Compile Include="Negocio\UsuarioNegocio.cs" />
@@ -219,8 +231,11 @@
     <Compile Include="Vistas\ReporteGeneral.xaml.cs">
       <DependentUpon>ReporteGeneral.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Vistas\ReporteVendedor.xaml.cs">
-      <DependentUpon>ReporteVendedor.xaml</DependentUpon>
+    <Compile Include="Vistas\ReporteProductos.xaml.cs">
+      <DependentUpon>ReporteProductos.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\ReportesVendedor.xaml.cs">
+      <DependentUpon>ReportesVendedor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vistas\ReporteVendedorIndividual.xaml.cs">
       <DependentUpon>ReporteVendedorIndividual.xaml</DependentUpon>
@@ -270,7 +285,11 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Vistas\ReporteVendedor.xaml">
+    <Page Include="Vistas\ReporteProductos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vistas\ReportesVendedor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
