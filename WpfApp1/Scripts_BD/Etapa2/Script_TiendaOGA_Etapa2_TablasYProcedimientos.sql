@@ -264,7 +264,7 @@ END;
 GO
 
 EXEC dbo.sp_cliente_historial 1;   -- poné un id_cliente que tenga compras
-
+GO
 -- Consultas y operaciones de venta -------------------------------------
 CREATE OR ALTER PROCEDURE sp_ventas_por_fecha @desde DATE, @hasta DATE
 AS
