@@ -26,7 +26,7 @@ CREATE TABLE tipo_pago(
     CONSTRAINT ck_tipo_pago_nombre CHECK (LEN(LTRIM(RTRIM(nombre_tipo_pago))) > 0)
 );
 
--- TABLA CLIENTE
+-- TABLA CLIENTEsp_backup_bd
 CREATE TABLE cliente(
     id_cliente   INT IDENTITY(1,1),
     tipo_cliente   VARCHAR(30) NOT NULL,
@@ -324,31 +324,6 @@ BEGIN
 END;
 GO
 
-/* ---------------------------------------------------------------------
-   4) BACKUP (ejecutar dentro de la base de datos de la app)
-   --------------------------------------------------------------------- */
-CREATE OR ALTER PROCEDURE sp_backup_bd
-    @ruta NVARCHAR(260) = N'C:\Backups\'
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    IF RIGHT(@ruta, 1) <> N'\' SET @ruta = @ruta + N'\';
-
-    DECLARE @archivo NVARCHAR(400) =
-        @ruta + DB_NAME() + N'_' + FORMAT(GETDATE(), 'yyyyMMdd_HHmmss') + N'.bak';
-
-    DECLARE @sql NVARCHAR(MAX) =
-        N'BACKUP DATABASE ' + QUOTENAME(DB_NAME()) +
-        N' TO DISK = @a WITH INIT, CHECKSUM';
-
-    EXEC sp_executesql @sql, N'@a NVARCHAR(400)', @a = @archivo;
-
-    RESTORE VERIFYONLY FROM DISK = @archivo WITH CHECKSUM;
-
-    SELECT @archivo AS archivo_generado, GETDATE() AS fecha_backup;
-END;
-GO
 
 /* ---------------------------------------------------------------------
    5) RESTORE (Nota: Idealmente se ejecutan sobre master)
@@ -374,36 +349,5 @@ BEGIN
     SET NOCOUNT ON;
     RESTORE VERIFYONLY FROM DISK = @archivo WITH CHECKSUM;
     SELECT 'Backup valido' AS resultado;
-END;
-GO
-
-CREATE OR ALTER PROCEDURE sp_restaurar_backup
-    @nombre_bd SYSNAME, @archivo NVARCHAR(400)
-AS
-BEGIN
-    SET NOCOUNT ON;
-
-    RESTORE VERIFYONLY FROM DISK = @archivo WITH CHECKSUM;
-
-    DECLARE @bd NVARCHAR(300) = QUOTENAME(@nombre_bd);
-    DECLARE @sql NVARCHAR(MAX);
-
-    BEGIN TRY
-        SET @sql = N'ALTER DATABASE ' + @bd + N' SET SINGLE_USER WITH ROLLBACK IMMEDIATE;';
-        EXEC (@sql);
-
-        SET @sql = N'RESTORE DATABASE ' + @bd + N' FROM DISK = @a WITH REPLACE;';
-        EXEC sp_executesql @sql, N'@a NVARCHAR(400)', @a = @archivo;
-
-        SET @sql = N'ALTER DATABASE ' + @bd + N' SET MULTI_USER;';
-        EXEC (@sql);
-
-        SELECT 'Restauracion completada' AS resultado;
-    END TRY
-    BEGIN CATCH
-        SET @sql = N'ALTER DATABASE ' + @bd + N' SET MULTI_USER;';
-        EXEC (@sql);
-        THROW;
-    END CATCH
 END;
 GO

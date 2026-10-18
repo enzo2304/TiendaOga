@@ -7,7 +7,8 @@
       Title="Backup"
       Background="#F4F5F7"
       FontFamily="Segoe UI"
-      d:DesignHeight="600" d:DesignWidth="1000">
+      d:DesignHeight="900" d:DesignWidth="1000"
+      Loaded="Page_Loaded">
 
     <Page.Resources>
 
@@ -36,6 +37,12 @@
             <Setter Property="Foreground" Value="#666666"/>
             <Setter Property="Margin" Value="0,4,0,0"/>
         </Style>
+        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="17"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Margin" Value="0,0,0,14"/>
+        </Style>
         <Style x:Key="FieldLabelStyle" TargetType="TextBlock">
             <Setter Property="FontSize" Value="12.5"/>
             <Setter Property="FontWeight" Value="SemiBold"/>
@@ -46,6 +53,11 @@
             <Setter Property="FontSize" Value="11.5"/>
             <Setter Property="Foreground" Value="#999999"/>
             <Setter Property="Margin" Value="0,6,0,0"/>
+        </Style>
+        <Style x:Key="InfoTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Margin" Value="0,0,0,3"/>
         </Style>
 
         <!-- **** TextBox **** -->
@@ -69,6 +81,10 @@
                 </Setter.Value>
             </Setter>
             <Style.Triggers>
+                <Trigger Property="IsReadOnly" Value="True">
+                    <Setter Property="Background" Value="#F7F8F9"/>
+                    <Setter Property="Foreground" Value="#555555"/>
+                </Trigger>
                 <Trigger Property="IsEnabled" Value="False">
                     <Setter Property="Background" Value="#F7F8F9"/>
                     <Setter Property="Foreground" Value="#8A8F98"/>
@@ -90,7 +106,7 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="borderBtn" Background="{TemplateBinding Background}" CornerRadius="6">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
@@ -121,11 +137,14 @@
                     <ControlTemplate TargetType="Button">
                         <Border x:Name="borderBtn" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
                                 BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
-                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            <ContentPresenter HorizontalAlignment="Center" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="borderBtn" Property="Background" Value="#F4F5F7"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="borderBtn" Property="Opacity" Value="0.5"/>
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -133,68 +152,264 @@
             </Setter>
         </Style>
 
+        <!-- **** Botón de peligro (contorno rojo) **** -->
+        <Style x:Key="ButtonDangerStyle" TargetType="Button">
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="Foreground" Value="#C62828"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="Height" Value="38"/>
+            <Setter Property="Padding" Value="18,0"/>
+            <Setter Property="BorderBrush" Value="#C62828"/>
+            <Setter Property="BorderThickness" Value="1.5"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="borderBtn" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}" CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center" Margin="{TemplateBinding Padding}" VerticalAlignment="Center"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="borderBtn" Property="Background" Value="#FDECEA"/>
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter TargetName="borderBtn" Property="Opacity" Value="0.4"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- **** DataGrid **** -->
+        <Style x:Key="GridHeaderStyle" TargetType="DataGridColumnHeader">
+            <Setter Property="Background" Value="#F4F5F7"/>
+            <Setter Property="Foreground" Value="#666666"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="12,9"/>
+            <Setter Property="BorderThickness" Value="0"/>
+        </Style>
+        <Style x:Key="GridCellStyle" TargetType="DataGridCell">
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Foreground" Value="#333333"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="DataGridCell">
+                        <Border Background="{TemplateBinding Background}" Padding="12,0">
+                            <ContentPresenter VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsSelected" Value="True">
+                    <Setter Property="Background" Value="#FDEBDD"/>
+                    <Setter Property="Foreground" Value="#333333"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+        <Style x:Key="GridStyle" TargetType="DataGrid">
+            <Setter Property="AutoGenerateColumns" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="CanUserAddRows" Value="False"/>
+            <Setter Property="CanUserResizeRows" Value="False"/>
+            <Setter Property="HeadersVisibility" Value="Column"/>
+            <Setter Property="GridLinesVisibility" Value="Horizontal"/>
+            <Setter Property="HorizontalGridLinesBrush" Value="#EEEEEE"/>
+            <Setter Property="Background" Value="#FFFFFF"/>
+            <Setter Property="BorderBrush" Value="#E0E0E0"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="RowHeight" Value="34"/>
+            <Setter Property="FontSize" Value="12.5"/>
+            <Setter Property="SelectionMode" Value="Single"/>
+            <Setter Property="ColumnHeaderStyle" Value="{StaticResource GridHeaderStyle}"/>
+            <Setter Property="CellStyle" Value="{StaticResource GridCellStyle}"/>
+        </Style>
+
     </Page.Resources>
 
-    <Grid Margin="28">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="*"/>
-        </Grid.RowDefinitions>
+    <Grid>
 
-        <!-- **** ENCABEZADO **** -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,20">
-            <TextBlock Text="Copia de Seguridad (Backup)" Style="{StaticResource PageTitleStyle}"/>
-            <TextBlock Text="Respaldo y protección de la base de datos" Style="{StaticResource PageSubtitleStyle}"/>
-        </StackPanel>
+        <!-- ================= CONTENIDO ================= -->
+        <ScrollViewer x:Name="contenido" VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="28" MaxWidth="1100">
 
-        <!-- **** TARJETA CENTRAL **** -->
-        <Border Grid.Row="1" Style="{StaticResource CardStyle}" MaxWidth="700" Width="700"
-                HorizontalAlignment="Left" VerticalAlignment="Top" Margin="0,30,0,0">
-            <StackPanel>
+                <!-- ENCABEZADO -->
+                <StackPanel Margin="0,0,0,20">
+                    <TextBlock Text="Copia de Seguridad y Restauración" Style="{StaticResource PageTitleStyle}"/>
+                    <TextBlock Text="Respaldo y protección de la base de datos" Style="{StaticResource PageSubtitleStyle}"/>
+                </StackPanel>
 
-                <!-- Fila 1: Base de datos origen -->
-                <TextBlock Text="Base de Datos Origen:" Style="{StaticResource FieldLabelStyle}"/>
-                <Grid Margin="0,0,0,22">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                <!-- ========== 1. BACKUP ========== -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,22">
+                    <StackPanel>
+                        <TextBlock Text="Copia de Seguridad (Backup)" Style="{StaticResource SectionTitleStyle}"/>
 
-                    <TextBox Grid.Column="0" Style="{StaticResource TextBoxStyle}"
-                             Text="TiendaOga_DB" IsReadOnly="True" IsEnabled="False"/>
+                        <!-- Estado -->
+                        <TextBlock x:Name="txtUltimoBackup" Style="{StaticResource InfoTextStyle}" Text="Último respaldo exitoso: ..."/>
+                        <TextBlock x:Name="txtTamanoBD" Style="{StaticResource InfoTextStyle}" Text="Tamaño de la base de datos: ..."/>
 
-                    <Border Grid.Column="2" Background="#E5F6EA" CornerRadius="6" Padding="12,0" Height="38">
-                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                            <Ellipse Width="8" Height="8" Fill="#2F9E58" Margin="0,0,7,0"/>
-                            <TextBlock Text="Conectado" Foreground="#2F9E58" FontSize="12.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                        </StackPanel>
-                    </Border>
-                </Grid>
+                        <!-- Origen -->
+                        <TextBlock Text="Base de Datos Origen:" Style="{StaticResource FieldLabelStyle}" Margin="0,16,0,6"/>
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="txtBaseOrigen" Grid.Column="0" Style="{StaticResource TextBoxStyle}" IsReadOnly="True"/>
+                            <Border x:Name="badgeEstado" Grid.Column="2" Background="#E5F6EA" CornerRadius="6" Padding="12,0" Height="38">
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <Ellipse x:Name="puntoEstado" Width="8" Height="8" Fill="#2F9E58" Margin="0,0,7,0"/>
+                                    <TextBlock x:Name="txtEstadoConexion" Text="Conectado" Foreground="#2F9E58" FontSize="12.5" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Border>
+                        </Grid>
 
-                <!-- Fila 2: Ruta de destino -->
-                <TextBlock Text="Ruta para Guardar:" Style="{StaticResource FieldLabelStyle}"/>
-                <Grid Margin="0,0,0,6">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="12"/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
+                        <!-- Ruta de destino -->
+                        <TextBlock Text="Ruta de Destino:" Style="{StaticResource FieldLabelStyle}"/>
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="txtCarpeta" Grid.Column="0" Style="{StaticResource TextBoxStyle}"
+                                     IsReadOnly="True" ToolTip="Carpeta donde se guardará la copia de seguridad"/>
+                            <Button x:Name="btnExaminar" Grid.Column="2" Content="Examinar..."
+                                    Style="{StaticResource ButtonSecondaryStyle}" Click="btnExaminar_Click"/>
+                        </Grid>
 
-                    <TextBox x:Name="txtRuta" Grid.Column="0" Style="{StaticResource TextBoxStyle}"
-                             IsReadOnly="True" ToolTip="Elegí dónde guardar el archivo de backup"/>
+                        <!-- Nombre sugerido -->
+                        <TextBlock Text="Nombre de Archivo Sugerido:" Style="{StaticResource FieldLabelStyle}"/>
+                        <TextBox x:Name="txtNombreArchivo" Style="{StaticResource TextBoxStyle}"/>
+                        <TextBlock Text="Incluye la fecha y hora automáticamente. Se genera un archivo .bak de SQL Server."
+                                   Style="{StaticResource HelperTextStyle}" Margin="0,6,0,24"/>
 
-                    <Button x:Name="btnExaminar" Grid.Column="2" Content="Examinar..."
-                            Style="{StaticResource ButtonSecondaryStyle}" Click="btnExaminar_Click"/>
-                </Grid>
-                <TextBlock Text="Se va a generar un archivo .txt con el respaldo de la base." Style="{StaticResource HelperTextStyle}" Margin="0,0,0,26"/>
+                        <!-- Acción -->
+                        <Button x:Name="btnGenerarBackup" Content="Generar Copia de Seguridad"
+                                Style="{StaticResource ButtonPrimaryStyle}" HorizontalAlignment="Right"
+                                Click="btnGenerarBackup_Click"/>
+                    </StackPanel>
+                </Border>
 
-                <!-- Fila 3: Acción principal -->
-                <Button x:Name="btnGenerarBackup" Content="Generar Copia de Seguridad"
-                        Style="{StaticResource ButtonPrimaryStyle}" HorizontalAlignment="Right"
-                        Click="btnGenerarBackup_Click"/>
+                <!-- ========== 2. RESTORE ========== -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,22">
+                    <StackPanel>
+                        <TextBlock Text="Restaurar Sistema (Restore)" Style="{StaticResource SectionTitleStyle}"/>
+
+                        <!-- Advertencias -->
+                        <Border Background="#FFF4E0" BorderBrush="#F5D9A0" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,8">
+                            <TextBlock TextWrapping="Wrap" FontSize="12.5" Foreground="#7A4B00">
+                                <Run Text="⚠ ¡Atención!" FontWeight="Bold"/>
+                                <Run Text=" Restaurar una copia sobrescribirá los datos actuales de ventas e inventario de forma irreversible. Se recomienda realizar un backup previo."/>
+                            </TextBlock>
+                        </Border>
+                        <Border Background="#FDECEA" BorderBrush="#F3B7B2" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,18">
+                            <TextBlock TextWrapping="Wrap" FontSize="12.5" Foreground="#8E1B13"
+                                       Text="Durante la restauración se desconectará temporalmente a los demás usuarios y terminales de venta, porque el motor de base de datos requiere acceso exclusivo."/>
+                        </Border>
+
+                        <!-- Selector de origen -->
+                        <TextBlock Text="Archivo de respaldo seleccionado:" Style="{StaticResource FieldLabelStyle}"/>
+                        <Grid Margin="0,0,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="12"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox x:Name="txtArchivoRestore" Grid.Column="0" Style="{StaticResource TextBoxStyle}"
+                                     IsReadOnly="True" ToolTip="Elegí un archivo de la lista o buscalo manualmente"/>
+                            <Button x:Name="btnBuscarArchivo" Grid.Column="2" Content="Buscar archivo de respaldo..."
+                                    Style="{StaticResource ButtonSecondaryStyle}" Click="btnBuscarArchivo_Click"/>
+                        </Grid>
+
+                        <!-- Historial -->
+                        <TextBlock Text="Respaldos disponibles en la carpeta de destino:" Style="{StaticResource FieldLabelStyle}"/>
+                        <DataGrid x:Name="dgHistorial" Style="{StaticResource GridStyle}" MaxHeight="240"
+                                  SelectionChanged="dgHistorial_SelectionChanged" Margin="0,0,0,6">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Nombre del Archivo" Binding="{Binding Nombre}" Width="*"/>
+                                <DataGridTextColumn Header="Fecha de creación" Binding="{Binding Fecha}" Width="160"/>
+                                <DataGridTextColumn Header="Tamaño" Binding="{Binding Tamano}" Width="90"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <TextBlock x:Name="txtSinRespaldos" Text="No hay archivos .bak en la carpeta seleccionada."
+                                   Style="{StaticResource HelperTextStyle}" Visibility="Collapsed"/>
+
+                        <!-- Acción peligrosa -->
+                        <Button x:Name="btnRestaurar" Content="Restaurar Sistema" IsEnabled="False"
+                                Style="{StaticResource ButtonDangerStyle}" HorizontalAlignment="Right" Margin="0,22,0,0"
+                                Click="btnRestaurar_Click"/>
+                    </StackPanel>
+                </Border>
+
+                <!-- ========== 3. AUDITORÍA ========== -->
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,0,10">
+                    <StackPanel>
+                        <TextBlock Text="Registro de Auditoría" Style="{StaticResource SectionTitleStyle}" Margin="0,0,0,4"/>
+                        <TextBlock Text="Últimas operaciones de mantenimiento realizadas sobre la base de datos."
+                                   Style="{StaticResource HelperTextStyle}" Margin="0,0,0,12"/>
+                        <DataGrid x:Name="dgAuditoria" Style="{StaticResource GridStyle}" MaxHeight="260" SelectionMode="Single">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Fecha y hora" Binding="{Binding Fecha}" Width="130"/>
+                                <DataGridTextColumn Header="Usuario" Binding="{Binding Usuario}" Width="140"/>
+                                <DataGridTextColumn Header="Operación" Binding="{Binding Operacion}" Width="110"/>
+                                <DataGridTextColumn Header="Resultado" Binding="{Binding Resultado}" Width="80"/>
+                                <DataGridTextColumn Header="Detalle" Binding="{Binding Detalle}" Width="*"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </StackPanel>
+                </Border>
 
             </StackPanel>
-        </Border>
+        </ScrollViewer>
+
+        <!-- ================= BLOQUEO (SPINNER) ================= -->
+        <Grid x:Name="overlayBusy" Background="#B3F4F5F7" Visibility="Collapsed">
+            <Border Style="{StaticResource CardStyle}" Width="340" Padding="28,24"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock x:Name="txtBusy" Text="Procesando..." FontSize="15" FontWeight="SemiBold"
+                               Foreground="#333333" HorizontalAlignment="Center" Margin="0,0,0,14"/>
+                    <ProgressBar IsIndeterminate="True" Height="6" Foreground="#E8792D" Background="#F0F0F0" BorderThickness="0"/>
+                    <TextBlock Text="No cierres la aplicación hasta que termine." Style="{StaticResource HelperTextStyle}"
+                               HorizontalAlignment="Center" Margin="0,12,0,0"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- ================= MODAL DE CONFIRMACIÓN ================= -->
+        <Grid x:Name="overlayConfirm" Background="#99000000" Visibility="Collapsed">
+            <Border Style="{StaticResource CardStyle}" Width="480" Padding="28"
+                    HorizontalAlignment="Center" VerticalAlignment="Center">
+                <StackPanel>
+                    <TextBlock Text="⚠ Confirmar restauración" FontSize="18" FontWeight="SemiBold" Foreground="#C62828" Margin="0,0,0,12"/>
+
+                    <TextBlock TextWrapping="Wrap" FontSize="13" Foreground="#333333" Margin="0,0,0,10"
+                               Text="Toda venta o cambio en el inventario realizado después de la fecha del respaldo se perderá para siempre."/>
+
+                    <TextBlock x:Name="txtModalArchivo" TextWrapping="Wrap" FontSize="12.5" Foreground="#666666" Margin="0,0,0,6"/>
+                    <TextBlock x:Name="txtModalConexiones" TextWrapping="Wrap" FontSize="12.5" Foreground="#8E1B13" FontWeight="SemiBold" Margin="0,0,0,12"/>
+
+                    <CheckBox x:Name="chkBackupPrevio" IsChecked="True" FontSize="12.5" Foreground="#333333" Margin="0,0,0,16"
+                              Content="Crear un backup de seguridad antes de restaurar (recomendado)"/>
+
+                    <TextBlock Text="Para continuar, escribí la palabra CONFIRMAR:" Style="{StaticResource FieldLabelStyle}"/>
+                    <TextBox x:Name="txtConfirmar" Style="{StaticResource TextBoxStyle}" TextChanged="txtConfirmar_TextChanged"/>
+
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
+                        <Button x:Name="btnCancelarRestore" Content="Cancelar" Style="{StaticResource ButtonSecondaryStyle}"
+                                Margin="0,0,10,0" Click="btnCancelarRestore_Click"/>
+                        <Button x:Name="btnConfirmarRestore" Content="Restaurar Sistema" IsEnabled="False"
+                                Style="{StaticResource ButtonDangerStyle}" Click="btnConfirmarRestore_Click"/>
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </Grid>
+
     </Grid>
 </Page>

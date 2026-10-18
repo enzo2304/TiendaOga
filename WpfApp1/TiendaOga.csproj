@@ -177,12 +177,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Datos\BackupArchivoDatos.cs" />
+    <Compile Include="Datos\BackupDatos.cs" />
     <Compile Include="Datos\ClienteDatos.cs" />
     <Compile Include="Datos\ConexionBD.cs" />
     <Compile Include="Datos\FacturaDatos.cs" />
     <Compile Include="Datos\PerfilRepository.cs" />
     <Compile Include="Datos\ProductoVentaDatos.cs" />
     <Compile Include="Datos\RendimientoDatos.cs" />
+    <Compile Include="Entidades\BackupEntidades.cs" />
     <Compile Include="Entidades\RendimientoVendedorDTO.cs" />
     <Compile Include="Datos\ReporteDatos.cs" />
     <Compile Include="Datos\TipoPagoDatos.cs" />
@@ -200,6 +203,7 @@
     <Compile Include="Entidades\UsuarioRow.cs" />
     <Compile Include="Entidades\VentaRegistrada.cs" />
     <Compile Include="Entidades\VentaTurnoItem.cs" />
+    <Compile Include="Negocio\BackupNegocio.cs" />
     <Compile Include="Negocio\ClienteNegocio.cs" />
     <Compile Include="Negocio\FacturaNegocio.cs" />
     <Compile Include="Negocio\FacturaPdf.cs" />
