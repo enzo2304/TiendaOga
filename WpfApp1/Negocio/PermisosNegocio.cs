@@ -45,7 +45,7 @@ namespace TiendaOga.Negocio
                     Modulo.Clientes,
                     Modulo.Usuarios,
                     Modulo.Ventas,
-                    Modulo.ReporteGeneral
+                   // Modulo.ReporteGeneral
                 },
 
                 [ROL_VENDEDOR] = new HashSet<Modulo>

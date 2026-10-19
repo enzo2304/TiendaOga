@@ -9,13 +9,12 @@ BEGIN
     SET NOCOUNT ON;
 
     SELECT 
-        -- ROW_NUMBER() nos genera el ranking (1, 2, 3...) automáticamente
         ROW_NUMBER() OVER(ORDER BY SUM(d.cantidad) DESC) AS Posicion,
         p.id_producto,
         p.nombre AS NombreProducto,
         c.nombre AS Categoria,
         SUM(d.cantidad) AS CantidadVendida,
-        SUM(d.cantidad) * p.precio_ventas AS TotalIngreso,
+        SUM(d.sub_total) AS TotalIngreso,      -- corregido: usa el precio real de cada venta
         p.stock AS StockActual
     FROM dbo.venta_cabecera v
     JOIN dbo.venta_detalle d ON v.id_venta = d.id_venta
@@ -30,8 +29,6 @@ BEGIN
         p.id_producto, 
         p.nombre, 
         c.nombre, 
-        p.precio_ventas, 
-        p.stock
-    ORDER BY CantidadVendida DESC;
+        p.stock;                               
 END;
 GO
