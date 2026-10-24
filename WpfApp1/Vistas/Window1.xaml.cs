@@ -32,6 +32,7 @@ namespace TiendaOga.Vistas
             btnProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerProductos(RolActual));
             btnUsuarios.Visibility = ToVisibility(PermisosNegocio.PuedeVerUsuarios(RolActual));
             btnReportesVentas.Visibility = ToVisibility(PermisosNegocio.PuedeVerReportesVendedor(RolActual));
+            btnReporteProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteProductos(RolActual));
             btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteGeneral(RolActual));
             btnStockBackup.Visibility = ToVisibility(PermisosNegocio.PuedeVerBackup(RolActual));
 
@@ -122,12 +123,20 @@ namespace TiendaOga.Vistas
             }
         }
 
+        private void btnReporteProductos_Click(object sender, RoutedEventArgs e)
+        {
+            if (!PermisosNegocio.PuedeVerReporteProductos(RolActual)) return;
+
+            lblTituloModulo.Text = "Reporte de Productos Más Vendidos";
+            ContenedorPrincipal.Navigate(new ReporteProductos());
+        }
+
         private void btnReporteGeneral_Click(object sender, RoutedEventArgs e)
         {
             if (!PermisosNegocio.PuedeVerReporteGeneral(RolActual)) return;
 
-            lblTituloModulo.Text = "Reporte General: Productos Más Vendidos";
-            ContenedorPrincipal.Navigate(new ReporteProductos());
+            lblTituloModulo.Text = "Reporte General (Panel Gerencial)";
+            ContenedorPrincipal.Navigate(new ReporteGeneral());
         }
 
         private void btnBackup_Click(object sender, RoutedEventArgs e)

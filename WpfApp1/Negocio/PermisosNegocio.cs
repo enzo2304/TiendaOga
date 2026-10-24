@@ -23,6 +23,7 @@ namespace TiendaOga.Negocio
             Productos,
             Usuarios,
             ReportesVendedor,
+            ReporteProductos,
             ReporteGeneral,
             Backup
         }
@@ -36,6 +37,7 @@ namespace TiendaOga.Negocio
                     Modulo.Clientes,
                     Modulo.Productos,
                     Modulo.ReportesVendedor,
+                    Modulo.ReporteProductos,
                     Modulo.ReporteGeneral
                 },
 
@@ -68,6 +70,7 @@ namespace TiendaOga.Negocio
         public static bool PuedeVerProductos(string rol) => TienePermiso(rol, Modulo.Productos);
         public static bool PuedeVerUsuarios(string rol) => TienePermiso(rol, Modulo.Usuarios);
         public static bool PuedeVerReportesVendedor(string rol) => TienePermiso(rol, Modulo.ReportesVendedor);
+        public static bool PuedeVerReporteProductos(string rol) => TienePermiso(rol, Modulo.ReporteProductos);
         public static bool PuedeVerReporteGeneral(string rol) => TienePermiso(rol, Modulo.ReporteGeneral);
         public static bool PuedeVerBackup(string rol) => TienePermiso(rol, Modulo.Backup);
 
@@ -92,6 +95,7 @@ namespace TiendaOga.Negocio
             if (PuedeVerProductos(rol)) return nameof(Modulo.Productos);
             if (PuedeVerUsuarios(rol)) return nameof(Modulo.Usuarios);
             if (PuedeVerReportesVendedor(rol)) return nameof(Modulo.ReportesVendedor);
+            if (PuedeVerReporteProductos(rol)) return nameof(Modulo.ReporteProductos);
             if (PuedeVerReporteGeneral(rol)) return nameof(Modulo.ReporteGeneral);
             if (PuedeVerBackup(rol)) return nameof(Modulo.Backup);
             return null;
