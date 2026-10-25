@@ -106,6 +106,8 @@ namespace TiendaOga.Datos
             using (var cn = ConexionMaster())
             using (var cmd = Comando(cn, "dbo.usp_tienda_conexiones_activas"))
             {
+                // Excluye las conexiones de este proceso (su pool); cuenta SSMS, otras copias de la app y otras PCs
+                cmd.Parameters.AddWithValue("@pid_cliente", System.Diagnostics.Process.GetCurrentProcess().Id);
                 cn.Open();
                 return Convert.ToInt32(cmd.ExecuteScalar());
             }
