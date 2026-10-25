@@ -231,20 +231,26 @@ namespace TiendaOga.Vistas
             string archivo = _archivoRestore;
             string rol = ObtenerRol();
             string usuario = ObtenerUsuario();
-            bool restaurado = false;
+
+            // Pausar la vigilancia para que el reloj del admin no lo saque
+            var ventana = Window.GetWindow(this) as Window1;
+            if (ventana != null) ventana.VigilanciaPausada = true;
+
+            bool sesionValida = true;
 
             SetOcupado(true, "Restaurando base de datos...");
             try
             {
                 await Task.Run(() => BackupNegocio.Restaurar(rol, usuario, archivo, backupPrevio));
-                restaurado = true;
 
                 MessageBox.Show(
-                    "La base de datos se restauró correctamente.\n\nSe cerrará la sesión para cargar los datos restaurados.",
+                    "La base de datos se restauró correctamente.\n\nLas demás sesiones abiertas se cerrarán automáticamente.",
                     "Restauración completada", MessageBoxButton.OK, MessageBoxImage.Information);
 
-                new MainWindow().Show();
-                Window.GetWindow(this)?.Close();
+                // El admin sigue solo si su cuenta existe en el respaldo con el mismo rol.
+                // Si no, RevalidarSesionTrasRestore avisa y lo manda al login.
+                if (ventana != null)
+                    sesionValida = ventana.RevalidarSesionTrasRestore();
             }
             catch (Exception ex)
             {
@@ -253,15 +259,25 @@ namespace TiendaOga.Vistas
             }
             finally
             {
-                if (!restaurado)
+                // Siempre se saca el spinner y el cursor de espera (es global a la aplicación)
+                SetOcupado(false);
+
+                if (sesionValida)
                 {
-                    SetOcupado(false);
+                    // El admin toma la nueva restauración como suya y reanuda la vigilancia
+                    if (ventana != null)
+                    {
+                        ventana.ActualizarLineaBaseRestore();
+                        ventana.VigilanciaPausada = false;
+                    }
+
                     CargarHistorial();
                     CargarAuditoria();
                     await ActualizarEstadoAsync();
                 }
             }
         }
+
 
         // ====================================================================
         // ESTADO, HISTORIAL Y AUDITORÍA

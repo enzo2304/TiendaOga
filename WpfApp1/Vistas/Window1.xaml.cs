@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Threading;
+using Microsoft.Data.SqlClient;
 using TiendaOga.Negocio;
 
 namespace TiendaOga.Vistas
@@ -10,6 +12,10 @@ namespace TiendaOga.Vistas
         public string RolActual { get; private set; }
         public int IdUsuarioActual { get; private set; }
 
+        private DateTime? _lineaBaseRestore;
+        private DispatcherTimer _vigilante;
+        public bool VigilanciaPausada { get; set; }
+
         public Window1(string usuario, string rol)
         {
             InitializeComponent();
@@ -17,10 +23,84 @@ namespace TiendaOga.Vistas
             RolActual = rol;
             IdUsuarioActual = UsuarioNegocio.ObtenerIdPorLogin(usuario);
             ConfigurarVistaPorRol();
+
+            IniciarVigilanciaRestore();
         }
 
         public Window1() : this("admin", "Administrador") { }
 
+        // ------------------------------------------------------------
+        // VIGILANCIA DE RESTAURACIONES
+        // ------------------------------------------------------------
+        public void ActualizarLineaBaseRestore()
+        {
+            DateTime? v;
+            if (BackupNegocio.TryObtenerUltimoRestore(out v)) _lineaBaseRestore = v;
+        }
+
+        private void IniciarVigilanciaRestore()
+        {
+            ActualizarLineaBaseRestore();
+            _vigilante = new DispatcherTimer { Interval = TimeSpan.FromSeconds(10) };
+            _vigilante.Tick += (s, e) =>
+            {
+                if (VigilanciaPausada) return;
+
+                DateTime? actual;
+                if (!BackupNegocio.TryObtenerUltimoRestore(out actual)) return;
+                if (actual == _lineaBaseRestore) return;
+
+                _vigilante.Stop();
+                SqlConnection.ClearAllPools();
+                MessageBox.Show("El administrador restauró la base de datos.\nPor seguridad, tu sesión ha finalizado.",
+                                "Sesión finalizada", MessageBoxButton.OK, MessageBoxImage.Information);
+                btnCerrarSesion_Click(null, null);
+            };
+            _vigilante.Start();
+        }
+
+        // Se llama desde la pantalla de Backup, justo después de restaurar.
+        // Devuelve true si la sesión sigue siendo válida; false si se cerró.
+        // Compara por login (no por id): el login es lo estable entre respaldos.
+        public bool RevalidarSesionTrasRestore()
+        {
+            int id = 0;
+            string rol = null;
+
+            try
+            {
+                UsuarioNegocio.ObtenerDatosSesion(UsuarioActual, out id, out rol);
+            }
+            catch
+            {
+                // Si no se puede verificar, se trata como inválida (id = 0)
+            }
+
+            bool existe = id > 0;
+            bool mismoRol = existe && string.Equals((rol ?? string.Empty).Trim(),
+                                                    (RolActual ?? string.Empty).Trim(),
+                                                    StringComparison.OrdinalIgnoreCase);
+
+            if (!existe || !mismoRol)
+            {
+                string motivo = !existe
+                    ? "Tu cuenta no existe (o está inactiva) en el respaldo restaurado."
+                    : "Tu rol cambió en el respaldo restaurado.";
+
+                MessageBox.Show(motivo + "\nPor seguridad, se cerrará la sesión.",
+                                "Sesión finalizada", MessageBoxButton.OK, MessageBoxImage.Warning);
+                btnCerrarSesion_Click(null, null);
+                return false;
+            }
+
+            // Mismo login y mismo rol, pero el id puede ser otro en el respaldo
+            IdUsuarioActual = id;
+            return true;
+        }
+
+        // ------------------------------------------------------------
+        // CONFIGURACIÓN SEGÚN ROL
+        // ------------------------------------------------------------
         private void ConfigurarVistaPorRol()
         {
             lblUsuarioActivo.Text = $"Usuario: {UsuarioActual}";
@@ -65,8 +145,12 @@ namespace TiendaOga.Vistas
             return visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
+        // ------------------------------------------------------------
+        // NAVEGACIÓN
+        // ------------------------------------------------------------
         private void btnCerrarSesion_Click(object sender, RoutedEventArgs e)
         {
+            _vigilante?.Stop();
             MainWindow login = new MainWindow();
             login.Show();
             this.Close();

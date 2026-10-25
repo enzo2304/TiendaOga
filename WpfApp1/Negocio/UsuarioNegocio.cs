@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Data.SqlClient;
 using TiendaOga.Datos;
 using TiendaOga.Entidades;
 
@@ -283,5 +285,38 @@ namespace TiendaOga.Negocio
         {
             return usuarioDatos.ObtenerIdPorLogin(login);
         }
+
+        // id = 0 y rol = null si el usuario no existe o está inactivo.
+        // Si la base no responde lanza excepción (el llamador decide qué hacer).
+        public static void ObtenerDatosSesion(string usuario, out int id, out string rol)
+        {
+            id = 0;
+            rol = null;
+
+            const string sql = @"
+                SELECT TOP 1 u.id_usuario, p.nombre_perfil
+                FROM dbo.Usuario u
+                INNER JOIN dbo.Perfiles p ON p.id_perfil = u.id_perfil
+                WHERE u.Activo = 1
+                  AND (   u.usuario COLLATE Latin1_General_CI_AI = @usuario
+                       OR CONCAT(u.nombre, ' ', u.apellido) COLLATE Latin1_General_CI_AI = @usuario)
+                ORDER BY u.id_usuario;";
+
+            using (var cn = new ConexionBD().ObtenerConexion())
+            using (var cmd = new SqlCommand(sql, cn))
+            {
+                cmd.Parameters.AddWithValue("@usuario", usuario ?? string.Empty);
+                cn.Open();
+                using (var rd = cmd.ExecuteReader())
+                {
+                    if (rd.Read())
+                    {
+                        id = rd.GetInt32(0);
+                        rol = rd.GetString(1);
+                    }
+                }
+            }
+        }
+
     }
 }

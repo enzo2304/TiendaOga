@@ -103,9 +103,14 @@ END;
 GO
 
 /* ---------------------------------------------------------------------
-5) CONEXIONES ACTIVAS A LA BASE (aviso antes de restaurar)
---------------------------------------------------------------------- */
+   5) CONEXIONES ACTIVAS A LA BASE (aviso antes de restaurar)
+      @pid_cliente : ID del proceso de la aplicación que consulta. Se
+                     excluyen solo las conexiones de ese proceso (su pool);
+                     otras copias de la app, SSMS y otras PCs sí se cuentan.
+                     Si es NULL, cuenta todas las sesiones.
+   --------------------------------------------------------------------- */
 CREATE OR ALTER PROCEDURE dbo.usp_tienda_conexiones_activas
+    @pid_cliente INT = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -115,10 +120,11 @@ BEGIN
     WHERE database_id = DB_ID(N'TiendaOgaDB')
       AND is_user_process = 1
       AND session_id <> @@SPID
-      AND NOT (host_name = HOST_NAME() AND program_name = APP_NAME());
+      AND (   @pid_cliente IS NULL
+           OR ISNULL(host_name, N'') <> HOST_NAME()
+           OR ISNULL(host_process_id, -1) <> @pid_cliente);
 END;
 GO
-
 /* ---------------------------------------------------------------------
 6) RESTAURAR
     a) Verifica el archivo antes de tocar nada.
@@ -203,6 +209,19 @@ SELECT N'Restauracion completada' AS resultado,
 END;
 GO
 
+
+/* ---------------------------------------------------------------------
+   7) ÚLTIMA RESTAURACIÓN
+--------------------------------------------------------------------- */
+CREATE OR ALTER PROCEDURE dbo.usp_tienda_ultimo_restore
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SELECT MAX(restore_date) AS ultimo_restore
+    FROM msdb.dbo.restorehistory
+    WHERE destination_database_name = N'TiendaOgaDB';
+END;
+GO
 /* ---------------------------------------------------------------------
 PRUEBAS RÁPIDAS
 --------------------------------------------------------------------- */

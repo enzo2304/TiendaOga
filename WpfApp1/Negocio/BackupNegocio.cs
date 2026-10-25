@@ -188,7 +188,12 @@ namespace TiendaOga.Negocio
                 throw;
             }
         }
-
+        // false si no se pudo consultar (para no cerrar sesiones por un error pasajero)
+        public static bool TryObtenerUltimoRestore(out DateTime? valor)
+        {
+            try { valor = _datos.ObtenerUltimoRestore(); return true; }
+            catch { valor = null; return false; }
+        }
         // ------------------------------------------------------------
         // CONSULTAS PARA LA PANTALLA
         // ------------------------------------------------------------

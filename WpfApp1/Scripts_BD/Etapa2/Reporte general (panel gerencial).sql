@@ -93,3 +93,35 @@ GO
 
 -- Prueba
 EXEC dbo.sp_reporte_general;
+
+
+
+
+
+
+
+--SE AGREGO ACA PARA NO ESTAR CREANDO OTRO QUERY
+USE TiendaOgaDB;
+GO
+ 
+-- Devuelve el id y el perfil (rol) de un usuario activo.
+-- Acepta el login o "nombre apellido", igual que sp_usuario_obtener_id_por_login.
+CREATE OR ALTER PROCEDURE dbo.sp_usuario_datos_sesion @usuario VARCHAR(100)
+AS
+BEGIN
+    SET NOCOUNT ON;
+ 
+    SELECT TOP 1 u.id_usuario, p.nombre_perfil
+    FROM dbo.Usuario u
+    INNER JOIN dbo.Perfiles p ON p.id_perfil = u.id_perfil
+    WHERE u.Activo = 1
+      AND (   u.usuario COLLATE Latin1_General_CI_AI = @usuario
+           OR CONCAT(u.nombre, ' ', u.apellido) COLLATE Latin1_General_CI_AI = @usuario)
+    ORDER BY u.id_usuario;
+END;
+GO
+ 
+-- Prueba (poné un login que exista)
+EXEC dbo.sp_usuario_datos_sesion 'admin';
+ 
+

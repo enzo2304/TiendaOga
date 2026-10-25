@@ -140,5 +140,16 @@ namespace TiendaOga.Datos
                 SqlConnection.ClearAllPools();
             }
         }
+
+        public DateTime? ObtenerUltimoRestore()
+        {
+            using (var cn = ConexionMaster())
+            using (var cmd = Comando(cn, "dbo.usp_tienda_ultimo_restore"))
+            {
+                cn.Open();
+                object v = cmd.ExecuteScalar();
+                return (v == null || v == DBNull.Value) ? (DateTime?)null : Convert.ToDateTime(v);
+            }
+        }
     }
 }
