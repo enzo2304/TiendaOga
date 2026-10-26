@@ -20,9 +20,9 @@ namespace TiendaOga.Negocio
             return true;
         }
 
-        public static List<ReporteProductoRow> ObtenerProductosMasVendidos(int mes, int anio)
+        public static ReporteGeneralDTO ObtenerReporteGeneral(int mes, int anio)
         {
-            return _datos.ObtenerProductosMasVendidos(mes, anio);
+            return _datos.ObtenerReporteGeneral(mes, anio);
         }
     }
 }

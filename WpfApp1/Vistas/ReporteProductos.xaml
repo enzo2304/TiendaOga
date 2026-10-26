@@ -1,57 +1,127 @@
 ﻿<Page x:Class="TiendaOga.Vistas.ReporteProductos"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
       Title="Reporte de Ventas" Background="#F4F5F7" FontFamily="Segoe UI">
 
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,15,0">
     <Grid Margin="20">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
+            <RowDefinition Height="250"/>
+            <!-- Gráficos Top -->
+            <RowDefinition Height="250"/>
+            <!-- Gráficos Detalle -->
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
 
-        <!-- Encabezado -->
-        <StackPanel Grid.Row="0" Margin="0,0,0,20">
-            <TextBlock Text="Productos Más Vendidos" FontSize="22" FontWeight="Bold" Foreground="#333333"/>
-            <TextBlock Text="Ranking mensual de salidas y facturación por producto" FontSize="13" Foreground="#666666"/>
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <TextBlock Text="Panel de Análisis de Rentabilidad" FontSize="22" FontWeight="Bold" Foreground="#333333"/>
+            <TextBlock Text="Haga clic en las barras de los gráficos superiores para ver el detalle de cada producto." FontSize="13" Foreground="#E8792D" FontWeight="SemiBold"/>
         </StackPanel>
 
-        <!-- Filtros -->
-        <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,0,0,15">
-            <TextBlock Text="Mes:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="SemiBold"/>
-            <ComboBox x:Name="cmbMes" Width="120" Margin="0,0,20,0" SelectedIndex="0">
-                <ComboBoxItem Content="Enero" Tag="1"/>
-                <ComboBoxItem Content="Febrero" Tag="2"/>
-                <ComboBoxItem Content="Marzo" Tag="3"/>
-                <ComboBoxItem Content="Abril" Tag="4"/>
-                <ComboBoxItem Content="Mayo" Tag="5"/>
-                <ComboBoxItem Content="Junio" Tag="6"/>
-                <ComboBoxItem Content="Julio" Tag="7"/>
-                <ComboBoxItem Content="Agosto" Tag="8"/>
-                <ComboBoxItem Content="Septiembre" Tag="9"/>
-                <ComboBoxItem Content="Octubre" Tag="10"/>
-                <ComboBoxItem Content="Noviembre" Tag="11"/>
-                <ComboBoxItem Content="Diciembre" Tag="12"/>
-            </ComboBox>
+        <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,10" BorderBrush="#E0E0E0" BorderThickness="1">
+            <WrapPanel VerticalAlignment="Center">
+                <TextBlock Text="Mes:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <ComboBox x:Name="cmbMes" Width="100" Margin="0,0,15,0" SelectionChanged="Filtro_SelectionChanged">
+                    <ComboBoxItem Content="Enero" Tag="1"/>
+                    <ComboBoxItem Content="Febrero" Tag="2"/>
+                    <ComboBoxItem Content="Marzo" Tag="3"/>
+                    <ComboBoxItem Content="Abril" Tag="4"/>
+                    <ComboBoxItem Content="Mayo" Tag="5"/>
+                    <ComboBoxItem Content="Junio" Tag="6"/>
+                    <ComboBoxItem Content="Julio" Tag="7"/>
+                    <ComboBoxItem Content="Agosto" Tag="8"/>
+                    <ComboBoxItem Content="Septiembre" Tag="9"/>
+                    <ComboBoxItem Content="Octubre" Tag="10"/>
+                    <ComboBoxItem Content="Noviembre" Tag="11"/>
+                    <ComboBoxItem Content="Diciembre" Tag="12"/>
+                </ComboBox>
+                <TextBlock Text="Año:" VerticalAlignment="Center" Margin="0,0,10,0"/>
+                <ComboBox x:Name="cmbAnio" Width="80" Margin="0,0,20,0" SelectionChanged="Filtro_SelectionChanged"/>
+                <Button Content="Refrescar" Width="90" Height="30" Background="#E8792D" Foreground="White" Click="BtnGenerar_Click" Margin="0,0,10,0"/>
+                <Button Content="Ver General (Borrar Filtro)" Width="170" Height="30" Background="#666666" Foreground="White" Click="BtnRestablecer_Click"/>
+            </WrapPanel>
+        </Border>
 
-            <TextBlock Text="Año:" VerticalAlignment="Center" Margin="0,0,10,0" FontWeight="SemiBold"/>
-            <ComboBox x:Name="cmbAnio" Width="100" Margin="0,0,20,0"/>
+        <!-- FILA DE GRÁFICOS SUPERIOR: Los "Clickeables" -->
+        <Grid Grid.Row="2" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
 
-            <Button Content="Generar Reporte" Width="130" Height="32" Background="#E8792D" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="BtnGenerar_Click"/>
-        </StackPanel>
+            <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="10" Margin="0,0,10,0">
+                <Grid>
+                    <TextBlock Text="Más Vendidos (Unidades)" FontWeight="Bold" Margin="0,0,0,10"/>
+                    <lvc:CartesianChart x:Name="graficoTopUnidades" Margin="0,20,0,0" DataClick="GraficoUnidades_DataClick" Cursor="Hand">
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis x:Name="ejeXUnidades"/>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis MinValue="0"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Grid>
+            </Border>
 
-        <!-- Grilla de Resultados -->
-        <DataGrid x:Name="dgReporte" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" 
-                  CanUserAddRows="False" SelectionMode="Single" Background="White" RowHeight="32" BorderBrush="#CCCCCC">
-            <DataGrid.Columns>
-                <DataGridTextColumn Header="#" Binding="{Binding Posicion}" Width="50"/>
-                <DataGridTextColumn Header="ID" Binding="{Binding IdProducto}" Width="60"/>
-                <DataGridTextColumn Header="Producto" Binding="{Binding NombreProducto}" Width="2*"/>
-                <DataGridTextColumn Header="Rubro" Binding="{Binding Categoria}" Width="1.5*"/>
-                <DataGridTextColumn Header="Unid. Vendidas" Binding="{Binding CantidadVendida}" Width="110"/>
-                <DataGridTextColumn Header="Ingreso Generado" Binding="{Binding TotalIngreso, StringFormat={}{0:C}}" Width="140"/>
-                <DataGridTextColumn Header="Stock Restante" Binding="{Binding StockActual}" Width="110"/>
-            </DataGrid.Columns>
-        </DataGrid>
+            <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="10">
+                <Grid>
+                    <TextBlock Text="Más Rentables (Ganancia Neta $)" FontWeight="Bold" Margin="0,0,0,10"/>
+                    <lvc:CartesianChart x:Name="graficoTopRentables" Margin="0,20,0,0" DataClick="GraficoRentables_DataClick" Cursor="Hand">
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis x:Name="ejeXRentables"/>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis MinValue="0" LabelFormatter="{Binding FormatoMoneda}"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- FILA DE GRÁFICOS INFERIOR: Los "Dinámicos" -->
+        <Grid Grid.Row="3" Margin="0,0,0,10">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="1*"/>
+                <ColumnDefinition Width="1*"/>
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0" Background="White" CornerRadius="8" Padding="10" Margin="0,0,10,0">
+                <Grid>
+                    <TextBlock x:Name="lblTituloTorta" Text="Distribución de Cobranza (General)" FontWeight="Bold" Margin="0,0,0,10"/>
+                    <lvc:PieChart x:Name="graficoPagos" Margin="0,20,0,0" LegendLocation="Right" InnerRadius="20"/>
+                </Grid>
+            </Border>
+
+            <Border Grid.Column="1" Background="White" CornerRadius="8" Padding="10">
+                <Grid>
+                    <TextBlock x:Name="lblTituloComparativo" Text="Bruto vs Neto (General Promedio)" FontWeight="Bold" Margin="0,0,0,10"/>
+                    <lvc:CartesianChart x:Name="graficoComparativo" Margin="0,20,0,0">
+                        <lvc:CartesianChart.AxisX>
+                            <lvc:Axis x:Name="ejeXComparativo"/>
+                        </lvc:CartesianChart.AxisX>
+                        <lvc:CartesianChart.AxisY>
+                            <lvc:Axis MinValue="0" LabelFormatter="{Binding FormatoMoneda}"/>
+                        </lvc:CartesianChart.AxisY>
+                    </lvc:CartesianChart>
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- GRILLA -->
+        <Border Grid.Row="4" Background="White" CornerRadius="8" Padding="10">
+            <DataGrid x:Name="dgReporte" AutoGenerateColumns="False" IsReadOnly="True" Background="Transparent">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="#" Binding="{Binding Posicion}"/>
+                    <DataGridTextColumn Header="Producto" Binding="{Binding NombreProducto}" Width="2*"/>
+                    <DataGridTextColumn Header="Ingreso Bruto" Binding="{Binding TotalIngreso, StringFormat={}{0:C}}"/>
+                    <DataGridTextColumn Header="Ganancia Neta" Binding="{Binding GananciaNeta, StringFormat={}{0:C}}"/>
+                    <DataGridTextColumn Header="Stock" Binding="{Binding StockActual}"/>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Border>
     </Grid>
+    </ScrollViewer>
 </Page>

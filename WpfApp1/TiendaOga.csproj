@@ -186,6 +186,7 @@
     <Compile Include="Datos\ProductoVentaDatos.cs" />
     <Compile Include="Datos\RendimientoDatos.cs" />
     <Compile Include="Entidades\BackupEntidades.cs" />
+    <Compile Include="Entidades\PagoPorProducto.cs" />
     <Compile Include="Entidades\RendimientoVendedorDTO.cs" />
     <Compile Include="Datos\ReporteDatos.cs" />
     <Compile Include="Datos\TipoPagoDatos.cs" />
@@ -199,6 +200,7 @@
     <Compile Include="Entidades\ItemVenta.cs" />
     <Compile Include="Entidades\PerfilItem.cs" />
     <Compile Include="Entidades\ProductoRow.cs" />
+    <Compile Include="Entidades\ReporteGeneralDTO.cs" />
     <Compile Include="Entidades\ReporteProductoRow.cs" />
     <Compile Include="Entidades\UsuarioRow.cs" />
     <Compile Include="Entidades\VentaRegistrada.cs" />

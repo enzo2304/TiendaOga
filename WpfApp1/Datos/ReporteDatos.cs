@@ -10,9 +10,9 @@ namespace TiendaOga.Datos
     {
         private readonly ConexionBD _bd = new ConexionBD();
 
-        public List<ReporteProductoRow> ObtenerProductosMasVendidos(int mes, int anio)
+        public ReporteGeneralDTO ObtenerReporteGeneral(int mes, int anio)
         {
-            var lista = new List<ReporteProductoRow>();
+            var dto = new ReporteGeneralDTO();
             using (var cn = _bd.ObtenerConexion())
             using (var cmd = new SqlCommand("dbo.sp_reporte_productos_mas_vendidos", cn))
             {
@@ -23,9 +23,10 @@ namespace TiendaOga.Datos
                 cn.Open();
                 using (var rd = cmd.ExecuteReader())
                 {
+                    // Bloque 1: Ranking de Productos
                     while (rd.Read())
                     {
-                        lista.Add(new ReporteProductoRow
+                        dto.Productos.Add(new ReporteProductoRow
                         {
                             Posicion = Convert.ToInt32(rd["Posicion"]),
                             IdProducto = Convert.ToInt32(rd["id_producto"]),
@@ -33,12 +34,41 @@ namespace TiendaOga.Datos
                             Categoria = rd["Categoria"].ToString(),
                             CantidadVendida = Convert.ToInt32(rd["CantidadVendida"]),
                             TotalIngreso = Convert.ToDecimal(rd["TotalIngreso"]),
+                            CostoTotal = Convert.ToDecimal(rd["CostoTotal"]),
+                            GananciaNeta = Convert.ToDecimal(rd["GananciaNeta"]),
                             StockActual = Convert.ToInt32(rd["StockActual"])
                         });
                     }
+
+                    // Bloque 2: Métodos de Pago Generales
+                    if (rd.NextResult())
+                    {
+                        while (rd.Read())
+                        {
+                            dto.MetodosDePagoGenerales.Add(new PagoRendimiento
+                            {
+                                Metodo = rd["MetodoPago"].ToString(),
+                                Total = Convert.ToDecimal(rd["TotalCobrado"])
+                            });
+                        }
+                    }
+
+                    // Bloque 3: Métodos de Pago por Producto
+                    if (rd.NextResult())
+                    {
+                        while (rd.Read())
+                        {
+                            dto.PagosPorProducto.Add(new PagoPorProducto
+                            {
+                                IdProducto = Convert.ToInt32(rd["id_producto"]),
+                                Metodo = rd["MetodoPago"].ToString(),
+                                Total = Convert.ToDecimal(rd["TotalCobrado"])
+                            });
+                        }
+                    }
                 }
             }
-            return lista;
+            return dto;
         }
     }
 }
