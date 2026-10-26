@@ -109,7 +109,7 @@
             </Setter>
         </Style>
 
-        <!-- Botón redondo para íconos de acción en la grilla (Modificar / Baja / Reactivar) -->
+        <!-- Botón redondo para íconos de acción en la grilla (Modificar / Baja / Reactivar / Anular) -->
         <Style x:Key="IconGrillaButton" TargetType="Button">
             <Setter Property="Width" Value="30"/>
             <Setter Property="Height" Value="30"/>
@@ -145,6 +145,9 @@
                 <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="Factura">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="Anular">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
 
@@ -161,6 +164,16 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#FFF3E9"/>
                 </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <!-- Fila del historial de compras: las ventas ANULADAS se pintan de rojo y con texto gris -->
+        <Style x:Key="RowVentaStyle" TargetType="DataGridRow" BasedOn="{StaticResource FlatRowStyle}">
+            <Style.Triggers>
+                <DataTrigger Binding="{Binding Estado}" Value="ANULADA">
+                    <Setter Property="Background" Value="{StaticResource RowInactivoBrush}"/>
+                    <Setter Property="Foreground" Value="#888888"/>
+                </DataTrigger>
             </Style.Triggers>
         </Style>
     </Page.Resources>
@@ -306,7 +319,7 @@
                           BorderThickness="0"
                           Background="White"
                           AlternationCount="2"
-                          RowStyle="{StaticResource FlatRowStyle}"
+                          RowStyle="{StaticResource RowVentaStyle}"
                           ColumnHeaderStyle="{StaticResource FlatColumnHeader}"
                           FontSize="13"
                           RowHeight="34">
@@ -316,6 +329,10 @@
                         <DataGridTextColumn Header="Artículos Comprados" Binding="{Binding DetalleProductos}" Width="*"/>
                         <DataGridTextColumn Header="Método de Pago" Binding="{Binding MetodoPago}" Width="120"/>
                         <DataGridTextColumn Header="Total Abonado ($)" Binding="{Binding Total, StringFormat={}{0:N2}}" Width="130"/>
+
+                        <!-- NUEVO: Estado de la venta -->
+                        <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="90"/>
+
                         <DataGridTemplateColumn Header="Factura" Width="90">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
@@ -355,6 +372,25 @@
                                             </Path.Style>
                                         </Path>
                                     </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+
+                        <!-- NUEVO: Botón Anular (se oculta si la venta ya está anulada) -->
+                        <DataGridTemplateColumn Header="Anular" Width="80">
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button x:Name="btnAnular" Tag="{Binding IdVenta}" Click="BtnAnularVenta_Click"
+                                            Style="{StaticResource IconGrillaButton}"
+                                            HorizontalAlignment="Center" ToolTip="Anular venta">
+                                        <TextBlock Text="&#xE711;" FontFamily="Segoe MDL2 Assets"
+                                                   FontSize="15" Foreground="#E53E3E"/>
+                                    </Button>
+                                    <DataTemplate.Triggers>
+                                        <DataTrigger Binding="{Binding Estado}" Value="ANULADA">
+                                            <Setter TargetName="btnAnular" Property="Visibility" Value="Collapsed"/>
+                                        </DataTrigger>
+                                    </DataTemplate.Triggers>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>

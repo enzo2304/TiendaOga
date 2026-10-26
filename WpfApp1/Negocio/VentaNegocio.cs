@@ -114,5 +114,16 @@ namespace TiendaOga.Negocio
         {
             return new VentaDatos().Registrar(idUsuario, idCliente, idTipoPago, detalle);
         }
+
+        /// <summary>
+        /// Anula una venta: marca el estado, registra quién la anuló y devuelve el stock.
+        /// </summary>
+        public static void AnularVenta(int idVenta, int idUsuarioAnulo)
+        {
+            if (idVenta <= 0) throw new ArgumentException("Venta inválida.");
+            if (idUsuarioAnulo <= 0) throw new ArgumentException("Usuario inválido.");
+
+            new VentaDatos().AnularVenta(idVenta, idUsuarioAnulo);
+        }
     }
 }

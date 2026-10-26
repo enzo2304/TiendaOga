@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
+using System.Linq;
 
 namespace TiendaOga.Vistas
 {
@@ -157,6 +158,56 @@ namespace TiendaOga.Vistas
                     MessageBox.Show("No se pudo abrir el comprobante:\n" + ex.Message, "Error",
                                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+            }
+        }
+
+        private void BtnAnularVenta_Click(object sender, RoutedEventArgs e)
+        {
+            if (!(sender is Button boton) || !(boton.Tag is int idVenta)) return;
+
+            var ventanaPadre = Window.GetWindow(this) as Window1;
+            if (ventanaPadre == null || ventanaPadre.IdUsuarioActual <= 0)
+            {
+                MessageBox.Show("No se pudo identificar al usuario de la sesión.", "Sesión inválida",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            var confirmacion = MessageBox.Show(
+                "¿Anular esta venta? Se devolverá el stock y no se puede deshacer.",
+                "Confirmar anulación", MessageBoxButton.YesNo, MessageBoxImage.Warning);
+            if (confirmacion != MessageBoxResult.Yes) return;
+
+            try
+            {
+                // Guardo el cliente seleccionado: al recargar la lista se pierde la selección
+                int idClienteSel = (dgClientes.SelectedItem as ClienteItem)?.IdCliente ?? 0;
+
+                VentaNegocio.AnularVenta(idVenta, ventanaPadre.IdUsuarioActual);
+
+                // TODO 1: recargar clientes (actualiza "Compras Realizadas")
+                CargarListaClientes();
+
+                // TODO 2: reseleccionar el cliente; esto dispara DgClientes_SelectionChanged,
+                // que vuelve a cargar dgCompras
+                if (idClienteSel > 0)
+                {
+                    dgClientes.SelectedItem = DatosGlobales.Clientes
+                        .FirstOrDefault(c => c.IdCliente == idClienteSel);
+                }
+
+                MessageBox.Show("Venta anulada correctamente.", "Listo",
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+            catch (Microsoft.Data.SqlClient.SqlException ex)
+            {
+                MessageBox.Show(ex.Message, "No se pudo anular",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al anular la venta: " + ex.Message, "Error",
+                    MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
     }

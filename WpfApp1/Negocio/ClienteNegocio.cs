@@ -55,7 +55,8 @@ namespace TiendaOga.Negocio
                     DetalleProductos = c.Articulos,
                     MetodoPago = c.MetodoPago,
                     Total = c.TotalVenta,
-                    IdVenta = c.IdVenta
+                    IdVenta = c.IdVenta,
+                    Estado = c.Estado
                 })
                 .ToList();
         }

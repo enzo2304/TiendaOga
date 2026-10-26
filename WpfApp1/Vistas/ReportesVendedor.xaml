@@ -37,7 +37,7 @@
         </Border>
 
         <!-- Tarjetas de KPIs Generales -->
-        <UniformGrid Grid.Row="2" Columns="4" Margin="0,0,0,15">
+        <UniformGrid Grid.Row="2" Columns="3" Margin="0,0,0,15">
             <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0" BorderBrush="#E0E0E0" BorderThickness="1">
                 <StackPanel>
                     <TextBlock Text="Volumen de Facturación" FontSize="12" Foreground="#666666" FontWeight="SemiBold"/>
@@ -54,7 +54,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0" BorderBrush="#E0E0E0" BorderThickness="1">
+            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,0" BorderBrush="#E0E0E0" BorderThickness="1">
                 <StackPanel>
                     <TextBlock Text="Operaciones Anuladas" FontSize="12" Foreground="#666666" FontWeight="SemiBold"/>
                     <TextBlock x:Name="txtAnuladas" Text="0" FontSize="24" FontWeight="Bold" Foreground="#C62828" Margin="0,5,0,0"/>

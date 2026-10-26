@@ -203,6 +203,7 @@
     <Compile Include="Entidades\ReporteGeneralDTO.cs" />
     <Compile Include="Entidades\ReporteProductoRow.cs" />
     <Compile Include="Entidades\UsuarioRow.cs" />
+    <Compile Include="Entidades\VendedorItem.cs" />
     <Compile Include="Entidades\VentaRegistrada.cs" />
     <Compile Include="Entidades\VentaTurnoItem.cs" />
     <Compile Include="Negocio\BackupNegocio.cs" />

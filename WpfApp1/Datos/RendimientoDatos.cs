@@ -67,18 +67,19 @@ namespace TiendaOga.Datos
         }
 
         // Método para llenar el ComboBox de selección de vendedor
-        public List<dynamic> ObtenerVendedoresActivos()
+        public List<VendedorItem> ObtenerVendedoresActivos()
         {
-            var lista = new List<dynamic>();
+            var lista = new List<VendedorItem>();
             using (var cn = _bd.ObtenerConexion())
-            using (var cmd = new SqlCommand("SELECT id_usuario, CONCAT(nombre, ' ', apellido, ' (', usuario, ')') AS NombreCompleto FROM dbo.Usuario WHERE activo = 1", cn))
+            using (var cmd = new SqlCommand(
+                "SELECT id_usuario, CONCAT(nombre, ' ', apellido, ' (', usuario, ')') AS NombreCompleto FROM dbo.Usuario WHERE activo = 1", cn))
             {
                 cn.Open();
                 using (var rd = cmd.ExecuteReader())
                 {
                     while (rd.Read())
                     {
-                        lista.Add(new
+                        lista.Add(new VendedorItem
                         {
                             IdUsuario = Convert.ToInt32(rd["id_usuario"]),
                             NombreCompleto = rd["NombreCompleto"].ToString()

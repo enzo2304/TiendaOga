@@ -16,6 +16,7 @@ namespace TiendaOga.Entidades
             public string Articulos { get; set; }
             public string MetodoPago { get; set; }
             public decimal TotalVenta { get; set; }
-        public int IdVenta { get; set; }
+            public string Estado { get; set; }
+            public int IdVenta { get; set; }
     }
     }

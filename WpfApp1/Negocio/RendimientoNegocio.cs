@@ -14,7 +14,7 @@ namespace TiendaOga.Negocio
             return _datos.ObtenerRendimiento(idUsuario, desde, hasta);
         }
 
-        public static List<dynamic> ObtenerVendedoresActivos()
+        public static List<VendedorItem> ObtenerVendedoresActivos()
         {
             return _datos.ObtenerVendedoresActivos();
         }

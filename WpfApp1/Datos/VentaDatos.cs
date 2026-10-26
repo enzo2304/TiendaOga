@@ -76,5 +76,19 @@ namespace TiendaOga.Datos
 
             return lista;
         }
+
+        public void AnularVenta(int idVenta, int idUsuarioAnulo)
+        {
+            using (var cn = _bd.ObtenerConexion())
+            using (var cmd = new SqlCommand("dbo.sp_anular_venta", cn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@id_venta", idVenta);
+                cmd.Parameters.AddWithValue("@id_usuario_anulo", idUsuarioAnulo);
+
+                cn.Open();
+                cmd.ExecuteNonQuery();
+            }
+        }
     }
 }
