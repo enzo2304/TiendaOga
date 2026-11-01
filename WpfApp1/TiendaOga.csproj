@@ -182,10 +182,12 @@
     <Compile Include="Datos\ClienteDatos.cs" />
     <Compile Include="Datos\ConexionBD.cs" />
     <Compile Include="Datos\FacturaDatos.cs" />
+    <Compile Include="Datos\NotaCreditoDatos.cs" />
     <Compile Include="Datos\PerfilRepository.cs" />
     <Compile Include="Datos\ProductoVentaDatos.cs" />
     <Compile Include="Datos\RendimientoDatos.cs" />
     <Compile Include="Entidades\BackupEntidades.cs" />
+    <Compile Include="Entidades\NotaCredito.cs" />
     <Compile Include="Entidades\PagoPorProducto.cs" />
     <Compile Include="Entidades\RendimientoVendedorDTO.cs" />
     <Compile Include="Datos\ReporteDatos.cs" />
@@ -210,6 +212,7 @@
     <Compile Include="Negocio\ClienteNegocio.cs" />
     <Compile Include="Negocio\FacturaNegocio.cs" />
     <Compile Include="Negocio\FacturaPdf.cs" />
+    <Compile Include="Negocio\NotaCreditoNegocio.cs" />
     <Compile Include="Negocio\PermisosNegocio.cs" />
     <Compile Include="Negocio\ProductoNegocio.cs" />
     <Compile Include="Negocio\RendimientoNegocio.cs" />
@@ -226,6 +229,9 @@
     </Compile>
     <Compile Include="Vistas\ComprobanteVentaWindow.xaml.cs">
       <DependentUpon>ComprobanteVentaWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Vistas\NotaCreditoWindow.xaml.cs">
+      <DependentUpon>NotaCreditoWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Vistas\NuevoClienteWindow.xaml.cs">
       <DependentUpon>NuevoClienteWindow.xaml</DependentUpon>
@@ -280,6 +286,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Vistas\NotaCreditoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Vistas\NuevoClienteWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

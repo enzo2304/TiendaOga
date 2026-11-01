@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using TiendaOga.Entidades;
 using TiendaOga.Negocio;
 using System.Linq;
@@ -145,9 +146,10 @@ namespace TiendaOga.Vistas
                 }
             }
         }
+
         private void BtnVerFactura_Click(object sender, RoutedEventArgs e)
         {
-            if (sender is Button boton && boton.Tag is int idVenta)
+            if (sender is FrameworkElement boton && boton.Tag is int idVenta)
             {
                 try
                 {
@@ -158,6 +160,35 @@ namespace TiendaOga.Vistas
                     MessageBox.Show("No se pudo abrir el comprobante:\n" + ex.Message, "Error",
                                     MessageBoxButton.OK, MessageBoxImage.Warning);
                 }
+            }
+        }
+
+        // NUEVO: abre la nota de crédito de una venta anulada desde el historial
+        private void BtnVerNotaCredito_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is FrameworkElement boton && boton.Tag is int idVenta)
+            {
+                try
+                {
+                    new NotaCreditoWindow(idVenta) { Owner = Window.GetWindow(this) }.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("No se pudo abrir la nota de crédito:\n" + ex.Message, "Error",
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+            }
+        }
+
+        // NUEVO: abre el menú desplegable (Factura / Nota de crédito) de una venta anulada
+        private void BtnComprobantes_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button boton && boton.ContextMenu != null)
+            {
+                boton.ContextMenu.DataContext = boton.DataContext;   // para que los MenuItem lean el IdVenta de la fila
+                boton.ContextMenu.PlacementTarget = boton;
+                boton.ContextMenu.Placement = PlacementMode.Bottom;
+                boton.ContextMenu.IsOpen = true;
             }
         }
 
@@ -174,7 +205,7 @@ namespace TiendaOga.Vistas
             }
 
             var confirmacion = MessageBox.Show(
-                "¿Anular esta venta? Se devolverá el stock y no se puede deshacer.",
+                "¿Anular esta venta? Se devolverá el stock y se generará la nota de crédito.\nEsta acción no se puede deshacer.",
                 "Confirmar anulación", MessageBoxButton.YesNo, MessageBoxImage.Warning);
             if (confirmacion != MessageBoxResult.Yes) return;
 
@@ -185,10 +216,10 @@ namespace TiendaOga.Vistas
 
                 VentaNegocio.AnularVenta(idVenta, ventanaPadre.IdUsuarioActual);
 
-                // TODO 1: recargar clientes (actualiza "Compras Realizadas")
+                // Recargar clientes (actualiza "Compras Realizadas")
                 CargarListaClientes();
 
-                // TODO 2: reseleccionar el cliente; esto dispara DgClientes_SelectionChanged,
+                // Reseleccionar el cliente; esto dispara DgClientes_SelectionChanged,
                 // que vuelve a cargar dgCompras
                 if (idClienteSel > 0)
                 {
@@ -196,8 +227,16 @@ namespace TiendaOga.Vistas
                         .FirstOrDefault(c => c.IdCliente == idClienteSel);
                 }
 
-                MessageBox.Show("Venta anulada correctamente.", "Listo",
-                    MessageBoxButton.OK, MessageBoxImage.Information);
+                // Igual que al guardar una venta: se abre el comprobante (acá, la nota de crédito)
+                try
+                {
+                    new NotaCreditoWindow(idVenta) { Owner = Window.GetWindow(this) }.ShowDialog();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("La venta se anuló, pero no se pudo mostrar la nota de crédito:\n" + ex.Message,
+                        "Error de comprobante", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
             }
             catch (Microsoft.Data.SqlClient.SqlException ex)
             {
@@ -211,6 +250,4 @@ namespace TiendaOga.Vistas
             }
         }
     }
-
-
 }

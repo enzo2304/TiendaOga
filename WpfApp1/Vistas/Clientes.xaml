@@ -145,6 +145,9 @@
                 <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="Factura">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 </DataTrigger>
+                <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="Comprobantes">
+                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                </DataTrigger>
                 <DataTrigger Binding="{Binding Content, RelativeSource={RelativeSource Self}}" Value="Anular">
                     <Setter Property="HorizontalContentAlignment" Value="Center"/>
                 </DataTrigger>
@@ -333,45 +336,120 @@
                         <!-- NUEVO: Estado de la venta -->
                         <DataGridTextColumn Header="Estado" Binding="{Binding Estado}" Width="90"/>
 
-                        <DataGridTemplateColumn Header="Factura" Width="90">
+                        <DataGridTemplateColumn Header="Comprobantes" Width="110">
                             <DataGridTemplateColumn.CellTemplate>
                                 <DataTemplate>
-                                    <Button Tag="{Binding IdVenta}"
-                    Click="BtnVerFactura_Click"
-                    ToolTip="Ver / descargar factura"
-                    HorizontalAlignment="Center" VerticalAlignment="Center"
-                    Width="32" Height="26" Cursor="Hand"
-                    Background="Transparent" BorderThickness="0">
+                                    <Grid HorizontalAlignment="Center" VerticalAlignment="Center">
 
-                                        <Button.Template>
-                                            <ControlTemplate TargetType="Button">
-                                                <Border x:Name="fondo" Background="Transparent" CornerRadius="4">
-                                                    <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                </Border>
-                                                <ControlTemplate.Triggers>
-                                                    <Trigger Property="IsMouseOver" Value="True">
-                                                        <Setter TargetName="fondo" Property="Background" Value="#1AE67E22"/>
-                                                    </Trigger>
-                                                </ControlTemplate.Triggers>
-                                            </ControlTemplate>
-                                        </Button.Template>
-
-                                        <Path Data="M12,3 L12,15 M7,10.5 L12,15.5 L17,10.5 M4,16 L4,20 L20,20 L20,16"
-                      StrokeThickness="2.2"
-                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                      Width="16" Height="16" Stretch="Uniform">
-                                            <Path.Style>
-                                                <Style TargetType="Path">
-                                                    <Setter Property="Stroke" Value="#E67E22"/>
+                                        <!-- 1) Botón simple de factura: se muestra cuando la venta NO está anulada -->
+                                        <Button Tag="{Binding IdVenta}"
+                                                Click="BtnVerFactura_Click"
+                                                ToolTip="Ver / descargar factura"
+                                                Width="32" Height="26" Cursor="Hand"
+                                                Background="Transparent" BorderThickness="0">
+                                            <Button.Style>
+                                                <Style TargetType="Button">
+                                                    <Setter Property="Visibility" Value="Visible"/>
                                                     <Style.Triggers>
-                                                        <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True">
-                                                            <Setter Property="Stroke" Value="White"/>
+                                                        <DataTrigger Binding="{Binding Estado}" Value="ANULADA">
+                                                            <Setter Property="Visibility" Value="Collapsed"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
                                                 </Style>
-                                            </Path.Style>
-                                        </Path>
-                                    </Button>
+                                            </Button.Style>
+                                            <Button.Template>
+                                                <ControlTemplate TargetType="Button">
+                                                    <Border x:Name="fondo" Background="Transparent" CornerRadius="4">
+                                                        <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                    </Border>
+                                                    <ControlTemplate.Triggers>
+                                                        <Trigger Property="IsMouseOver" Value="True">
+                                                            <Setter TargetName="fondo" Property="Background" Value="#1AE67E22"/>
+                                                        </Trigger>
+                                                    </ControlTemplate.Triggers>
+                                                </ControlTemplate>
+                                            </Button.Template>
+                                            <Path Data="M12,3 L12,15 M7,10.5 L12,15.5 L17,10.5 M4,16 L4,20 L20,20 L20,16"
+                                                  StrokeThickness="2.2"
+                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                  Width="16" Height="16" Stretch="Uniform">
+                                                <Path.Style>
+                                                    <Style TargetType="Path">
+                                                        <Setter Property="Stroke" Value="#E67E22"/>
+                                                        <Style.Triggers>
+                                                            <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True">
+                                                                <Setter Property="Stroke" Value="White"/>
+                                                            </DataTrigger>
+                                                        </Style.Triggers>
+                                                    </Style>
+                                                </Path.Style>
+                                            </Path>
+                                        </Button>
+
+                                        <!-- 2) Botón desplegable: solo cuando la venta está ANULADA -->
+                                        <Button Click="BtnComprobantes_Click"
+                                                ToolTip="Comprobantes de la venta"
+                                                Width="50"
+                                                ContextMenuService.IsEnabled="False">
+                                            <Button.Style>
+                                                <Style TargetType="Button" BasedOn="{StaticResource IconGrillaButton}">
+                                                    <Setter Property="Visibility" Value="Collapsed"/>
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding Estado}" Value="ANULADA">
+                                                            <Setter Property="Visibility" Value="Visible"/>
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Button.Style>
+
+                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Path Data="M12,3 L12,15 M7,10.5 L12,15.5 L17,10.5 M4,16 L4,20 L20,20 L20,16"
+                                                      StrokeThickness="2.2"
+                                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                      Width="16" Height="16" Stretch="Uniform">
+                                                    <Path.Style>
+                                                        <Style TargetType="Path">
+                                                            <Setter Property="Stroke" Value="#E67E22"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True">
+                                                                    <Setter Property="Stroke" Value="White"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </Path.Style>
+                                                </Path>
+                                                <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="9"
+                                                           Margin="5,0,0,0" VerticalAlignment="Center">
+                                                    <TextBlock.Style>
+                                                        <Style TargetType="TextBlock">
+                                                            <Setter Property="Foreground" Value="#E67E22"/>
+                                                            <Style.Triggers>
+                                                                <DataTrigger Binding="{Binding RelativeSource={RelativeSource AncestorType=DataGridRow}, Path=IsSelected}" Value="True">
+                                                                    <Setter Property="Foreground" Value="White"/>
+                                                                </DataTrigger>
+                                                            </Style.Triggers>
+                                                        </Style>
+                                                    </TextBlock.Style>
+                                                </TextBlock>
+                                            </StackPanel>
+
+                                            <Button.ContextMenu>
+                                                <ContextMenu>
+                                                    <MenuItem Header="Factura" Tag="{Binding IdVenta}" Click="BtnVerFactura_Click">
+                                                        <MenuItem.Icon>
+                                                            <TextBlock Text="&#xE896;" FontFamily="Segoe MDL2 Assets" Foreground="#E67E22"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                    <MenuItem Header="Nota de crédito" Tag="{Binding IdVenta}" Click="BtnVerNotaCredito_Click">
+                                                        <MenuItem.Icon>
+                                                            <TextBlock Text="&#xE8A5;" FontFamily="Segoe MDL2 Assets" Foreground="#3182CE"/>
+                                                        </MenuItem.Icon>
+                                                    </MenuItem>
+                                                </ContextMenu>
+                                            </Button.ContextMenu>
+                                        </Button>
+
+                                    </Grid>
                                 </DataTemplate>
                             </DataGridTemplateColumn.CellTemplate>
                         </DataGridTemplateColumn>
