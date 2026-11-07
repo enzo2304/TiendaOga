@@ -27,6 +27,9 @@ namespace TiendaOga.Vistas
             var f = _nc.Venta;
 
             txtComercio.Text = DatosEmisor.Nombre;
+            txtDireccion.Text = DatosEmisor.LineaDireccion;
+            txtTelefono.Text = DatosEmisor.LineaTelefono;
+            txtEmail.Text = DatosEmisor.Email;
             txtNumeroNC.Text = _nc.NumeroNC;
 
             txtDia.Text = _nc.FechaAnulacion.ToString("dd");

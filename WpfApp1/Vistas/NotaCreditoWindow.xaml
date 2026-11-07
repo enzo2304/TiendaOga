@@ -13,7 +13,7 @@
                 <StackPanel>
 
                     <!-- Encabezado -->
-                    <Grid Height="115">
+                    <Grid Height="135">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="5*"/>
                             <ColumnDefinition Width="90"/>
@@ -23,6 +23,9 @@
                         <StackPanel Grid.Column="0" Margin="14">
                             <TextBlock x:Name="txtComercio" FontSize="24" FontWeight="Bold"/>
                             <TextBlock Text="Nota de crédito por anulación de venta" FontSize="10" Margin="0,2,0,0"/>
+                            <TextBlock x:Name="txtDireccion" FontSize="10" Margin="0,4,0,0"/>
+                            <TextBlock x:Name="txtTelefono" FontSize="10"/>
+                            <TextBlock x:Name="txtEmail" FontSize="10"/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" HorizontalAlignment="Center">

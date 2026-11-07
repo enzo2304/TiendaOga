@@ -33,6 +33,11 @@ namespace TiendaOga.Vistas
             txtSubtitulo.Text = DatosEmisor.Subtitulo;
             txtPie.Text = DatosEmisor.Pie;
 
+            // Datos del comercio
+            txtDireccion.Text = DatosEmisor.LineaDireccion;
+            txtTelefono.Text = DatosEmisor.LineaTelefono;
+            txtEmail.Text = DatosEmisor.Email;
+
             txtNumero.Text = _factura.NumeroVenta;
             txtFecha.Text = _factura.FechaVenta.ToString("dd/MM/yyyy HH:mm");
             txtCliente.Text = _factura.NombreCliente;
@@ -47,8 +52,6 @@ namespace TiendaOga.Vistas
                 Precio = FormatoTicket.Moneda(i.PrecioUnitario),
                 Subtotal = FormatoTicket.Moneda(i.SubTotal)
             }).ToList();
-
-          
         }
 
         private void BtnImprimir_Click(object sender, RoutedEventArgs e)

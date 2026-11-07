@@ -11,6 +11,16 @@ namespace TiendaOga.Negocio
         public const string Nombre = "TIENDA OGA";
         public const string Subtitulo = "Comprobante de venta";
         public const string Pie = "¡Gracias por su compra!";
+
+        // Datos del comercio (ficticios, para el comprobante)
+        public const string Direccion = "Junín 1234";
+        public const string Ciudad = "Corrientes Capital";
+        public const string Telefono = "(0379) 442-1234";
+        public const string Email = "ventas@tiendaoga.com";
+
+        // Líneas listas para mostrar bajo el nombre del comercio
+        public static string LineaDireccion => Direccion + " - " + Ciudad;
+        public static string LineaTelefono => "Tel: " + Telefono;
     }
 
     public static class FormatoTicket
@@ -39,6 +49,12 @@ namespace TiendaOga.Negocio
                     {
                         col.Item().AlignCenter().Text(DatosEmisor.Nombre).FontSize(14).Bold();
                         col.Item().AlignCenter().Text(DatosEmisor.Subtitulo).FontSize(7);
+
+                        // Datos del comercio
+                        col.Item().AlignCenter().Text(DatosEmisor.LineaDireccion).FontSize(7);
+                        col.Item().AlignCenter().Text(DatosEmisor.LineaTelefono).FontSize(7);
+                        col.Item().AlignCenter().Text(DatosEmisor.Email).FontSize(7);
+
                         col.Item().Text(Guiones);
 
                         Fila(col, "N° Venta:", f.NumeroVenta);
@@ -47,7 +63,7 @@ namespace TiendaOga.Negocio
                         Fila(col, "Vendedor:", f.Vendedor);
                         Fila(col, "Pago:", string.Join(", ", f.Pagos.ConvertAll(p => p.TipoPago)));
 
-                        
+
                         col.Item().Text(Guiones);
 
                         col.Item().Table(t =>

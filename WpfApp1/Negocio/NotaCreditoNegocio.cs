@@ -64,12 +64,15 @@ namespace TiendaOga.Negocio
                     page.Content().Border(1).BorderColor(ColorLinea).Column(col =>
                     {
                         // ---------- Encabezado ----------
-                        col.Item().BorderBottom(1).BorderColor(ColorLinea).Height(105).Row(r =>
+                        col.Item().BorderBottom(1).BorderColor(ColorLinea).Height(125).Row(r =>
                         {
                             r.RelativeItem(5).Padding(14).Column(c =>
                             {
                                 c.Item().Text(DatosEmisor.Nombre).FontSize(24).Bold();
                                 c.Item().Text("Nota de crédito por anulación de venta").FontSize(9);
+                                c.Item().PaddingTop(3).Text(DatosEmisor.LineaDireccion).FontSize(8);
+                                c.Item().Text(DatosEmisor.LineaTelefono).FontSize(8);
+                                c.Item().Text(DatosEmisor.Email).FontSize(8);
                             });
 
                             r.ConstantItem(90).PaddingTop(0).Column(c =>

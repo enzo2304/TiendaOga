@@ -17,6 +17,11 @@
                     <TextBlock x:Name="txtComercio" FontSize="18" FontWeight="Bold" TextAlignment="Center"/>
                     <TextBlock x:Name="txtSubtitulo" FontSize="10" TextAlignment="Center"/>
 
+                    <!-- Datos del comercio -->
+                    <TextBlock x:Name="txtDireccion" FontSize="10" TextAlignment="Center" Margin="0,3,0,0"/>
+                    <TextBlock x:Name="txtTelefono" FontSize="10" TextAlignment="Center"/>
+                    <TextBlock x:Name="txtEmail" FontSize="10" TextAlignment="Center"/>
+
                     <Line X1="0" X2="1" Stretch="Fill" Stroke="#555" StrokeThickness="1" StrokeDashArray="3 3" Margin="0,8"/>
 
                     <Grid>
