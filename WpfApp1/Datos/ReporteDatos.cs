@@ -10,15 +10,15 @@ namespace TiendaOga.Datos
     {
         private readonly ConexionBD _bd = new ConexionBD();
 
-        public ReporteGeneralDTO ObtenerReporteGeneral(int mes, int anio)
+        public ReporteGeneralDTO ObtenerReporteGeneral(DateTime desde, DateTime hasta)
         {
             var dto = new ReporteGeneralDTO();
             using (var cn = _bd.ObtenerConexion())
             using (var cmd = new SqlCommand("dbo.sp_reporte_productos_mas_vendidos", cn))
             {
                 cmd.CommandType = CommandType.StoredProcedure;
-                cmd.Parameters.AddWithValue("@mes", mes);
-                cmd.Parameters.AddWithValue("@anio", anio);
+                cmd.Parameters.Add("@desde", SqlDbType.Date).Value = desde;
+                cmd.Parameters.Add("@hasta", SqlDbType.Date).Value = hasta;
 
                 cn.Open();
                 using (var rd = cmd.ExecuteReader())

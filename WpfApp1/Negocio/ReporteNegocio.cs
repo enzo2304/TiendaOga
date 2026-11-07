@@ -20,9 +20,13 @@ namespace TiendaOga.Negocio
             return true;
         }
 
-        public static ReporteGeneralDTO ObtenerReporteGeneral(int mes, int anio)
+        // Ahora recibe un rango de fechas (un mes completo o un día puntual)
+        public static ReporteGeneralDTO ObtenerReporteGeneral(DateTime desde, DateTime hasta)
         {
-            return _datos.ObtenerReporteGeneral(mes, anio);
+            if (desde.Date > hasta.Date)
+                throw new ArgumentException("La fecha 'Desde' no puede ser posterior a la fecha 'Hasta'.");
+
+            return _datos.ObtenerReporteGeneral(desde.Date, hasta.Date);
         }
     }
 }

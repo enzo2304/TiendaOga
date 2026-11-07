@@ -29,31 +29,60 @@ namespace TiendaOga.Vistas
 
         private void ReporteProductos_Loaded(object sender, RoutedEventArgs e)
         {
-            int anioActual = DateTime.Now.Year;
-            for (int i = 2024; i <= anioActual; i++) cmbAnio.Items.Add(i);
-            cmbAnio.SelectedItem = anioActual;
-            cmbMes.SelectedIndex = DateTime.Now.Month - 1;
+            // Fechas por defecto: mes actual (igual que el reporte de vendedores)
+            DateTime hoy = DateTime.Today;
+            dpDesde.SelectedDate = new DateTime(hoy.Year, hoy.Month, 1);
+            dpHasta.SelectedDate = new DateTime(hoy.Year, hoy.Month, DateTime.DaysInMonth(hoy.Year, hoy.Month));
 
             _cargandoInicial = false;
-            CargarReporte();
+            CargarReporte(false);
         }
 
-        private void Filtro_SelectionChanged(object sender, SelectionChangedEventArgs e) { CargarReporte(); }
-        private void BtnGenerar_Click(object sender, RoutedEventArgs e) { CargarReporte(); }
+        // Cambió alguna fecha: recarga solo (sin molestar con avisos mientras se está eligiendo)
+        private void FiltroFecha_SelectedDateChanged(object sender, SelectionChangedEventArgs e) { CargarReporte(false); }
+
+        // El botón sí avisa si el rango no es válido
+        private void BtnGenerar_Click(object sender, RoutedEventArgs e) { CargarReporte(true); }
 
         private void BtnRestablecer_Click(object sender, RoutedEventArgs e)
         {
             if (_datosActuales != null) ActualizarGraficosDinamicos(null); // Null vuelve a mostrar el General
         }
 
-        private void CargarReporte()
+        private void CargarReporte(bool mostrarAvisos)
         {
-            if (_cargandoInicial || cmbMes.SelectedItem == null || cmbAnio.SelectedItem == null) return;
+            if (_cargandoInicial) return;
 
-            int mes = Convert.ToInt32(((ComboBoxItem)cmbMes.SelectedItem).Tag);
-            int anio = Convert.ToInt32(cmbAnio.SelectedItem);
+            if (!dpDesde.SelectedDate.HasValue || !dpHasta.SelectedDate.HasValue)
+            {
+                if (mostrarAvisos)
+                    MessageBox.Show("Seleccioná las fechas 'Desde' y 'Hasta'.", "Fechas incompletas",
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
 
-            _datosActuales = ReporteNegocio.ObtenerReporteGeneral(mes, anio);
+            DateTime desde = dpDesde.SelectedDate.Value;
+            DateTime hasta = dpHasta.SelectedDate.Value;
+
+            if (desde.Date > hasta.Date)
+            {
+                if (mostrarAvisos)
+                    MessageBox.Show("La fecha 'Desde' no puede ser posterior a la fecha 'Hasta'.", "Rango inválido",
+                                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                return;
+            }
+
+            try
+            {
+                _datosActuales = ReporteNegocio.ObtenerReporteGeneral(desde, hasta);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Error al generar el reporte: " + ex.Message, "Error",
+                                MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
             dgReporte.ItemsSource = _datosActuales.Productos;
 
             // 1. Gráfico Top Unidades
