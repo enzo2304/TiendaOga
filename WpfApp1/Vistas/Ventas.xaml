@@ -49,11 +49,12 @@
                             </Grid.ColumnDefinitions>
 
                             <ComboBox x:Name="cmbCliente"
-                  Grid.Column="0"
-                  Height="30"
-                  Foreground="#2D3748"
-                  FontSize="13"
-                  IsEditable="False">
+                                  Grid.Column="0"
+                                  Height="30"
+                                  Foreground="#2D3748"
+                                  FontSize="13"
+                                  IsEditable="False"
+                                  ToolTipService.ShowOnDisabled="True">
                                 <ComboBox.ItemTemplate>
                                     <DataTemplate>
                                         <TextBlock Text="{Binding NombreDisplay}"

@@ -80,6 +80,21 @@ namespace TiendaOga.Vistas
             }
         }
 
+        // Mientras haya una venta en curso (ítems cargados) no se puede cambiar de cliente
+        private void ActualizarBloqueoCliente()
+        {
+            if (cmbCliente == null || btnNuevoClienteRapido == null) return;
+
+            bool ventaEnCurso = _detalleVenta.Count > 0;
+
+            cmbCliente.IsEnabled = !ventaEnCurso;
+            btnNuevoClienteRapido.IsEnabled = !ventaEnCurso;   // el "+" selecciona al cliente nuevo, así que también se bloquea
+
+            cmbCliente.ToolTip = ventaEnCurso
+                ? "No se puede cambiar de cliente con una venta en curso. Guardá o cancelá la venta."
+                : null;
+        }
+
         private void CargarListaProductos()
         {
             cmbProductoBusqueda.ItemsSource = null;
@@ -202,6 +217,14 @@ namespace TiendaOga.Vistas
 
         private void BtnAgregar_Click(object sender, RoutedEventArgs e)
         {
+            if (!(cmbCliente.SelectedItem is ClienteItem))
+            {
+                MessageBox.Show("Seleccioná primero el cliente de la venta.", "Cliente requerido",
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+                cmbCliente.Focus();
+                return;
+            }
+
             var productoSeleccionado = cmbProductoBusqueda.SelectedItem as ProductoRow;
 
             if (productoSeleccionado == null && !string.IsNullOrWhiteSpace(txtCodigoProducto.Text))
@@ -290,6 +313,7 @@ namespace TiendaOga.Vistas
             decimal total = VentaNegocio.CalcularTotal(_detalleVenta);
             txtPrecioTotal.Text = total.ToString("C2", CultureInfo.GetCultureInfo("es-AR"));
             ActualizarEstadoPago();
+            ActualizarBloqueoCliente();
         }
 
         private void CmbTipoPago_SelectionChanged(object sender, SelectionChangedEventArgs e)
