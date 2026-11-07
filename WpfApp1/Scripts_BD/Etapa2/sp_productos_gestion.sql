@@ -80,7 +80,7 @@ GO
    ========================================================================= */
 CREATE OR ALTER PROCEDURE dbo.sp_producto_guardar_o_modificar
     @id_producto        INT = NULL, -- NULL si es Nuevo, número si es Modificar
-    @nombre   VARCHAR(30),
+    @nombre             VARCHAR(30),
     @precio_costo       DECIMAL(12,2),
     @precio_ventas      DECIMAL(12,2),
     @stock              INT,
@@ -94,7 +94,8 @@ CREATE OR ALTER PROCEDURE dbo.sp_producto_guardar_o_modificar
     @marca              VARCHAR(50) = NULL,
     @modelo             VARCHAR(50) = NULL,
     @garantia_meses     INT = NULL,
-    @voltaje  VARCHAR(20) = NULL
+    @voltaje            VARCHAR(20) = NULL,
+    @stock_original     INT = NULL -- NUEVO PARÁMETRO
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -132,13 +133,15 @@ BEGIN
         END
         ELSE
         BEGIN
-            -- UPDATE en producto base
+            -- UPDATE en producto base con prevención de sobreescritura de stock
             UPDATE dbo.producto
             SET id_categoria  = @id_cat,
                 nombre        = @nombre,
                 precio_costo  = @precio_costo,
                 precio_ventas = @precio_ventas,
-                stock         = @stock
+                stock         = CASE WHEN @stock_original IS NULL 
+                                     THEN @stock 
+                                     ELSE stock + (@stock - @stock_original) END
             WHERE id_producto = @id_producto;
         END
 
@@ -193,7 +196,6 @@ BEGIN
     END CATCH
 END;
 GO
-
 /* =========================================================================
    4. BAJA LÓGICA / REACTIVACIÓN DE PRODUCTO
    ========================================================================= */

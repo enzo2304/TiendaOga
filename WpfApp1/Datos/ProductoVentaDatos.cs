@@ -112,7 +112,8 @@ namespace TiendaOga.Datos
             string marca = null,
             string modelo = null,
             int? garantia = null,
-            string voltaje = null)
+            string voltaje = null,
+            int? stockOriginal = null)
         {
             using (var cn = _bd.ObtenerConexion())
             using (var cmd = new SqlCommand("dbo.sp_producto_guardar_o_modificar", cn))
@@ -137,7 +138,7 @@ namespace TiendaOga.Datos
                 cmd.Parameters.AddWithValue("@modelo", (object)modelo ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@garantia_meses", (object)garantia ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@voltaje", (object)voltaje ?? DBNull.Value);
-
+                cmd.Parameters.AddWithValue("@stock_original", (object)stockOriginal ?? DBNull.Value);
                 cn.Open();
                 return Convert.ToInt32(cmd.ExecuteScalar());
             }

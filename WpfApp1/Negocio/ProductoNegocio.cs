@@ -171,7 +171,8 @@ namespace TiendaOga.Negocio
             string marca = null,
             string modelo = null,
             int? garantia = null,
-            string voltaje = null)
+            string voltaje = null,
+            int? stockOriginal = null)
         {
             _datos.GuardarOModificar(
                 idProducto,
@@ -187,7 +188,8 @@ namespace TiendaOga.Negocio
                 marca,
                 modelo,
                 garantia,
-                voltaje);
+                voltaje,
+                stockOriginal);
         }
 
         // Cambia el estado activo en SQL Server

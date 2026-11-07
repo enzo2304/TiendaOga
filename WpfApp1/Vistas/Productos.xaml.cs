@@ -12,6 +12,7 @@ namespace TiendaOga.Vistas
 {
     public partial class Productos : Page
     {
+        private int? _stockOriginal;
         public Productos()
         {
             InitializeComponent();
@@ -130,7 +131,7 @@ namespace TiendaOga.Vistas
             txtPrecioCosto.Text = producto.PrecioCosto.ToString("0.00", CultureInfo.InvariantCulture);
             txtPrecioVenta.Text = producto.PrecioVentas.ToString("0.00", CultureInfo.InvariantCulture);
             txtStock.Text = producto.Stock.ToString();
-
+            _stockOriginal = producto.Stock;
             if (string.Equals(producto.TipoProducto, "Hogar", StringComparison.OrdinalIgnoreCase))
             {
                 rbHogar.IsChecked = true;
@@ -223,7 +224,8 @@ namespace TiendaOga.Vistas
                     txtMarca.Text.Trim(),
                     txtModelo.Text.Trim(),
                     garantia,
-                    txtVoltaje.Text.Trim());
+                    txtVoltaje.Text.Trim(),
+                    _stockOriginal);
 
                 string mensajeExito = idProducto.HasValue
                     ? "¡Producto modificado correctamente en la base de datos!"
@@ -241,6 +243,13 @@ namespace TiendaOga.Vistas
                 {
                     MessageBox.Show("Ya existe un producto registrado con ese nombre. Por favor, ingrese un nombre distinto.",
                                     "Nombre Duplicado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                }
+                else if (ex.Number == 547 && ex.Message.Contains("ck_producto_stock"))
+                {
+                    MessageBox.Show("Mientras editabas se vendieron unidades y el stock resultante sería negativo.\n" +
+                                    "Cerrá el formulario y volvé a abrir el producto.",
+                                    "Stock modificado", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
                 }
                 else
                 {
