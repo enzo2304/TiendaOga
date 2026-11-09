@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Threading;
 using Microsoft.Data.SqlClient;
 using TiendaOga.Negocio;
@@ -19,6 +20,7 @@ namespace TiendaOga.Vistas
         public Window1(string usuario, string rol)
         {
             InitializeComponent();
+            PreviewKeyDown += Window1_PreviewKeyDown;   // F1 = ayuda
             UsuarioActual = usuario;
             RolActual = rol;
             IdUsuarioActual = UsuarioNegocio.ObtenerIdPorLogin(usuario);
@@ -154,6 +156,49 @@ namespace TiendaOga.Vistas
             MainWindow login = new MainWindow();
             login.Show();
             this.Close();
+        }
+
+        // ------------------------------------------------------------
+        // AYUDA CONTEXTUAL (recorrido guiado)
+        // ------------------------------------------------------------
+        private void btnAyuda_Click(object sender, RoutedEventArgs e)
+        {
+            IniciarAyuda();
+        }
+
+        private void Window1_PreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F1)
+            {
+                IniciarAyuda();
+                e.Handled = true;
+            }
+        }
+
+        // Toma la pantalla que está cargada en el Frame y recorre sus pasos anotados.
+        // Si esa pantalla no tiene guía propia, muestra la guía general de la ventana.
+        public void IniciarAyuda()
+        {
+            if (guiaOverlay.EstaActiva)
+            {
+                guiaOverlay.Cerrar();
+                return;
+            }
+
+            var pagina = ContenedorPrincipal.Content as System.Windows.Controls.Page;
+            var pasos = Guia.ObtenerPasos(pagina, pagina != null ? pagina.Title : null);
+
+            if (pasos.Count == 0)
+                pasos = Guia.ObtenerPasos(this, "Bienvenida");
+
+            if (pasos.Count == 0)
+            {
+                MessageBox.Show("Todavía no hay ayuda disponible para esta pantalla.", "Ayuda",
+                                MessageBoxButton.OK, MessageBoxImage.Information);
+                return;
+            }
+
+            guiaOverlay.Iniciar(pasos);
         }
 
         private void btnVentas_Click(object sender, RoutedEventArgs e)

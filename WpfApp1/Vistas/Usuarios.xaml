@@ -4,6 +4,8 @@
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:TiendaOga.Vistas"
+      xmlns:ayuda="clr-namespace:TiendaOga.Vistas"
+      ayuda:Guia.Capitulo="Usuarios y Permisos"
       mc:Ignorable="d" 
       d:DesignHeight="600" d:DesignWidth="900"
       Title="Usuarios"
@@ -17,7 +19,9 @@
                 <StackPanel>
                     <TextBlock x:Name="lblTituloFormulario" Text="Alta de Usuario" Foreground="#2D3748" FontSize="16" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
-                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,0,4"
+                                ayuda:Guia.Orden="1" ayuda:Guia.Titulo="Modo de operación"
+                                ayuda:Guia.Texto="Elegí qué querés hacer: dar de alta un usuario nuevo, modificar uno existente o darlo de baja. Para modificar o dar de baja, primero seleccioná al usuario en la lista de abajo.">
                         <RadioButton x:Name="rbAlta" GroupName="ModoOperacion" Content="Alta" IsChecked="True" Checked="ModoOperacion_Checked" Margin="0,0,20,0" VerticalAlignment="Center"/>
                         <RadioButton x:Name="rbModificar" GroupName="ModoOperacion" Content="Modificar" Checked="ModoOperacion_Checked" Margin="0,0,20,0" VerticalAlignment="Center"/>
                         <RadioButton x:Name="rbBaja" GroupName="ModoOperacion" Content="Dar de Baja" Checked="ModoOperacion_Checked" VerticalAlignment="Center"/>
@@ -37,7 +41,9 @@
                                      Padding="8,0" VerticalContentAlignment="Center" FontSize="13"
                                      PreviewTextInput="SoloLetras_PreviewTextInput"
                                      DataObject.Pasting="SoloLetras_Pasting"
-                                     MaxLength="100"/>
+                                     MaxLength="100"
+                                     ayuda:Guia.Orden="2" ayuda:Guia.Titulo="Nombre"
+                                     ayuda:Guia.Texto="Nombre de la persona. Solo se aceptan letras."/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
@@ -46,7 +52,9 @@
                                      Padding="8,0" VerticalContentAlignment="Center" FontSize="13"
                                      PreviewTextInput="SoloLetras_PreviewTextInput"
                                      DataObject.Pasting="SoloLetras_Pasting"
-                                     MaxLength="100"/>
+                                     MaxLength="100"
+                                     ayuda:Guia.Orden="3" ayuda:Guia.Titulo="Apellido"
+                                     ayuda:Guia.Texto="Apellido de la persona. Solo se aceptan letras."/>
                         </StackPanel>
                     </Grid>
 
@@ -59,7 +67,9 @@
 
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Usuario" Foreground="#4A5568" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                            <TextBox x:Name="txtUsuario" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Padding="8,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            <TextBox x:Name="txtUsuario" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Padding="8,0" VerticalContentAlignment="Center" FontSize="13"
+                                     ayuda:Guia.Orden="4" ayuda:Guia.Titulo="Usuario"
+                                     ayuda:Guia.Texto="Nombre con el que la persona va a iniciar sesión en el sistema."/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
@@ -67,7 +77,9 @@
                             <Grid>
                                 <PasswordBox x:Name="txtPassword" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1"
                                              Padding="8,0,32,0" VerticalContentAlignment="Center" FontSize="13"
-                                             PasswordChanged="TxtPassword_PasswordChanged"/>
+                                             PasswordChanged="TxtPassword_PasswordChanged"
+                                             ayuda:Guia.Orden="5" ayuda:Guia.Titulo="Contraseña"
+                                             ayuda:Guia.Texto="Contraseña con la que va a ingresar. Para verla mientras la escribís, usá el ojo que está a la derecha."/>
                                 <TextBox x:Name="txtPasswordVisible" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1"
                                          Padding="8,0,32,0" VerticalContentAlignment="Center" FontSize="13"
                                          Visibility="Collapsed"
@@ -75,7 +87,9 @@
                                 <ToggleButton x:Name="btnMostrarPassword" HorizontalAlignment="Right" VerticalAlignment="Center"
                                               Width="28" Height="26" Margin="0,0,4,0" Background="Transparent" BorderThickness="0"
                                               Content="👁" FontSize="14" Cursor="Hand"
-                                              Checked="BtnMostrarPassword_Checked" Unchecked="BtnMostrarPassword_Unchecked"/>
+                                              Checked="BtnMostrarPassword_Checked" Unchecked="BtnMostrarPassword_Unchecked"
+                                              ayuda:Guia.Orden="6" ayuda:Guia.Titulo="Mostrar contraseña"
+                                              ayuda:Guia.Texto="Muestra u oculta lo que escribiste en la contraseña, para que verifiques que está bien."/>
                             </Grid>
                         </StackPanel>
                     </Grid>
@@ -89,24 +103,32 @@
 
                         <StackPanel Grid.Column="0">
                             <TextBlock Text="Email" Foreground="#4A5568" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
-                            <TextBox x:Name="txtEmail" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Padding="8,0" VerticalContentAlignment="Center" FontSize="13"/>
+                            <TextBox x:Name="txtEmail" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1" Padding="8,0" VerticalContentAlignment="Center" FontSize="13"
+                                     ayuda:Guia.Orden="7" ayuda:Guia.Titulo="Email"
+                                     ayuda:Guia.Texto="Correo electrónico de la persona."/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="2">
                             <TextBlock Text="Perfil" Foreground="#4A5568" FontSize="12" FontWeight="SemiBold" Margin="0,0,0,6"/>
                             <ComboBox x:Name="cmbPerfil" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1"
                                       VerticalContentAlignment="Center" FontSize="13"
-                                      DisplayMemberPath="NombrePerfil" SelectedValuePath="IdPerfil"/>
+                                      DisplayMemberPath="NombrePerfil" SelectedValuePath="IdPerfil"
+                                      ayuda:Guia.Orden="8" ayuda:Guia.Titulo="Perfil"
+                                      ayuda:Guia.Texto="El perfil define el rol del usuario y, con eso, a qué pantallas y acciones puede acceder."/>
                         </StackPanel>
                     </Grid>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                         <Button x:Name="btnLimpiar" Click="BtnLimpiar_Click" Content="Limpiar"
                                 Height="38" Width="100" Background="#FFFFFF" Foreground="#4A5568"
-                                BorderBrush="#CBD5E0" BorderThickness="1" Margin="0,0,10,0" Cursor="Hand"/>
+                                BorderBrush="#CBD5E0" BorderThickness="1" Margin="0,0,10,0" Cursor="Hand"
+                                ayuda:Guia.Orden="9" ayuda:Guia.Titulo="Limpiar"
+                                ayuda:Guia.Texto="Vacía el formulario para empezar de nuevo."/>
                         <Button x:Name="btnGuardar" Click="BtnGuardar_Click" Content="Registrar Usuario"
                                 Height="38" Width="160" Background="#FF6B00" Foreground="#FFFFFF"
-                                FontWeight="Bold" BorderThickness="0" Cursor="Hand"/>
+                                FontWeight="Bold" BorderThickness="0" Cursor="Hand"
+                                ayuda:Guia.Orden="10" ayuda:Guia.Titulo="Confirmar"
+                                ayuda:Guia.Texto="Ejecuta la operación elegida arriba: registrar, modificar o dar de baja al usuario. El texto del botón cambia según el modo."/>
                     </StackPanel>
                 </StackPanel>
             </Border>
@@ -120,7 +142,9 @@
                     <Grid Margin="0,0,0,12">
                         <TextBox x:Name="txtBuscarUsuario" Height="36" Background="#FAFAFA" BorderBrush="#CBD5E0" BorderThickness="1"
                                  Padding="30,0,8,0" VerticalContentAlignment="Center" FontSize="13"
-                                 TextChanged="TxtBuscarUsuario_TextChanged"/>
+                                 TextChanged="TxtBuscarUsuario_TextChanged"
+                                 ayuda:Guia.Orden="11" ayuda:Guia.Titulo="Buscar usuario"
+                                 ayuda:Guia.Texto="Escribí para filtrar la lista de usuarios registrados."/>
                         <TextBlock Text="🔍" FontSize="13" Foreground="#A0AEC0" VerticalAlignment="Center" Margin="8,0,0,0" IsHitTestVisible="False"/>
                         <TextBlock Text="Buscar usuario..." Foreground="#A0AEC0" FontSize="13" Margin="30,0,0,0"
                                    VerticalAlignment="Center" IsHitTestVisible="False">
@@ -146,7 +170,9 @@
           CanUserResizeRows="False"
           CanUserResizeColumns="False"
           CanUserReorderColumns="False"
-          HorizontalScrollBarVisibility="Disabled">
+          HorizontalScrollBarVisibility="Disabled"
+          ayuda:Guia.Orden="12" ayuda:Guia.Titulo="Usuarios registrados"
+          ayuda:Guia.Texto="Lista de usuarios con su perfil y su estado. Los usuarios dados de baja aparecen en rojo. Al seleccionar uno, sus datos pasan al formulario de arriba para modificarlo o darlo de baja. Si hay muchos usuarios, los botones de paginación de abajo permiten cambiar de página.">
 
                         <DataGrid.Resources>
                             <Style TargetType="DataGridColumnHeader">

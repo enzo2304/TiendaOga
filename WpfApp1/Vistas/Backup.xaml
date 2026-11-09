@@ -3,6 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:ayuda="clr-namespace:TiendaOga.Vistas"
+      ayuda:Guia.Capitulo="Backup"
       mc:Ignorable="d"
       Title="Backup"
       Background="#F4F5F7"
@@ -249,8 +251,12 @@
                         <TextBlock Text="Copia de Seguridad (Backup)" Style="{StaticResource SectionTitleStyle}"/>
 
                         <!-- Estado -->
-                        <TextBlock x:Name="txtUltimoBackup" Style="{StaticResource InfoTextStyle}" Text="Último respaldo exitoso: ..."/>
-                        <TextBlock x:Name="txtTamanoBD" Style="{StaticResource InfoTextStyle}" Text="Tamaño de la base de datos: ..."/>
+                        <TextBlock x:Name="txtUltimoBackup" Style="{StaticResource InfoTextStyle}" Text="Último respaldo exitoso: ..."
+                                   ayuda:Guia.Orden="1" ayuda:Guia.Titulo="Último respaldo"
+                                   ayuda:Guia.Texto="Muestra cuándo se hizo el último respaldo exitoso. Sirve para saber qué tan desactualizada está tu copia."/>
+                        <TextBlock x:Name="txtTamanoBD" Style="{StaticResource InfoTextStyle}" Text="Tamaño de la base de datos: ..."
+                                   ayuda:Guia.Orden="2" ayuda:Guia.Titulo="Tamaño de la base"
+                                   ayuda:Guia.Texto="Indica cuánto pesa la base de datos hoy. Te da una idea del espacio que va a ocupar la copia."/>
 
                         <!-- Origen -->
                         <TextBlock Text="Base de Datos Origen:" Style="{StaticResource FieldLabelStyle}" Margin="0,16,0,6"/>
@@ -260,7 +266,9 @@
                                 <ColumnDefinition Width="12"/>
                                 <ColumnDefinition Width="Auto"/>
                             </Grid.ColumnDefinitions>
-                            <TextBox x:Name="txtBaseOrigen" Grid.Column="0" Style="{StaticResource TextBoxStyle}" IsReadOnly="True"/>
+                            <TextBox x:Name="txtBaseOrigen" Grid.Column="0" Style="{StaticResource TextBoxStyle}" IsReadOnly="True"
+                                     ayuda:Guia.Orden="3" ayuda:Guia.Titulo="Base de datos de origen"
+                                     ayuda:Guia.Texto="Es la base de datos de la que se hace la copia. No se puede modificar. El indicador de la derecha muestra si hay conexión."/>
                             <Border x:Name="badgeEstado" Grid.Column="2" Background="#E5F6EA" CornerRadius="6" Padding="12,0" Height="38">
                                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
                                     <Ellipse x:Name="puntoEstado" Width="8" Height="8" Fill="#2F9E58" Margin="0,0,7,0"/>
@@ -280,19 +288,25 @@
                             <TextBox x:Name="txtCarpeta" Grid.Column="0" Style="{StaticResource TextBoxStyle}"
                                      IsReadOnly="True" ToolTip="Carpeta donde se guardará la copia de seguridad"/>
                             <Button x:Name="btnExaminar" Grid.Column="2" Content="Examinar..."
-                                    Style="{StaticResource ButtonSecondaryStyle}" Click="btnExaminar_Click"/>
+                                    Style="{StaticResource ButtonSecondaryStyle}" Click="btnExaminar_Click"
+                                    ayuda:Guia.Orden="4" ayuda:Guia.Titulo="Carpeta de destino"
+                                    ayuda:Guia.Texto="Elegí la carpeta donde se va a guardar la copia. La ruta elegida aparece en el campo de la izquierda."/>
                         </Grid>
 
                         <!-- Nombre sugerido -->
                         <TextBlock Text="Nombre de Archivo Sugerido:" Style="{StaticResource FieldLabelStyle}"/>
-                        <TextBox x:Name="txtNombreArchivo" Style="{StaticResource TextBoxStyle}"/>
+                        <TextBox x:Name="txtNombreArchivo" Style="{StaticResource TextBoxStyle}"
+                                 ayuda:Guia.Orden="5" ayuda:Guia.Titulo="Nombre del archivo"
+                                 ayuda:Guia.Texto="Nombre con el que se guarda la copia. Ya viene sugerido con la fecha y la hora, y se genera un archivo .bak de SQL Server. Podés cambiarlo si querés."/>
                         <TextBlock Text="Incluye la fecha y hora automáticamente. Se genera un archivo .bak de SQL Server."
                                    Style="{StaticResource HelperTextStyle}" Margin="0,6,0,24"/>
 
                         <!-- Acción -->
                         <Button x:Name="btnGenerarBackup" Content="Generar Copia de Seguridad"
                                 Style="{StaticResource ButtonPrimaryStyle}" HorizontalAlignment="Right"
-                                Click="btnGenerarBackup_Click"/>
+                                Click="btnGenerarBackup_Click"
+                                ayuda:Guia.Orden="6" ayuda:Guia.Titulo="Generar copia de seguridad"
+                                ayuda:Guia.Texto="Crea la copia en la carpeta elegida. Mientras se procesa aparece un aviso de espera: no cierres la aplicación hasta que termine."/>
                     </StackPanel>
                 </Border>
 
@@ -302,7 +316,9 @@
                         <TextBlock Text="Restaurar Sistema (Restore)" Style="{StaticResource SectionTitleStyle}"/>
 
                         <!-- Advertencias -->
-                        <Border Background="#FFF4E0" BorderBrush="#F5D9A0" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,8">
+                        <Border Background="#FFF4E0" BorderBrush="#F5D9A0" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,8"
+                                ayuda:Guia.Orden="7" ayuda:Guia.Titulo="Advertencia antes de restaurar"
+                                ayuda:Guia.Texto="Leé esto antes de seguir: restaurar una copia reemplaza los datos actuales de ventas e inventario y no se puede deshacer. Además, se desconecta temporalmente a los demás usuarios y terminales de venta. Conviene hacer un backup antes.">
                             <TextBlock TextWrapping="Wrap" FontSize="12.5" Foreground="#7A4B00">
                                 <Run Text="⚠ ¡Atención!" FontWeight="Bold"/>
                                 <Run Text=" Restaurar una copia sobrescribirá los datos actuales de ventas e inventario de forma irreversible. Se recomienda realizar un backup previo."/>
@@ -324,13 +340,17 @@
                             <TextBox x:Name="txtArchivoRestore" Grid.Column="0" Style="{StaticResource TextBoxStyle}"
                                      IsReadOnly="True" ToolTip="Elegí un archivo de la lista o buscalo manualmente"/>
                             <Button x:Name="btnBuscarArchivo" Grid.Column="2" Content="Buscar archivo de respaldo..."
-                                    Style="{StaticResource ButtonSecondaryStyle}" Click="btnBuscarArchivo_Click"/>
+                                    Style="{StaticResource ButtonSecondaryStyle}" Click="btnBuscarArchivo_Click"
+                                    ayuda:Guia.Orden="8" ayuda:Guia.Titulo="Buscar archivo de respaldo"
+                                    ayuda:Guia.Texto="Si el respaldo que querés usar no está en la lista de abajo, buscalo manualmente en tu equipo. El archivo elegido aparece en el campo de la izquierda."/>
                         </Grid>
 
                         <!-- Historial -->
                         <TextBlock Text="Respaldos disponibles en la carpeta de destino:" Style="{StaticResource FieldLabelStyle}"/>
                         <DataGrid x:Name="dgHistorial" Style="{StaticResource GridStyle}" MaxHeight="240"
-                                  SelectionChanged="dgHistorial_SelectionChanged" Margin="0,0,0,6">
+                                  SelectionChanged="dgHistorial_SelectionChanged" Margin="0,0,0,6"
+                                  ayuda:Guia.Orden="9" ayuda:Guia.Titulo="Respaldos disponibles"
+                                  ayuda:Guia.Texto="Lista los archivos .bak que hay en la carpeta de destino, con su fecha de creación y su tamaño. Al seleccionar uno queda elegido para restaurar.">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Nombre del Archivo" Binding="{Binding Nombre}" Width="*"/>
                                 <DataGridTextColumn Header="Fecha de creación" Binding="{Binding Fecha}" Width="160"/>
@@ -343,7 +363,9 @@
                         <!-- Acción peligrosa -->
                         <Button x:Name="btnRestaurar" Content="Restaurar Sistema" IsEnabled="False"
                                 Style="{StaticResource ButtonDangerStyle}" HorizontalAlignment="Right" Margin="0,22,0,0"
-                                Click="btnRestaurar_Click"/>
+                                Click="btnRestaurar_Click"
+                                ayuda:Guia.Orden="10" ayuda:Guia.Titulo="Restaurar sistema"
+                                ayuda:Guia.Texto="Se habilita cuando elegís un archivo de respaldo. Al presionarlo se abre una ventana para confirmar, así que todavía no se restaura nada."/>
                     </StackPanel>
                 </Border>
 
@@ -353,7 +375,9 @@
                         <TextBlock Text="Registro de Auditoría" Style="{StaticResource SectionTitleStyle}" Margin="0,0,0,4"/>
                         <TextBlock Text="Últimas operaciones de mantenimiento realizadas sobre la base de datos."
                                    Style="{StaticResource HelperTextStyle}" Margin="0,0,0,12"/>
-                        <DataGrid x:Name="dgAuditoria" Style="{StaticResource GridStyle}" MaxHeight="260" SelectionMode="Single">
+                        <DataGrid x:Name="dgAuditoria" Style="{StaticResource GridStyle}" MaxHeight="260" SelectionMode="Single"
+                                  ayuda:Guia.Orden="11" ayuda:Guia.Titulo="Registro de auditoría"
+                                  ayuda:Guia.Texto="Deja constancia de las últimas operaciones de mantenimiento: cuándo se hicieron, quién las hizo, de qué tipo fueron y cómo terminaron.">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Fecha y hora" Binding="{Binding Fecha}" Width="130"/>
                                 <DataGridTextColumn Header="Usuario" Binding="{Binding Usuario}" Width="140"/>
@@ -396,16 +420,24 @@
                     <TextBlock x:Name="txtModalConexiones" TextWrapping="Wrap" FontSize="12.5" Foreground="#8E1B13" FontWeight="SemiBold" Margin="0,0,0,12"/>
 
                     <CheckBox x:Name="chkBackupPrevio" IsChecked="True" FontSize="12.5" Foreground="#333333" Margin="0,0,0,16"
-                              Content="Crear un backup de seguridad antes de restaurar (recomendado)"/>
+                              Content="Crear un backup de seguridad antes de restaurar (recomendado)"
+                              ayuda:Guia.Orden="12" ayuda:Guia.Titulo="Backup previo"
+                              ayuda:Guia.Texto="Si lo dejás tildado, el sistema hace una copia de seguridad antes de restaurar. Es lo recomendado, por si necesitás volver atrás."/>
 
                     <TextBlock Text="Para continuar, escribí la palabra CONFIRMAR:" Style="{StaticResource FieldLabelStyle}"/>
-                    <TextBox x:Name="txtConfirmar" Style="{StaticResource TextBoxStyle}" TextChanged="txtConfirmar_TextChanged"/>
+                    <TextBox x:Name="txtConfirmar" Style="{StaticResource TextBoxStyle}" TextChanged="txtConfirmar_TextChanged"
+                             ayuda:Guia.Orden="13" ayuda:Guia.Titulo="Confirmación"
+                             ayuda:Guia.Texto="Escribí la palabra CONFIRMAR para habilitar el botón de restaurar. Es una medida de seguridad para evitar restauraciones por error."/>
 
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,22,0,0">
                         <Button x:Name="btnCancelarRestore" Content="Cancelar" Style="{StaticResource ButtonSecondaryStyle}"
-                                Margin="0,0,10,0" Click="btnCancelarRestore_Click"/>
+                                Margin="0,0,10,0" Click="btnCancelarRestore_Click"
+                                ayuda:Guia.Orden="15" ayuda:Guia.Titulo="Cancelar"
+                                ayuda:Guia.Texto="Cierra esta ventana sin restaurar nada. Los datos actuales quedan como estaban."/>
                         <Button x:Name="btnConfirmarRestore" Content="Restaurar Sistema" IsEnabled="False"
-                                Style="{StaticResource ButtonDangerStyle}" Click="btnConfirmarRestore_Click"/>
+                                Style="{StaticResource ButtonDangerStyle}" Click="btnConfirmarRestore_Click"
+                                ayuda:Guia.Orden="14" ayuda:Guia.Titulo="Confirmar restauración"
+                                ayuda:Guia.Texto="Inicia la restauración con el archivo elegido. Se habilita recién cuando escribís la palabra de confirmación. Esta acción no se puede deshacer."/>
                     </StackPanel>
                 </StackPanel>
             </Border>

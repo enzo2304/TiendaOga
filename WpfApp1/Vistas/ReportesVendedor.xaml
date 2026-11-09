@@ -2,6 +2,8 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+      xmlns:ayuda="clr-namespace:TiendaOga.Vistas"
+      ayuda:Guia.Capitulo="Reportes del vendedor"
       Title="Rendimiento por Vendedor" Background="#F4F5F7" FontFamily="Segoe UI">
 
     <Grid Margin="20">
@@ -24,21 +26,31 @@
                 <TextBlock Text="Seleccionar Vendedor:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,10"/>
                 <ComboBox x:Name="cmbVendedor" Width="220" Margin="0,0,20,10" 
                           DisplayMemberPath="NombreCompleto" SelectedValuePath="IdUsuario"
-                          SelectionChanged="cmbVendedor_SelectionChanged"/>
+                          SelectionChanged="cmbVendedor_SelectionChanged"
+                          ayuda:Guia.Orden="1" ayuda:Guia.Titulo="Vendedor"
+                          ayuda:Guia.Texto="Elegí el empleado cuyo rendimiento querés analizar."/>
 
                 <TextBlock Text="Desde:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,10"/>
-                <DatePicker x:Name="dpDesde" Width="120" Margin="0,0,15,10" SelectedDateChanged="FiltroFecha_SelectedDateChanged"/>
+                <DatePicker x:Name="dpDesde" Width="120" Margin="0,0,15,10" SelectedDateChanged="FiltroFecha_SelectedDateChanged"
+                            ayuda:Guia.Orden="2" ayuda:Guia.Titulo="Fecha desde"
+                            ayuda:Guia.Texto="Primer día del período que querés analizar."/>
 
                 <TextBlock Text="Hasta:" VerticalAlignment="Center" FontWeight="SemiBold" Margin="0,0,10,10"/>
-                <DatePicker x:Name="dpHasta" Width="120" Margin="0,0,20,10" SelectedDateChanged="FiltroFecha_SelectedDateChanged"/>
+                <DatePicker x:Name="dpHasta" Width="120" Margin="0,0,20,10" SelectedDateChanged="FiltroFecha_SelectedDateChanged"
+                            ayuda:Guia.Orden="3" ayuda:Guia.Titulo="Fecha hasta"
+                            ayuda:Guia.Texto="Último día del período que querés analizar."/>
 
-                <Button Content="Analizar Rendimiento" Width="150" Height="34" Background="#E8792D" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="BtnAnalizar_Click" Margin="0,0,0,10"/>
+                <Button Content="Analizar Rendimiento" Width="150" Height="34" Background="#E8792D" Foreground="White" FontWeight="Bold" BorderThickness="0" Cursor="Hand" Click="BtnAnalizar_Click" Margin="0,0,0,10"
+                        ayuda:Guia.Orden="4" ayuda:Guia.Titulo="Analizar rendimiento"
+                        ayuda:Guia.Texto="Calcula los indicadores y los gráficos con el vendedor y las fechas que elegiste."/>
             </WrapPanel>
         </Border>
 
         <!-- Tarjetas de KPIs Generales -->
         <UniformGrid Grid.Row="2" Columns="3" Margin="0,0,0,15">
-            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0" BorderBrush="#E0E0E0" BorderThickness="1">
+            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0" BorderBrush="#E0E0E0" BorderThickness="1"
+                    ayuda:Guia.Orden="5" ayuda:Guia.Titulo="Volumen de facturación"
+                    ayuda:Guia.Texto="Total facturado por el vendedor en el período, junto con la cantidad de ventas concretadas.">
                 <StackPanel>
                     <TextBlock Text="Volumen de Facturación" FontSize="12" Foreground="#666666" FontWeight="SemiBold"/>
                     <TextBlock x:Name="txtFacturacion" Text="$ 0.00" FontSize="20" FontWeight="Bold" Foreground="#2E7D32" Margin="0,5,0,0"/>
@@ -46,7 +58,9 @@
                 </StackPanel>
             </Border>
 
-            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0" BorderBrush="#E0E0E0" BorderThickness="1">
+            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,10,0" BorderBrush="#E0E0E0" BorderThickness="1"
+                    ayuda:Guia.Orden="6" ayuda:Guia.Titulo="Ticket promedio"
+                    ayuda:Guia.Texto="Cuánto gasta en promedio cada cliente por compra. Sirve para comparar el valor de las ventas entre vendedores.">
                 <StackPanel>
                     <TextBlock Text="Ticket Promedio" FontSize="12" Foreground="#666666" FontWeight="SemiBold"/>
                     <TextBlock x:Name="txtTicketPromedio" Text="$ 0.00" FontSize="24" FontWeight="Bold" Foreground="#1976D2" Margin="0,5,0,0"/>
@@ -54,7 +68,9 @@
                 </StackPanel>
             </Border>
 
-            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,0" BorderBrush="#E0E0E0" BorderThickness="1">
+            <Border Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,0" BorderBrush="#E0E0E0" BorderThickness="1"
+                    ayuda:Guia.Orden="7" ayuda:Guia.Titulo="Operaciones anuladas"
+                    ayuda:Guia.Texto="Cantidad de ventas anuladas del vendedor y su tasa de anulación. Un valor alto puede indicar errores frecuentes al cargar ventas.">
                 <StackPanel>
                     <TextBlock Text="Operaciones Anuladas" FontSize="12" Foreground="#666666" FontWeight="SemiBold"/>
                     <TextBlock x:Name="txtAnuladas" Text="0" FontSize="24" FontWeight="Bold" Foreground="#C62828" Margin="0,5,0,0"/>
@@ -78,7 +94,9 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Top 5 Productos Vendidos (Unidades)" FontSize="14" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,15"/>
-                    <lvc:CartesianChart x:Name="graficoTopProductos" Grid.Row="1">
+                    <lvc:CartesianChart x:Name="graficoTopProductos" Grid.Row="1"
+                                        ayuda:Guia.Orden="8" ayuda:Guia.Titulo="Top 5 de productos"
+                                        ayuda:Guia.Texto="Los cinco productos que más unidades vendió el vendedor en el período. Cada barra muestra la cantidad vendida.">
                         <lvc:CartesianChart.AxisX>
                             <lvc:Axis x:Name="ejeXProductos" Title="Productos">
                                 <lvc:Axis.Separator>
@@ -101,7 +119,9 @@
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
                     <TextBlock Text="Cobranza por Método" FontSize="14" FontWeight="Bold" Foreground="#333333" Margin="0,0,0,15"/>
-                    <lvc:PieChart x:Name="graficoPagos" Grid.Row="1" LegendLocation="Bottom" InnerRadius="40"/>
+                    <lvc:PieChart x:Name="graficoPagos" Grid.Row="1" LegendLocation="Bottom" InnerRadius="40"
+                                  ayuda:Guia.Orden="9" ayuda:Guia.Titulo="Cobranza por método"
+                                  ayuda:Guia.Texto="Muestra cómo se reparte lo cobrado por el vendedor según el método de pago. La leyenda de abajo indica el color de cada método."/>
                 </Grid>
             </Border>
         </Grid>

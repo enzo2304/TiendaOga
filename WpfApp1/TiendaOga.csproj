@@ -230,6 +230,10 @@
     <Compile Include="Vistas\ComprobanteVentaWindow.xaml.cs">
       <DependentUpon>ComprobanteVentaWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Vistas\Guia.cs" />
+    <Compile Include="Vistas\GuiaOverlay.xaml.cs">
+      <DependentUpon>GuiaOverlay.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vistas\NotaCreditoWindow.xaml.cs">
       <DependentUpon>NotaCreditoWindow.xaml</DependentUpon>
     </Compile>
@@ -271,6 +275,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vistas\ComprobanteVentaWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vistas\GuiaOverlay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

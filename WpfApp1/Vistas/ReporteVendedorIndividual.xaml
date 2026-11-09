@@ -3,6 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:ayuda="clr-namespace:TiendaOga.Vistas"
+      ayuda:Guia.Capitulo="Cierre de Caja"
       mc:Ignorable="d" 
       Title="Cierre de Caja - Reportes del Vendedor"
       Background="#F4F5F7"
@@ -66,7 +68,9 @@
                 <TextBlock Text="Resumen de facturación y movimientos del turno actual" FontSize="13" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0"/>
             </StackPanel>
 
-            <Border Grid.Column="1" Background="#EDF2F7" CornerRadius="6" Padding="12,6" VerticalAlignment="Center">
+            <Border Grid.Column="1" Background="#EDF2F7" CornerRadius="6" Padding="12,6" VerticalAlignment="Center"
+                    ayuda:Guia.Orden="1" ayuda:Guia.Titulo="Vendedor y fecha del turno"
+                    ayuda:Guia.Texto="Indica quién es el vendedor y la fecha del turno que se está cerrando. Todo lo que ves en esta pantalla corresponde a ese turno.">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock Text="Vendedor: " FontWeight="SemiBold" Foreground="{StaticResource TextSecondaryBrush}"/>
                     <TextBlock x:Name="lblNombreVendedor" Text="Enzo Vendedor" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,14,0"/>
@@ -87,7 +91,9 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+            <Border Grid.Column="0" Style="{StaticResource CardStyle}"
+                    ayuda:Guia.Orden="2" ayuda:Guia.Titulo="Total facturado"
+                    ayuda:Guia.Texto="Suma de todo lo facturado en el turno, con la cantidad de ventas registradas.">
                 <StackPanel>
                     <TextBlock Text="Total Facturado" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
                     <TextBlock x:Name="lblTotalFacturado" Text="$ 0.00" FontSize="20" FontWeight="Bold" Foreground="#38A169" Margin="0,6,0,0"/>
@@ -95,7 +101,9 @@
                 </StackPanel>
             </Border>
 
-            <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+            <Border Grid.Column="2" Style="{StaticResource CardStyle}"
+                    ayuda:Guia.Orden="3" ayuda:Guia.Titulo="Efectivo en caja"
+                    ayuda:Guia.Texto="Es el dinero físico cobrado en efectivo durante el turno. Es la plata que tenés que rendir al cerrar la caja.">
                 <StackPanel>
                     <TextBlock Text="Efectivo en Caja" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
                     <TextBlock x:Name="lblTotalEfectivo" Text="$ 0.00" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,6,0,0"/>
@@ -103,7 +111,9 @@
                 </StackPanel>
             </Border>
 
-            <Border Grid.Column="4" Style="{StaticResource CardStyle}">
+            <Border Grid.Column="4" Style="{StaticResource CardStyle}"
+                    ayuda:Guia.Orden="4" ayuda:Guia.Titulo="Cobros con tarjeta"
+                    ayuda:Guia.Texto="Total cobrado con tarjeta en el turno. Sirve para controlarlo contra los comprobantes del posnet.">
                 <StackPanel>
                     <TextBlock Text="Cobros con Tarjeta" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
                     <TextBlock x:Name="lblTotalTarjeta" Text="$ 0.00" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,6,0,0"/>
@@ -111,7 +121,9 @@
                 </StackPanel>
             </Border>
 
-            <Border Grid.Column="6" Style="{StaticResource CardStyle}">
+            <Border Grid.Column="6" Style="{StaticResource CardStyle}"
+                    ayuda:Guia.Orden="5" ayuda:Guia.Titulo="Transferencias"
+                    ayuda:Guia.Texto="Total cobrado por transferencia en el turno, es decir, lo que se depositó en la cuenta del negocio.">
                 <StackPanel>
                     <TextBlock Text="Transferencias" FontSize="12" Foreground="{StaticResource TextSecondaryBrush}"/>
                     <TextBlock x:Name="lblTotalTransferencia" Text="$ 0.00" FontSize="18" FontWeight="Bold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,6,0,0"/>
@@ -134,7 +146,9 @@
                           HeadersVisibility="Column" SelectionMode="Single"
                           Background="White" FontSize="13" RowHeight="32"
                           GridLinesVisibility="All" HorizontalGridLinesBrush="#E0E0E0" VerticalGridLinesBrush="#E0E0E0"
-                          BorderBrush="#CCCCCC" BorderThickness="1">
+                          BorderBrush="#CCCCCC" BorderThickness="1"
+                          ayuda:Guia.Orden="6" ayuda:Guia.Titulo="Comprobantes del turno"
+                          ayuda:Guia.Texto="Lista cada comprobante emitido en el turno con su hora, cliente, artículos, método de pago y monto. Sirve para controlar que todo coincida con los totales de arriba.">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="Comprobante" Binding="{Binding NroComprobante}" Width="120"/>
                         <DataGridTextColumn Header="Hora" Binding="{Binding Hora}" Width="80"/>
@@ -149,8 +163,12 @@
 
         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,16,0,0">
             <Button x:Name="btnImprimirCierre" Content="Imprimir Resumen" Background="#4A5568" Foreground="White" 
-                    BorderThickness="0" FontWeight="SemiBold" FontSize="13" Padding="16,8" Margin="0,0,10,0" Cursor="Hand" Click="BtnImprimirCierre_Click"/>
-            <Button x:Name="btnCerrarCaja" Content="Confirmar Cierre de Caja" Style="{StaticResource PrimaryButton}" Click="BtnCerrarCaja_Click"/>
+                    BorderThickness="0" FontWeight="SemiBold" FontSize="13" Padding="16,8" Margin="0,0,10,0" Cursor="Hand" Click="BtnImprimirCierre_Click"
+                    ayuda:Guia.Orden="7" ayuda:Guia.Titulo="Imprimir resumen"
+                    ayuda:Guia.Texto="Imprime el resumen del turno con los totales y los comprobantes, para dejar constancia del cierre."/>
+            <Button x:Name="btnCerrarCaja" Content="Confirmar Cierre de Caja" Style="{StaticResource PrimaryButton}" Click="BtnCerrarCaja_Click"
+                    ayuda:Guia.Orden="8" ayuda:Guia.Titulo="Confirmar cierre de caja"
+                    ayuda:Guia.Texto="Confirma el cierre de caja del turno. Antes de presionarlo, revisá que los totales y los comprobantes sean correctos."/>
         </StackPanel>
     </Grid>
 </Page>

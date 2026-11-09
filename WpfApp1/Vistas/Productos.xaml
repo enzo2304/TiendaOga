@@ -3,6 +3,8 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+      xmlns:ayuda="clr-namespace:TiendaOga.Vistas"
+      ayuda:Guia.Capitulo="Productos"
       mc:Ignorable="d"
       Title="Gestión de Productos"
       Background="#F4F5F7"
@@ -142,7 +144,9 @@
 
                 <!-- Botón Nuevo (Identificado para control de roles) -->
                 <Button x:Name="btnNuevoProducto" Grid.Column="1" Content="+ Nuevo Producto" 
-                        Style="{StaticResource PrimaryButton}" Click="BtnNuevoProducto_Click"/>
+                        Style="{StaticResource PrimaryButton}" Click="BtnNuevoProducto_Click"
+                        ayuda:Guia.Orden="1" ayuda:Guia.Titulo="Nuevo producto"
+                        ayuda:Guia.Texto="Abre el formulario para dar de alta un producto en el catálogo."/>
             </Grid>
 
             <!-- Tarjeta con Filtros y Grilla -->
@@ -163,16 +167,22 @@
 
                         <StackPanel Grid.Column="0" Margin="0,0,12,0">
                             <TextBlock Text="Filtrar por rubro:" Style="{StaticResource FieldLabelStyle}"/>
-                            <ComboBox x:Name="cmbFiltroCategoria" Style="{StaticResource FlatComboBox}" DisplayMemberPath="Nombre" SelectedValuePath="IdCategoria"/>
+                            <ComboBox x:Name="cmbFiltroCategoria" Style="{StaticResource FlatComboBox}" DisplayMemberPath="Nombre" SelectedValuePath="IdCategoria"
+                                      ayuda:Guia.Orden="2" ayuda:Guia.Titulo="Filtrar por rubro"
+                                      ayuda:Guia.Texto="Elegí un rubro para ver solo los productos de esa categoría. Se aplica al presionar Buscar."/>
                         </StackPanel>
 
                         <StackPanel Grid.Column="1" Margin="0,0,12,0">
                             <TextBlock Text="Buscar producto:" Style="{StaticResource FieldLabelStyle}"/>
-                            <TextBox x:Name="txtBusqueda" Style="{StaticResource FlatTextBox}" Height="34"/>
+                            <TextBox x:Name="txtBusqueda" Style="{StaticResource FlatTextBox}" Height="34"
+                                     ayuda:Guia.Orden="3" ayuda:Guia.Titulo="Buscar producto"
+                                     ayuda:Guia.Texto="Escribí el nombre del producto que buscás y presioná Buscar."/>
                         </StackPanel>
 
                         <Button Grid.Column="2" Content="Buscar" Style="{StaticResource PrimaryButton}" 
-                                VerticalAlignment="Bottom" Height="34" Padding="16,0" Click="BtnBuscar_Click"/>
+                                VerticalAlignment="Bottom" Height="34" Padding="16,0" Click="BtnBuscar_Click"
+                                ayuda:Guia.Orden="4" ayuda:Guia.Titulo="Buscar"
+                                ayuda:Guia.Texto="Actualiza el listado con el rubro y el texto que indicaste."/>
                     </Grid>
 
                     <!-- DataGrid -->
@@ -183,7 +193,9 @@
                               Background="White" FontSize="13" RowHeight="32"
                               HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto"
                               GridLinesVisibility="All" HorizontalGridLinesBrush="#E0E0E0" VerticalGridLinesBrush="#E0E0E0"
-                              BorderBrush="#CCCCCC" BorderThickness="1">
+                              BorderBrush="#CCCCCC" BorderThickness="1"
+                              ayuda:Guia.Orden="5" ayuda:Guia.Titulo="Listado de productos"
+                              ayuda:Guia.Texto="Muestra el catálogo con rubro, costo, precio de venta, stock y estado. Los productos inactivos aparecen en rojo. En la columna Acciones, el lápiz edita el producto y el tacho lo da de baja; en un producto inactivo, ese mismo botón lo reactiva. Según tu rol, la columna Acciones puede no estar disponible.">
                         <DataGrid.Columns>
                             <DataGridTextColumn Header="ID" Binding="{Binding IdProducto}" Width="60"/>
                             <DataGridTextColumn Header="Nombre" Binding="{Binding NombreProducto}" Width="2*" MinWidth="200"/>
@@ -291,7 +303,9 @@
 
                             <StackPanel Grid.Column="2">
                                 <TextBlock Text="Nombre del Producto" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="txtNombre" Style="{StaticResource FlatTextBox}" MaxLength="30"/>
+                                <TextBox x:Name="txtNombre" Style="{StaticResource FlatTextBox}" MaxLength="30"
+                                         ayuda:Guia.Orden="6" ayuda:Guia.Titulo="Nombre del producto"
+                                         ayuda:Guia.Texto="Escribí el nombre con el que se va a mostrar en el catálogo y en las ventas. Admite hasta 30 caracteres."/>
                             </StackPanel>
                         </Grid>
 
@@ -307,22 +321,30 @@
 
                             <StackPanel Grid.Column="0">
                                 <TextBlock Text="Precio Costo ($)" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="txtPrecioCosto" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloDecimales"/>
+                                <TextBox x:Name="txtPrecioCosto" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloDecimales"
+                                         ayuda:Guia.Orden="7" ayuda:Guia.Titulo="Precio de costo"
+                                         ayuda:Guia.Texto="Lo que te cuesta el producto. Solo se aceptan números."/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="2">
                                 <TextBlock Text="Precio Venta ($)" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="txtPrecioVenta" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloDecimales"/>
+                                <TextBox x:Name="txtPrecioVenta" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloDecimales"
+                                         ayuda:Guia.Orden="8" ayuda:Guia.Titulo="Precio de venta"
+                                         ayuda:Guia.Texto="El precio al que se vende al cliente. Es el que aparece al cargar el producto en una venta."/>
                             </StackPanel>
 
                             <StackPanel Grid.Column="4">
                                 <TextBlock Text="Stock Disponible" Style="{StaticResource FieldLabelStyle}"/>
-                                <TextBox x:Name="txtStock" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloEnteros"/>
+                                <TextBox x:Name="txtStock" Style="{StaticResource FlatTextBox}" PreviewTextInput="ValidarSoloEnteros"
+                                         ayuda:Guia.Orden="9" ayuda:Guia.Titulo="Stock disponible"
+                                         ayuda:Guia.Texto="Cantidad de unidades que hay. Solo números enteros. Cada venta guardada lo descuenta."/>
                             </StackPanel>
                         </Grid>
 
                         <!-- Selector de Rubro / Tipo -->
-                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
+                        <StackPanel Orientation="Horizontal" Margin="0,0,0,12"
+                                    ayuda:Guia.Orden="10" ayuda:Guia.Titulo="Tipo de rubro"
+                                    ayuda:Guia.Texto="Elegí Hogar o Tecnología. Según la opción, cambian los datos específicos que se piden más abajo.">
                             <TextBlock Text="Tipo de Rubro:" FontWeight="SemiBold" Foreground="{StaticResource TextPrimaryBrush}" Margin="0,0,16,0" VerticalAlignment="Center"/>
                             <RadioButton x:Name="rbHogar" Content="Hogar" GroupName="TipoProd" IsChecked="True" Checked="TipoProducto_Checked" Margin="0,0,20,0"/>
                             <RadioButton x:Name="rbTecnologia" Content="Tecnología" GroupName="TipoProd" Checked="TipoProducto_Checked"/>
@@ -331,7 +353,9 @@
                         <!-- Atributos Dinámicos -->
                         <Grid Margin="0,0,0,20">
                             <!-- Panel Hogar -->
-                            <Border x:Name="panelHogar" Background="#FBFBFB" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12">
+                            <Border x:Name="panelHogar" Background="#FBFBFB" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12"
+                                    ayuda:Guia.Orden="11" ayuda:Guia.Titulo="Datos de Hogar"
+                                    ayuda:Guia.Texto="Completá el material, las dimensiones, el peso en kilos y el ambiente donde se usa el producto.">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -366,7 +390,9 @@
                             </Border>
 
                             <!-- Panel Tecnología -->
-                            <Border x:Name="panelTecnologia" Background="#FBFBFB" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12" Visibility="Collapsed">
+                            <Border x:Name="panelTecnologia" Background="#FBFBFB" CornerRadius="6" BorderBrush="{StaticResource BorderBrush}" BorderThickness="1" Padding="12" Visibility="Collapsed"
+                                    ayuda:Guia.Orden="11" ayuda:Guia.Titulo="Datos de Tecnología"
+                                    ayuda:Guia.Texto="Completá la marca, el modelo, la garantía en meses y el voltaje del producto.">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="*"/>
@@ -403,8 +429,12 @@
 
                         <!-- Botones de Acción -->
                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-                            <Button Content="Cancelar" Style="{StaticResource GhostButton}" Margin="0,0,14,0" Click="BtnCancelar_Click"/>
-                            <Button Content="Guardar Producto" Style="{StaticResource PrimaryButton}" Width="150" Click="BtnGuardar_Click"/>
+                            <Button Content="Cancelar" Style="{StaticResource GhostButton}" Margin="0,0,14,0" Click="BtnCancelar_Click"
+                                    ayuda:Guia.Orden="13" ayuda:Guia.Titulo="Cancelar"
+                                    ayuda:Guia.Texto="Cierra el formulario sin guardar los cambios."/>
+                            <Button Content="Guardar Producto" Style="{StaticResource PrimaryButton}" Width="150" Click="BtnGuardar_Click"
+                                    ayuda:Guia.Orden="12" ayuda:Guia.Titulo="Guardar producto"
+                                    ayuda:Guia.Texto="Guarda el producto con los datos cargados y vuelve al listado."/>
                         </StackPanel>
                     </StackPanel>
                 </Border>

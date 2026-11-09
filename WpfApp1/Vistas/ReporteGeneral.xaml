@@ -2,6 +2,8 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+      xmlns:ayuda="clr-namespace:TiendaOga.Vistas"
+      ayuda:Guia.Capitulo="Reporte General"
       Title="Reporte General"
       Background="#F4F5F7"
       FontFamily="Segoe UI"
@@ -70,28 +72,36 @@
 
             <!-- KPIs -->
             <UniformGrid Grid.Row="0" Columns="4" Margin="0,0,0,20">
-                <Border Style="{StaticResource CardStyle}" Margin="0,0,12,0">
+                <Border Style="{StaticResource CardStyle}" Margin="0,0,12,0"
+                        ayuda:Guia.Orden="1" ayuda:Guia.Titulo="Ganancia neta del mes"
+                        ayuda:Guia.Texto="Muestra la ganancia neta del mes actual: lo que queda después de descontar el costo de lo vendido.">
                     <StackPanel>
                         <TextBlock Text="📈" Style="{StaticResource KpiIconStyle}"/>
                         <TextBlock Text="Ganancia Neta (Mes)" Style="{StaticResource KpiLabelStyle}"/>
                         <TextBlock x:Name="txtGanancia" Text="$ 0" Style="{StaticResource KpiValueStyle}" Foreground="#2FA35A"/>
                     </StackPanel>
                 </Border>
-                <Border Style="{StaticResource CardStyle}" Margin="6,0,6,0">
+                <Border Style="{StaticResource CardStyle}" Margin="6,0,6,0"
+                        ayuda:Guia.Orden="2" ayuda:Guia.Titulo="Capital en inventario"
+                        ayuda:Guia.Texto="Es el valor de toda la mercadería en stock calculado a precio de costo, no de venta.">
                     <StackPanel>
                         <TextBlock Text="🏦" Style="{StaticResource KpiIconStyle}"/>
                         <TextBlock Text="Capital en Inventario (a costo)" Style="{StaticResource KpiLabelStyle}"/>
                         <TextBlock x:Name="txtCapital" Text="$ 0" Style="{StaticResource KpiValueStyle}"/>
                     </StackPanel>
                 </Border>
-                <Border Style="{StaticResource CardStyle}" Margin="6,0,6,0">
+                <Border Style="{StaticResource CardStyle}" Margin="6,0,6,0"
+                        ayuda:Guia.Orden="3" ayuda:Guia.Titulo="Mejor vendedor"
+                        ayuda:Guia.Texto="Nombre del vendedor que lidera el ranking del mes. El detalle de todos los vendedores está más abajo, en Rendimiento del Personal.">
                     <StackPanel>
                         <TextBlock Text="🏆" Style="{StaticResource KpiIconStyle}"/>
                         <TextBlock Text="Mejor Vendedor" Style="{StaticResource KpiLabelStyle}"/>
                         <TextBlock x:Name="txtMejorVendedor" Text="-" Style="{StaticResource KpiValueStyle}" TextTrimming="CharacterEllipsis"/>
                     </StackPanel>
                 </Border>
-                <Border Style="{StaticResource CardStyle}" Margin="12,0,0,0">
+                <Border Style="{StaticResource CardStyle}" Margin="12,0,0,0"
+                        ayuda:Guia.Orden="4" ayuda:Guia.Titulo="Alertas de stock"
+                        ayuda:Guia.Texto="Cantidad de productos que están por debajo del stock mínimo establecido. El listado completo está abajo, en Alerta de Stock Crítico.">
                     <StackPanel>
                         <TextBlock Text="⚠️" Style="{StaticResource KpiIconStyle}"/>
                         <TextBlock Text="Alertas de Stock" Style="{StaticResource KpiLabelStyle}"/>
@@ -112,7 +122,9 @@
                     <StackPanel>
                         <TextBlock Text="Evolución de Rentabilidad" Style="{StaticResource SectionTitleStyle}"/>
                         <TextBlock Text="Ingresos Brutos vs. Ganancia Neta (6 meses)" Style="{StaticResource SectionSubtitleStyle}"/>
-                        <lvc:CartesianChart x:Name="graficoRentabilidad" Height="260" LegendLocation="Bottom">
+                        <lvc:CartesianChart x:Name="graficoRentabilidad" Height="260" LegendLocation="Bottom"
+                                            ayuda:Guia.Orden="5" ayuda:Guia.Titulo="Evolución de rentabilidad"
+                                            ayuda:Guia.Texto="Compara mes a mes los ingresos brutos con la ganancia neta de los últimos 6 meses. Sirve para ver si el negocio está mejorando o empeorando.">
                             <lvc:CartesianChart.AxisX>
                                 <lvc:Axis x:Name="ejeXMeses">
                                     <lvc:Axis.Separator>
@@ -131,7 +143,9 @@
                     <StackPanel>
                         <TextBlock Text="Ingresos por Medio de Pago" Style="{StaticResource SectionTitleStyle}"/>
                         <TextBlock Text="Liquidez del mes actual" Style="{StaticResource SectionSubtitleStyle}"/>
-                        <lvc:PieChart x:Name="graficoPagos" Height="260" LegendLocation="Bottom" InnerRadius="40"/>
+                        <lvc:PieChart x:Name="graficoPagos" Height="260" LegendLocation="Bottom" InnerRadius="40"
+                                      ayuda:Guia.Orden="6" ayuda:Guia.Titulo="Ingresos por medio de pago"
+                                      ayuda:Guia.Texto="Muestra cómo se reparte lo cobrado en el mes actual según el medio de pago. La leyenda de abajo indica el color de cada uno."/>
                     </StackPanel>
                 </Border>
             </Grid>
@@ -144,7 +158,9 @@
                     <ColumnDefinition Width="1*"/>
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Style="{StaticResource CardStyle}">
+                <Border Grid.Column="0" Style="{StaticResource CardStyle}"
+                        ayuda:Guia.Orden="7" ayuda:Guia.Titulo="Rendimiento del personal"
+                        ayuda:Guia.Texto="Ranking de los vendedores del mes con su cantidad de ventas y el monto recaudado. Si no hubo ventas, se muestra un aviso.">
                     <StackPanel>
                         <TextBlock Text="Rendimiento del Personal" Style="{StaticResource SectionTitleStyle}"/>
                         <TextBlock Text="Top vendedores del mes" Style="{StaticResource SectionSubtitleStyle}"/>
@@ -180,7 +196,9 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="2" Style="{StaticResource CardStyle}">
+                <Border Grid.Column="2" Style="{StaticResource CardStyle}"
+                        ayuda:Guia.Orden="8" ayuda:Guia.Titulo="Alerta de stock crítico"
+                        ayuda:Guia.Texto="Lista los productos que están por debajo del mínimo establecido, con su categoría y el stock que les queda. Son los que conviene reponer. Si no hay ninguno, se muestra un aviso.">
                     <StackPanel>
                         <TextBlock Text="Alerta de Stock Crítico" Style="{StaticResource SectionTitleStyle}"/>
                         <TextBlock Text="Productos por debajo del mínimo establecido" Style="{StaticResource SectionSubtitleStyle}"/>
