@@ -1,0 +1,58 @@
+﻿<Page x:Class="TiendaOga.Vistas.ReporteCategorias"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+      Title="Reporte de Categorías" Background="#F4F5F7" FontFamily="Segoe UI">
+
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,15,0">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="320"/>
+                <!-- Gráfico de Torta -->
+                <RowDefinition Height="Auto"/>
+                <!-- Grilla de Datos -->
+            </Grid.RowDefinitions>
+
+            <!-- Título -->
+            <StackPanel Grid.Row="0" Margin="0,0,0,15">
+                <TextBlock Text="Reporte de Categorías Más Vendidas" FontSize="22" FontWeight="Bold" Foreground="#333333"/>
+                <TextBlock Text="Participación de ventas y unidades por categoría de productos." FontSize="13" Foreground="#E8792D" FontWeight="SemiBold"/>
+            </StackPanel>
+
+            <!-- Filtros de Rango de Fechas con Calendario -->
+            <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,15" BorderBrush="#E0E0E0" BorderThickness="1">
+                <WrapPanel VerticalAlignment="Center">
+                    <TextBlock Text="Desde:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                    <DatePicker x:Name="dtpDesde" Width="130" Margin="0,0,20,0" SelectedDateChanged="Filtro_SelectedDateChanged"/>
+
+                    <TextBlock Text="Hasta:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
+                    <DatePicker x:Name="dtpHasta" Width="130" Margin="0,0,20,0" SelectedDateChanged="Filtro_SelectedDateChanged"/>
+
+                    <Button Content="Refrescar" Width="110" Height="30" Background="#E8792D" Foreground="White" FontWeight="Bold" Click="BtnGenerar_Click"/>
+                </WrapPanel>
+            </Border>
+
+            <!-- Gráfico Circular / Torta -->
+            <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="10" Margin="0,0,0,15">
+                <Grid>
+                    <TextBlock Text="Distribución por Unidades Vendidas" FontWeight="Bold" Margin="10,10,0,0"/>
+                    <lvc:PieChart x:Name="graficoCategorias" Margin="0,30,0,0" LegendLocation="Right" InnerRadius="30"/>
+                </Grid>
+            </Border>
+
+            <!-- Grilla -->
+            <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="10">
+                <DataGrid x:Name="dgCategorias" AutoGenerateColumns="False" IsReadOnly="True" Background="Transparent" Height="200">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="#" Binding="{Binding Posicion}" Width="50"/>
+                        <DataGridTextColumn Header="Categoría" Binding="{Binding NombreCategoria}" Width="2*"/>
+                        <DataGridTextColumn Header="Unidades Vendidas" Binding="{Binding TotalUnidadesVendidas}" Width="1.5*"/>
+                        <DataGridTextColumn Header="Ingreso Total" Binding="{Binding TotalIngresoCategoria, StringFormat={}{0:C}}" Width="1.5*"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Border>
+        </Grid>
+    </ScrollViewer>
+</Page>

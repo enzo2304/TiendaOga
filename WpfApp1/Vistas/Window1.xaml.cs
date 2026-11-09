@@ -117,6 +117,7 @@ namespace TiendaOga.Vistas
             btnReporteProductos.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteProductos(RolActual));
             btnReporteGeneral.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteGeneral(RolActual));
             btnStockBackup.Visibility = ToVisibility(PermisosNegocio.PuedeVerBackup(RolActual));
+            btnReporteCategorias.Visibility = ToVisibility(PermisosNegocio.PuedeVerReporteCategorias(RolActual));
 
             // Configuración dinámica del botón de ventas según el alcance
             if (PermisosNegocio.PuedeVerReportesVendedor(RolActual))
@@ -273,6 +274,14 @@ namespace TiendaOga.Vistas
             if (!PermisosNegocio.PuedeVerBackup(RolActual)) return;
             lblTituloModulo.Text = "Backup del Sistema";
             ContenedorPrincipal.Navigate(new Backup());
+        }
+
+        private void btnReporteCategorias_Click(object sender, RoutedEventArgs e)
+        {
+            if (!PermisosNegocio.PuedeVerReporteCategorias(RolActual)) return;
+
+            lblTituloModulo.Text = "Reporte de Categorías";
+            ContenedorPrincipal.Navigate(new ReporteCategorias());
         }
     }
 }

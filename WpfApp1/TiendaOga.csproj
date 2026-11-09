@@ -202,6 +202,7 @@
     <Compile Include="Entidades\ItemVenta.cs" />
     <Compile Include="Entidades\PerfilItem.cs" />
     <Compile Include="Entidades\ProductoRow.cs" />
+    <Compile Include="Entidades\ReporteCategoriaRow.cs" />
     <Compile Include="Entidades\ReporteGeneralDTO.cs" />
     <Compile Include="Entidades\ReporteProductoRow.cs" />
     <Compile Include="Entidades\UsuarioRow.cs" />
@@ -245,6 +246,9 @@
     </Compile>
     <Compile Include="Entidades\Perfil.cs" />
     <Compile Include="Entidades\Usuario.cs" />
+    <Compile Include="Vistas\ReporteCategorias.xaml.cs">
+      <DependentUpon>ReporteCategorias.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Vistas\ReporteGeneral.xaml.cs">
       <DependentUpon>ReporteGeneral.xaml</DependentUpon>
     </Compile>
@@ -303,6 +307,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Vistas\Productos.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Vistas\ReporteCategorias.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

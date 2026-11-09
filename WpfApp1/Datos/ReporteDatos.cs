@@ -70,5 +70,34 @@ namespace TiendaOga.Datos
             }
             return dto;
         }
+
+        public List<ReporteCategoriaRow> ObtenerReporteCategorias(DateTime fechaInicio, DateTime fechaFin)
+        {
+            var lista = new List<ReporteCategoriaRow>();
+            using (var cn = _bd.ObtenerConexion())
+            using (var cmd = new SqlCommand("dbo.sp_reporte_categorias_mas_vendidos", cn))
+            {
+                cmd.CommandType = CommandType.StoredProcedure;
+                cmd.Parameters.AddWithValue("@fechaInicio", fechaInicio.Date);
+                cmd.Parameters.AddWithValue("@fechaFin", fechaFin.Date);
+
+                cn.Open();
+                using (var rd = cmd.ExecuteReader())
+                {
+                    while (rd.Read())
+                    {
+                        lista.Add(new ReporteCategoriaRow
+                        {
+                            Posicion = Convert.ToInt32(rd["Posicion"]),
+                            IdCategoria = Convert.ToInt32(rd["id_categoria"]),
+                            NombreCategoria = rd["NombreCategoria"].ToString(),
+                            TotalUnidadesVendidas = Convert.ToInt32(rd["TotalUnidadesVendidas"]),
+                            TotalIngresoCategoria = Convert.ToDecimal(rd["TotalIngresoCategoria"])
+                        });
+                    }
+                }
+            }
+            return lista;
+        }
     }
 }

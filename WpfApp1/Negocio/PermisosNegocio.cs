@@ -25,7 +25,8 @@ namespace TiendaOga.Negocio
             ReportesVendedor,
             ReporteProductos,
             ReporteGeneral,
-            Backup
+            Backup,
+            ReporteCategorias
         }
 
         private static readonly Dictionary<string, HashSet<Modulo>> MatrizPermisos =
@@ -39,6 +40,7 @@ namespace TiendaOga.Negocio
                     Modulo.ReportesVendedor,
                     Modulo.ReporteProductos,
                     Modulo.ReporteGeneral,
+                    Modulo.ReporteCategorias,
                 },
 
                 [ROL_ADMINISTRADOR] = new HashSet<Modulo>
@@ -73,6 +75,8 @@ namespace TiendaOga.Negocio
         public static bool PuedeVerReporteProductos(string rol) => TienePermiso(rol, Modulo.ReporteProductos);
         public static bool PuedeVerReporteGeneral(string rol) => TienePermiso(rol, Modulo.ReporteGeneral);
         public static bool PuedeVerBackup(string rol) => TienePermiso(rol, Modulo.Backup);
+        public static bool PuedeVerReporteCategorias(string rol) => TienePermiso(rol, Modulo.ReporteCategorias);
+
 
         public static TipoReporteVenta ObtenerAlcanceReporteVenta(string rol)
         {
@@ -98,6 +102,8 @@ namespace TiendaOga.Negocio
             if (PuedeVerReporteProductos(rol)) return nameof(Modulo.ReporteProductos);
             if (PuedeVerReporteGeneral(rol)) return nameof(Modulo.ReporteGeneral);
             if (PuedeVerBackup(rol)) return nameof(Modulo.Backup);
+            if (PuedeVerReporteCategorias(rol)) return nameof(Modulo.ReporteCategorias);
+
             return null;
         }
     }
