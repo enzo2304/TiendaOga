@@ -2,6 +2,8 @@
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:lvc="clr-namespace:LiveCharts.Wpf;assembly=LiveCharts.Wpf"
+      xmlns:ayuda="clr-namespace:TiendaOga.Vistas"
+      ayuda:Guia.Capitulo="Reporte de Categorías"
       Title="Reporte de Categorías" Background="#F4F5F7" FontFamily="Segoe UI">
 
     <ScrollViewer VerticalScrollBarVisibility="Auto" Padding="0,0,15,0">
@@ -25,12 +27,18 @@
             <Border Grid.Row="1" Background="White" CornerRadius="8" Padding="15" Margin="0,0,0,15" BorderBrush="#E0E0E0" BorderThickness="1">
                 <WrapPanel VerticalAlignment="Center">
                     <TextBlock Text="Desde:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
-                    <DatePicker x:Name="dtpDesde" Width="130" Margin="0,0,20,0" SelectedDateChanged="Filtro_SelectedDateChanged"/>
+                    <DatePicker x:Name="dtpDesde" Width="130" Margin="0,0,20,0" SelectedDateChanged="Filtro_SelectedDateChanged"
+                                ayuda:Guia.Orden="1" ayuda:Guia.Titulo="Fecha desde"
+                                ayuda:Guia.Texto="Primer día del período que querés analizar."/>
 
                     <TextBlock Text="Hasta:" VerticalAlignment="Center" Margin="0,0,8,0" FontWeight="SemiBold"/>
-                    <DatePicker x:Name="dtpHasta" Width="130" Margin="0,0,20,0" SelectedDateChanged="Filtro_SelectedDateChanged"/>
+                    <DatePicker x:Name="dtpHasta" Width="130" Margin="0,0,20,0" SelectedDateChanged="Filtro_SelectedDateChanged"
+                                ayuda:Guia.Orden="2" ayuda:Guia.Titulo="Fecha hasta"
+                                ayuda:Guia.Texto="Último día del período que querés analizar."/>
 
-                    <Button Content="Refrescar" Width="110" Height="30" Background="#E8792D" Foreground="White" FontWeight="Bold" Click="BtnGenerar_Click"/>
+                    <Button Content="Refrescar" Width="110" Height="30" Background="#E8792D" Foreground="White" FontWeight="Bold" Click="BtnGenerar_Click"
+                            ayuda:Guia.Orden="3" ayuda:Guia.Titulo="Refrescar"
+                            ayuda:Guia.Texto="Actualiza el gráfico y la tabla con el rango de fechas que elegiste."/>
                 </WrapPanel>
             </Border>
 
@@ -38,13 +46,17 @@
             <Border Grid.Row="2" Background="White" CornerRadius="8" Padding="10" Margin="0,0,0,15">
                 <Grid>
                     <TextBlock Text="Distribución por Unidades Vendidas" FontWeight="Bold" Margin="10,10,0,0"/>
-                    <lvc:PieChart x:Name="graficoCategorias" Margin="0,30,0,0" LegendLocation="Right" InnerRadius="30"/>
+                    <lvc:PieChart x:Name="graficoCategorias" Margin="0,30,0,0" LegendLocation="Right" InnerRadius="30"
+                                  ayuda:Guia.Orden="4" ayuda:Guia.Titulo="Distribución por categoría"
+                                  ayuda:Guia.Texto="Muestra cómo se reparten las unidades vendidas entre las categorías en el período. Cada porción es una categoría y la leyenda de la derecha indica cuál es cuál."/>
                 </Grid>
             </Border>
 
             <!-- Grilla -->
             <Border Grid.Row="3" Background="White" CornerRadius="8" Padding="10">
-                <DataGrid x:Name="dgCategorias" AutoGenerateColumns="False" IsReadOnly="True" Background="Transparent" Height="200">
+                <DataGrid x:Name="dgCategorias" AutoGenerateColumns="False" IsReadOnly="True" Background="Transparent" Height="200"
+                          ayuda:Guia.Orden="5" ayuda:Guia.Titulo="Ranking de categorías"
+                          ayuda:Guia.Texto="Detalla cada categoría con su posición, las unidades vendidas y el ingreso total que generó. Sirve para ver cuáles son las que más venden y cuáles más facturan.">
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="#" Binding="{Binding Posicion}" Width="50"/>
                         <DataGridTextColumn Header="Categoría" Binding="{Binding NombreCategoria}" Width="2*"/>

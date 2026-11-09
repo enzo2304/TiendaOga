@@ -414,11 +414,12 @@
                                                 </Style>
                                             </Button.Style>
 
-                                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <Grid Width="50" Height="26">
                                                 <Path Data="M12,3 L12,15 M7,10.5 L12,15.5 L17,10.5 M4,16 L4,20 L20,20 L20,16"
-                                                      StrokeThickness="2.2"
-                                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
-                                                      Width="16" Height="16" Stretch="Uniform">
+                                                  StrokeThickness="2.2"
+                                                  StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                  Width="16" Height="16" Stretch="Uniform"
+                                                  HorizontalAlignment="Center" VerticalAlignment="Center">
                                                     <Path.Style>
                                                         <Style TargetType="Path">
                                                             <Setter Property="Stroke" Value="#E67E22"/>
@@ -430,8 +431,9 @@
                                                         </Style>
                                                     </Path.Style>
                                                 </Path>
+
                                                 <TextBlock Text="&#xE70D;" FontFamily="Segoe MDL2 Assets" FontSize="9"
-                                                           Margin="5,0,0,0" VerticalAlignment="Center">
+                                                    HorizontalAlignment="Right" VerticalAlignment="Center" Margin="0,0,3,0">
                                                     <TextBlock.Style>
                                                         <Style TargetType="TextBlock">
                                                             <Setter Property="Foreground" Value="#E67E22"/>
@@ -443,7 +445,7 @@
                                                         </Style>
                                                     </TextBlock.Style>
                                                 </TextBlock>
-                                            </StackPanel>
+                                            </Grid>
 
                                             <Button.ContextMenu>
                                                 <ContextMenu>
