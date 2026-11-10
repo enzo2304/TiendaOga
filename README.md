@@ -90,23 +90,82 @@ TiendaOga/
 
 ## ![06](https://img.shields.io/badge/06-555555?style=flat-square)![EJECUCI%C3%93N](https://img.shields.io/badge/EJECUCI%C3%93N-14B8A6?style=flat-square) Cómo ejecutar el proyecto
 
-**Requisitos**
+> **Importante:** es una aplicación de escritorio (WPF), por lo que **solo se ejecuta en Windows**. Necesita una base de datos SQL Server creada; sin ella el login y los módulos no funcionan.
 
-- Visual Studio con la carga de trabajo de escritorio de .NET.
-- SQL Server y SQL Server Management Studio (SSMS).
+### Requisitos previos
 
-**Pasos**
+| Requisito | Detalle |
+| :--- | :--- |
+| Sistema operativo | Windows 10 u 11. |
+| Visual Studio | **2022 versión 17.13 o superior** (o 2026), con la carga de trabajo **Desarrollo de escritorio con .NET**. Las versiones anteriores no abren la solución `.slnx`. |
+| SQL Server | Express, Developer o LocalDB. |
+| SSMS | SQL Server Management Studio. |
+| Git | Para clonar el repositorio (opcional: también se puede descargar el ZIP). |
 
-| Orden | Acción | Nota |
-| :---: | :--- | :--- |
-| 1 | Clonar el repositorio. | `git clone https://github.com/enzo2304/TiendaOga.git` |
-| 2 | Crear la base de datos en SQL Server. | _Completar: indicar el script, si se incluye en el repositorio._ |
-| 3 | Configurar la cadena de conexión. | _Completar: indicar en qué archivo se configura._ |
-| 4 | Abrir `TiendaOga.slnx` en Visual Studio y ejecutar. | Usar `WpfApp1` como proyecto de inicio. |
+### Paso a paso
+
+**Paso 1. Descargar el proyecto**
+
+```bash
+git clone https://github.com/enzo2304/TiendaOga.git
+```
+
+También se puede usar el botón verde **Code → Download ZIP** en GitHub y descomprimir la carpeta.
+
+**Paso 2. Crear la base de datos**
+
+1. Abrir **SSMS** y conectarse al servidor. Nombres habituales: `localhost\SQLEXPRESS` (Express) o `(localdb)\MSSQLLocalDB` (LocalDB).
+2. Ir a **Archivo → Abrir → ScriptDB** y seleccionar el script de la base de datos.
+3. Presionar **Ejecutar** (`F5`). El script crea la base `[TiendaOgaDB]` con sus tablas, procedimientos almacenados y datos iniciales.
+4. Verificar en el Explorador de objetos (clic derecho en **Bases de datos → Actualizar**) que la base aparece.
+
+**Paso 3. Configurar la conexión**
+1. Abrir el archivo `App.config` dentro de `WpfApp1`.
+2. Reemplazar el servidor por el de tu equipo (el mismo que usaste en SSMS):
+
+```text
+Server=TU_SERVIDOR;Database=TiendaOgaDB;Trusted_Connection=True;TrustServerCertificate=True;
+```
+
+Si el servidor usa usuario y contraseña de SQL en lugar de la cuenta de Windows, reemplazar `Trusted_Connection=True` por `User Id=USUARIO;Password=CONTRASEÑA`.
+
+**Paso 4. Abrir la solución**
+
+1. Hacer doble clic en `TiendaOga.slnx` (se abre con Visual Studio).
+2. Esperar a que se restauren los paquetes NuGet (se ve en la barra inferior). Si hay errores por paquetes faltantes: clic derecho sobre la solución → **Restaurar paquetes NuGet**.
+
+**Paso 5. Elegir el proyecto de inicio**
+
+En el Explorador de soluciones, clic derecho sobre `WpfApp1` → **Establecer como proyecto de inicio** (debe verse en negrita).
+
+**Paso 6. Compilar y ejecutar**
+
+1. Menú **Compilar → Compilar solución** (`Ctrl + Shift + B`) y comprobar que no haya errores.
+2. Presionar **F5** (o el botón **Iniciar**). Se abre la ventana de login.
+
+**Paso 7. Iniciar sesión**
+
+Ingresar con un usuario de prueba cargado por el script:
+
+| Rol | Usuario | Contraseña |
+| :--- | :--- | :--- |
+| Administrador | `[COMPLETAR]` | `[COMPLETAR]` |
+| Gerente | `[COMPLETAR]` | `[COMPLETAR]` |
+| Vendedor | `[COMPLETAR]` | `[COMPLETAR]` |
+
+### Problemas frecuentes
+
+| Problema | Solución |
+| :--- | :--- |
+| Visual Studio no abre `TiendaOga.slnx`. | Actualizar a Visual Studio 2022 17.13 o superior. |
+| Error de conexión al iniciar sesión. | Revisar el nombre del servidor en la cadena de conexión y que el servicio de SQL Server esté iniciado. |
+| `Cannot open database ... requested by the login`. | La base no existe: repetir el Paso 2. |
+| Error de certificado SSL. | Agregar `TrustServerCertificate=True` a la cadena de conexión. |
+| La aplicación no inicia o abre otro proyecto. | Repetir el Paso 5. |
 
 ---
 
-## ![08](https://img.shields.io/badge/08-555555?style=flat-square)![DESARROLLADORES](https://img.shields.io/badge/DESARROLLADORES-EC4899?style=flat-square) Desarrolladores
+## ![07](https://img.shields.io/badge/07-555555?style=flat-square)![DESARROLLADORES](https://img.shields.io/badge/DESARROLLADORES-EC4899?style=flat-square) Desarrolladores
 
 - [Christian Gabriel Jesus Gomez](https://github.com/Chris10TS)
 - [Sanchez Rodriguez Enzo Nahuel](https://github.com/enzo2304)
