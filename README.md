@@ -106,12 +106,6 @@ TiendaOga/
 
 ---
 
-## ![07](https://img.shields.io/badge/07-555555?style=flat-square)![CAPTURAS](https://img.shields.io/badge/CAPTURAS-EC4899?style=flat-square) Capturas
-
-_Completar: agregar capturas del login, el catálogo y el módulo de ventas, por ejemplo en una carpeta `capturas/`._
-
----
-
 ## ![08](https://img.shields.io/badge/08-555555?style=flat-square)![DESARROLLADORES](https://img.shields.io/badge/DESARROLLADORES-EC4899?style=flat-square) Desarrolladores
 
 - [Christian Gabriel Jesus Gomez](https://github.com/Chris10TS)
